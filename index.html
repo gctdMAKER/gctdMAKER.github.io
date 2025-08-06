@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grilled Cheese Tower Defense - The Website!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDF4E3; /* Creamy background */
+        }
+        .font-chewy {
+            font-family: 'Chewy', cursive;
+        }
+        #game-section canvas {
+            cursor: not-allowed;
+            background-color: #2E8B57; /* SeaGreen fallback */
+        }
+        .tower-select-button.selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+            border-color: #FBBF24;
+        }
+        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        #enemy-index-content::-webkit-scrollbar, #tower-index-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        #enemy-index-content::-webkit-scrollbar-track, #tower-index-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        #enemy-index-content::-webkit-scrollbar-thumb, #tower-index-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        #enemy-index-content::-webkit-scrollbar-thumb:hover, #tower-index-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .hero-bg {
+            background-image: linear-gradient(rgba(253, 244, 227, 0.8), rgba(253, 244, 227, 1)), url('https://placehold.co/1200x800/2E8B57/FFFFFF?text=Gooey+Battlefield');
+            background-size: cover;
+            background-position: center;
+        }
+        .tab-button.active {
+            border-bottom-color: #FBBF24;
+            color: #c2410c;
+        }
+        .speed-button.active {
+            background-color: #3b82f6;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-yellow-50">
+
+    <!-- Header -->
+    <header class="bg-amber-500 shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">G.C.T.D</div>
+            <div>
+                <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
+                <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg py-20 md:py-32">
+        <div class="container mx-auto text-center px-6">
+            <h1 class="text-6xl md:text-8xl font-chewy text-amber-700" style="text-shadow: 2px 2px #fff, 4px 4px #FBBF24;">Grilled Cheese Tower Defense</h1>
+            <p class="text-xl md:text-2xl text-amber-800 mt-4 max-w-3xl mx-auto font-semibold">The ultimate battle of bread and butter! Defend your delicious base from hordes of hungry, marauding crumbs. Strategize, build, and melt your way to victory!</p>
+            <a href="#game-section" id="start-game-button" class="mt-8 inline-block bg-amber-500 text-white font-bold text-2xl py-4 px-10 rounded-xl shadow-lg hover:bg-amber-600 transition-transform transform hover:scale-105">Start Defending!</a>
+        </div>
+    </section>
+
+    <!-- How to Play Section -->
+    <section id="how-to-play" class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-chewy text-amber-600 mb-12 text-center">How to Play</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-amber-50 p-6 rounded-lg shadow-md border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-amber-800 mb-2">1. Earn Gold</h3>
+                    <p class="text-gray-600">Your primary resource is Gold, earned by defeating enemies. Each crumb you vanquish adds to your treasury, allowing you to build a formidable cheesy fortress.</p>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-lg shadow-md border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-amber-800 mb-2">2. Build Towers</h3>
+                    <p class="text-gray-600">Use your gold to build a variety of cheese-themed towers from the menu. Each tower has unique strengths. Place them strategically along the path to create deadly kill zones.</p>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-lg shadow-md border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-amber-800 mb-2">3. Upgrade and Sell</h3>
+                    <p class="text-gray-600">Click on a placed tower to open its upgrade menu. Spend gold to increase its power, or sell it (for half its total cost) to make room for a different strategy.</p>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-lg shadow-md border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-amber-800 mb-2">4. Know Your Enemy</h3>
+                    <p class="text-gray-600">Use the in-game 'Game Index' to learn about the different enemy types. Knowing their health, speed, and special abilities is key to choosing the right towers for the job.</p>
+                </div>
+                 <div class="bg-amber-50 p-6 rounded-lg shadow-md border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-amber-800 mb-2">5. Survive the Waves</h3>
+                    <p class="text-gray-600">Enemies come in waves, with each wave getting progressively harder. Prepare for stronger foes, tricky new enemy types, and devastating bosses that appear every 10 waves.</p>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-lg shadow-md border-2 border-amber-200">
+                    <h3 class="text-2xl font-bold text-amber-800 mb-2">6. Protect Your Base</h3>
+                    <p class="text-gray-600">The ultimate goal is to prevent enemies from reaching your Grilled Cheese base at the end of the path. If your base's health drops to zero, the game is over!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Section -->
+    <section id="game-section" class="py-16">
+        <div class="w-full max-w-5xl mx-auto px-4">
+            <!-- Game Info Panel -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 text-center">
+                <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
+                    <p class="text-sm text-gray-500 font-semibold">GOLD</p>
+                    <p id="gold-display" class="text-2xl font-bold text-amber-500">100</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
+                    <p class="text-sm text-gray-500 font-semibold">BASE HEALTH</p>
+                    <p id="lives-display" class="text-2xl font-bold text-red-500">1500</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
+                    <p class="text-sm text-gray-500 font-semibold">WAVE</p>
+                    <p id="wave-display" class="text-2xl font-bold text-sky-500">0</p>
+                </div>
+                 <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
+                    <p class="text-sm text-gray-500 font-semibold">NEXT WAVE IN</p>
+                    <p id="timer-display" class="text-2xl font-bold text-gray-600">--</p>
+                </div>
+            </div>
+
+            <!-- Game Canvas -->
+            <div class="relative w-full aspect-[16/10] shadow-lg rounded-xl overflow-hidden border-4 border-amber-400">
+                <div id="pre-game-overlay" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white p-8 text-center z-30">
+                    <h2 class="text-4xl font-chewy text-amber-400 mb-4">Ready to Defend?</h2>
+                    <p class="text-lg">Click "Start Defending!" above to begin the cheesy onslaught!</p>
+                </div>
+                <canvas id="gameCanvas"></canvas>
+                
+                <!-- Game Over Modal -->
+                <div id="game-over-modal" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white p-8 text-center hidden opacity-0 scale-90 z-30">
+                    <h2 id="game-over-title" class="text-6xl font-chewy text-amber-400 mb-4">Game Over</h2>
+                    <p id="game-over-message" class="text-xl mb-6">The hungry hordes have overwhelmed you!</p>
+                    <button id="restart-button" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg transition-transform transform hover:scale-105">
+                        Play Again
+                    </button>
+                </div>
+                
+                <!-- Alerts -->
+                <div id="boss-alert" class="absolute inset-0 flex items-center justify-center hidden opacity-0 z-10 pointer-events-none">
+                     <h2 class="text-8xl font-chewy text-red-600" style="text-shadow: 4px 4px #000;">BOSS LEVEL</h2>
+                </div>
+                <div id="demon-mode-alert" class="absolute inset-0 flex items-center justify-center hidden opacity-0 z-20 pointer-events-none">
+                     <h2 class="text-8xl font-chewy text-purple-800" style="text-shadow: 4px 4px #000;">DEMON MODE</h2>
+                </div>
+                <div id="hell-mode-alert" class="absolute inset-0 flex items-center justify-center hidden opacity-0 z-20 pointer-events-none">
+                     <h2 class="text-8xl font-chewy text-red-800" style="text-shadow: 4px 4px #000;">HELL MODE</h2>
+                </div>
+                <div id="pause-overlay" class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-white p-8 text-center hidden z-35">
+                    <h2 class="text-6xl font-chewy text-amber-400">Game Paused</h2>
+                </div>
+                <div id="speed-indicator" class="absolute top-4 right-4 text-white font-bold text-2xl font-chewy hidden z-10" style="text-shadow: 2px 2px #000;">
+                    2x Speed
+                </div>
+
+                <!-- Game Index Modal -->
+                <div id="game-index-modal" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-white p-4 md:p-8 text-center hidden opacity-0 scale-90 z-40">
+                    <div class="bg-amber-100 text-black w-full max-w-4xl h-full max-h-[80vh] rounded-xl shadow-lg flex flex-col p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-3xl font-chewy text-amber-700">Game Index</h2>
+                            <button id="close-index-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full text-xl">&times;</button>
+                        </div>
+                        <div class="flex border-b border-amber-300 mb-2">
+                            <button id="show-towers-tab" class="tab-button py-2 px-4 font-semibold border-b-4 border-transparent">Towers</button>
+                            <button id="show-enemies-tab" class="tab-button py-2 px-4 font-semibold border-b-4 border-transparent active">Enemies</button>
+                        </div>
+                        <div id="tower-index-content" class="flex-grow overflow-y-auto pr-2 space-y-4 hidden">
+                            <!-- Tower entries will be populated here -->
+                        </div>
+                        <div id="enemy-index-content" class="flex-grow overflow-y-auto pr-2 space-y-4">
+                            <!-- Enemy entries will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-2 text-center flex justify-center items-center gap-4">
+                <div class="flex gap-2">
+                    <button id="pause-button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10 flex items-center justify-center text-lg">❚❚</button>
+                    <button id="normal-speed-button" class="speed-button bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10 active">1x</button>
+                    <button id="2x-speed-button" class="speed-button bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10">2x</button>
+                </div>
+                <button id="index-button" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">Game Index</button>
+                <button id="sound-toggle-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">🔊 Sound On</button>
+            </div>
+            
+            <!-- Tower Selection Menu -->
+            <div class="mt-4 w-full bg-amber-200 border-4 border-amber-400 p-4 rounded-lg shadow-md">
+                <h3 class="text-center font-bold text-amber-800 text-xl mb-2">Build a Tower</h3>
+                <div id="tower-selection" class="flex justify-center gap-4 flex-wrap">
+                    <!-- Tower buttons will be inserted here by JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-amber-600 py-6">
+        <div class="container mx-auto text-center text-white">
+            <p>&copy; 2025 Grilled Cheese Tower Defense. All rights reserved.</p>
+            <p class="text-sm text-amber-200">A ridiculously cheesy game.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- ALL THE GAME JAVASCRIPT IS HERE ---
+
+        // --- Canvas and UI Setup ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const parentDiv = canvas.parentElement;
+
+        const goldDisplay = document.getElementById('gold-display');
+        const livesDisplay = document.getElementById('lives-display');
+        const waveDisplay = document.getElementById('wave-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const towerSelectionContainer = document.getElementById('tower-selection');
+        const soundToggleButton = document.getElementById('sound-toggle-button');
+        const pauseButton = document.getElementById('pause-button');
+        const normalSpeedButton = document.getElementById('normal-speed-button');
+        const twoxSpeedButton = document.getElementById('2x-speed-button');
+        const pauseOverlay = document.getElementById('pause-overlay');
+        const speedIndicator = document.getElementById('speed-indicator');
+        
+        const gameOverModal = document.getElementById('game-over-modal');
+        const gameOverTitle = document.getElementById('game-over-title');
+        const gameOverMessage = document.getElementById('game-over-message');
+        const restartButton = document.getElementById('restart-button');
+        const bossAlert = document.getElementById('boss-alert');
+        const demonModeAlert = document.getElementById('demon-mode-alert');
+        const hellModeAlert = document.getElementById('hell-mode-alert');
+        
+        const indexButton = document.getElementById('index-button');
+        const gameIndexModal = document.getElementById('game-index-modal');
+        const closeIndexButton = document.getElementById('close-index-button');
+        const enemyIndexContent = document.getElementById('enemy-index-content');
+        const towerIndexContent = document.getElementById('tower-index-content');
+        const showTowersTab = document.getElementById('show-towers-tab');
+        const showEnemiesTab = document.getElementById('show-enemies-tab');
+        const preGameOverlay = document.getElementById('pre-game-overlay');
+        const startGameButton = document.getElementById('start-game-button');
+        const playNowButton = document.getElementById('play-now-button');
+
+
+        let canvasWidth, canvasHeight;
+        let backgroundCanvas; // Offscreen canvas for the background
+
+        // --- Game State Variables ---
+        let gold, wave, waveTimer, gameInterval, timerInterval, frameCount = 0;
+        let enemies, towers, projectiles, decorations, floatingTexts, specialEffects;
+        let gameOver, waveInProgress, bossWave, bossSpawned, demonModeActive, hellModeActive, gameHasStarted = false;
+        let selectedTowerType = null, selectedTower = null;
+        let mousePos = { x: 0, y: 0 };
+        let baseHealth, maxBaseHealth, enemyStrengthModifier;
+        let audioStarted = false;
+        let isMuted = false;
+        let isPaused = false, gameSpeed = 1;
+        let keySequence = [];
+
+        // --- Audio Setup ---
+        let popSynth, lazarSynth, explodeSynth, deathSynth, buildSynth;
+        function setupAudio() {
+            if (audioStarted) return;
+            try {
+                Tone.start();
+                Tone.Master.mute = isMuted;
+
+                // Sound effects synths
+                const popVolume = new Tone.Volume(6).toDestination(); // Increased volume by 6 decibels
+                popSynth = new Tone.MembraneSynth({
+                    pitchDecay: 0.01, octaves: 6,
+                    envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.2 },
+                }).connect(popVolume);
+
+                lazarSynth = new Tone.Synth({ oscillator: { type: "sawtooth" }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination();
+                explodeSynth = new Tone.NoiseSynth({ noise: { type: "white" }, envelope: { attack: 0.005, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination();
+                deathSynth = new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.01, decay: 0.3, sustain: 0.01, release: 0.1 }, }).toDestination();
+                buildSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 } }).toDestination();
+
+                audioStarted = true;
+            } catch (e) {
+                console.error("Audio could not be started:", e);
+            }
+        }
+
+        function playSound(type) {
+            if (!audioStarted || isMuted) return;
+            try {
+                if (type === 'shoot') popSynth.triggerAttackRelease("C4", "8n");
+                if (type === 'lazar') lazarSynth.triggerAttackRelease("G5", "32n");
+                if (type === 'explode') explodeSynth.triggerAttack();
+                if (type === 'death') deathSynth.triggerAttackRelease("C2", "8n");
+                if (type === 'build') buildSynth.triggerAttackRelease("E4", "8n");
+            } catch (e) {
+                console.error("Sound playback error:", e);
+            }
+        }
+
+        function toggleSound() {
+            isMuted = !isMuted;
+            if (audioStarted) {
+                Tone.Master.mute = isMuted;
+            }
+            soundToggleButton.textContent = isMuted ? '🔇 Sound Off' : '🔊 Sound On';
+            soundToggleButton.classList.toggle('bg-green-500', !isMuted);
+            soundToggleButton.classList.toggle('hover:bg-green-600', !isMuted);
+            soundToggleButton.classList.toggle('bg-red-500', isMuted);
+            soundToggleButton.classList.toggle('hover:bg-red-600', isMuted);
+        }
+
+        // --- Game Configuration ---
+        const TOWER_DATA = {
+            'gunner': { name: 'Gunner Cheese', cost: 50, range: 0.12, fireRate: 60, damage: 12, projectile: 'normal', upgrade: 'damage', description: 'Your trusty bread-and-butter tower. Fires single, reliable cheese globs.' },
+            'slower': { name: 'Slo-mo Melter', cost: 125, range: 0.09, fireRate: 60, damage: 15, projectile: 'slow', upgrade: 'effect', description: 'Launches sticky, melted cheese that significantly slows down enemies.' },
+            'gold': { name: 'Gold Grill', cost: 150, range: 0, fireRate: 400, damage: 15, projectile: 'none', upgrade: 'damage', description: 'A passive tower that grills up extra gold for you every few seconds.', limit: 5 },
+            'mg': { name: 'Machine Gun Mozz', cost: 175, range: 0.1, fireRate: 10, damage: 10, projectile: 'normal', upgrade: 'fireRate', description: 'Shreds enemies with a blistering fast stream of mozzarella strings.' },
+            'bomber': { name: 'Cheddar Bomber', cost: 180, range: 0.15, fireRate: 90, damage: 40, projectile: 'bomb', upgrade: 'damage', description: 'Hurls explosive cheddar balls that deal damage to groups of enemies.' },
+            'piercer': { name: 'PepperJack Piercer', cost: 225, range: 0.18, fireRate: 75, damage: 15, projectile: 'pierce', upgrade: 'damage', description: 'Fires a spicy shard of pepperjack that pierces through multiple enemies.' },
+            'lazar': { name: 'Lazar Swiss', cost: 250, range: 0.2, fireRate: 120, damage: 120, projectile: 'lazar', upgrade: 'effect', description: 'Channels sunlight through its holes to fire a high-damage laser beam.' },
+            'gasser': { name: 'Gorgonzola Gasser', cost: 250, range: 0.1, fireRate: 150, damage: 15, projectile: 'gas_cloud', upgrade: 'effect', description: 'Releases a pungent cloud of gas that deals damage over time to enemies inside.' },
+            'fountain': { name: 'Fondue Fountain', cost: 300, range: 0.1, fireRate: 10, damage: 2, projectile: 'none', upgrade: 'damage', description: 'A continuous fountain of hot cheese that damages and slows nearby enemies.' },
+            'prism': { name: 'Provolone Prism', cost: 350, range: 0.12, fireRate: 0, damage: 0.25, projectile: 'none', upgrade: 'effect', description: 'A support tower that passively increases the fire rate of all towers in its radius.' },
+            'rocket': { name: 'Ricotta Rocket', cost: 400, range: 0.25, fireRate: 240, damage: 200, projectile: 'rocket', upgrade: 'damage', description: 'Launches a long-range rocket with a large and powerful explosion.' },
+            'partitioner': { name: 'Parmesan Partitioner', cost: 450, range: 0.15, fireRate: 100, damage: 50, projectile: 'bounce', upgrade: 'damage', description: 'Fires a hard parmesan disc that ricochets between several enemies.' },
+            'blue_bio': { name: 'Blue Cheese Bio-Tower', cost: 500, range: 0.15, fireRate: 100, damage: 20, projectile: 'gas_cloud', upgrade: 'effect', description: 'Spreads a virulent mold cloud that deals significant damage over time.' },
+            'blimp': { name: 'Brie Blimp', cost: 550, range: 1.0, fireRate: 180, damage: 150, projectile: 'brie_rocket', upgrade: 'damage', description: 'Launches a powerful rocket in a straight line towards a target.' },
+            'assassin': { name: 'Asiago Assassin', cost: 600, range: 0.3, fireRate: 120, damage: 150, projectile: 'normal', upgrade: 'damage', description: 'Focuses on a single target, dealing more damage the longer it attacks it.' },
+            'hailstorm': { name: 'Havarti Hailstorm', cost: 650, range: 0.15, fireRate: 180, damage: 15, projectile: 'none', upgrade: 'effect', description: 'Creates a damaging hailstorm with a chance to briefly freeze enemies.' },
+            'freezer': { name: 'Feta Freezer', cost: 700, range: 0.2, fireRate: 200, damage: 25, projectile: 'freeze', upgrade: 'effect', description: 'Fires a shard of feta that completely freezes a target for a moderate duration.' },
+            'commander': { name: 'Colby Commander', cost: 750, range: 0, fireRate: 0, damage: 0.08, projectile: 'none', upgrade: 'effect', description: 'A global command tower that provides a small fire rate and range buff to all towers.' },
+            'gouda_guardian': { name: 'Gouda Guardian', cost: 800, range: 0.1, fireRate: 20, damage: 30, projectile: 'normal', upgrade: 'damage', description: 'A powerful short-range defender that fires a spread of three projectiles.' },
+            'monolith': { name: 'Muenster Monolith', cost: 850, range: 0, fireRate: 0, damage: 0, projectile: 'none', upgrade: 'health', description: 'A defensive wall placed on the path. It has its own health and must be destroyed by enemies.', health: 75, maxHealth: 75, thornsUpgradeCost: 250, healthUpgradeCost: 200 },
+            'romano_repeater': { name: 'Romano Repeater', cost: 1100, range: 0.2, fireRate: 30, damage: 25, projectile: 'bounce', upgrade: 'fireRate', description: 'Rapidly fires multiple projectiles that bounce between enemies.' },
+            'manchego_mortar': { name: 'Manchego Mortar', cost: 1500, range: 0.4, fireRate: 300, damage: 300, projectile: 'bomb', upgrade: 'damage', description: 'A very long-range artillery tower with a massive explosive impact.' },
+            'chevre_chain': { name: 'Chevre Chain Lightning', cost: 1800, range: 0.25, fireRate: 75, damage: 100, projectile: 'bounce', upgrade: 'damage', description: 'Zaps a primary target with lightning that then arcs to many nearby enemies.' },
+            'pecorino_pulverizer': { name: 'Pecorino Pulverizer', cost: 2200, range: 0.1, fireRate: 45, damage: 200, projectile: 'normal', upgrade: 'damage', description: 'A heavy-hitting tower that excels at taking down single, powerful enemies.' },
+            'camembert_comet': { name: 'Camembert Comet', cost: 2700, range: 0.5, fireRate: 480, damage: 1000, projectile: 'rocket', upgrade: 'damage', description: 'Targets the densest group of enemies and calls down a devastating comet.' },
+            'brie_barrage': { name: 'Brie Barrage', cost: 3500, range: 0.3, fireRate: 5, damage: 15, projectile: 'slow', upgrade: 'fireRate', description: 'Fills the screen with an overwhelming number of slowing projectiles.' },
+            'swiss_behemoth': { name: 'Swiss Behemoth', cost: 5000, range: 0.25, fireRate: 30, damage: 1200, projectile: 'bomb', upgrade: 'damage', description: 'Flings giant, explosive wheels of swiss cheese out in a spinning pattern.' },
+            'gruyere_golem': { name: 'Gruyere Golem', cost: 6000, range: 0.25, fireRate: 90, damage: 3200, projectile: 'stun', upgrade: 'damage', description: 'A slow but incredibly powerful tower whose attacks can stun enemies.' },
+            'limburger_lazer': { name: 'Limburger Lazer', cost: 7500, range: 0.4, fireRate: 5, damage: 450, projectile: 'continuous_lazar', upgrade: 'damage', description: 'Projects a continuous, high-damage laser that melts everything in its path.' },
+            'edam_eradicator': { name: 'Edam Eradicator', cost: 9000, range: 0.5, fireRate: 90, damage: 3600, projectile: 'shock_blast', upgrade: 'fireRate', description: 'Charges up and releases a massive blast of energy, shocking and damaging enemies.' },
+            'morbier_maelstrom': { name: 'Morbier Maelstrom', cost: 10500, range: 0.35, fireRate: 20, damage: 900, projectile: 'vortex', upgrade: 'effect', description: 'Creates a powerful vortex that damages and slows all enemies in its radius.' },
+            'burrata_bomber': { name: 'Burrata Bomber', cost: 12000, range: 0.5, fireRate: 240, damage: 4500, projectile: 'carpet_bomb', upgrade: 'damage', description: 'Calls in a bombing run that carpets a section of the path with explosions.' },
+            'stilton_singularity': { name: 'Stilton Singularity', cost: 14000, range: 0.4, fireRate: 30, damage: 2000, projectile: 'singularity_slow', upgrade: 'effect', description: 'Summons a miniature black hole that slows and damages all enemies on screen.' },
+            'fondue': { name: 'The Final Fondue', cost: 15000, range: 0, fireRate: 21000, damage: 5000, projectile: 'none', upgrade: 'damage', description: 'The ultimate weapon. Has a very long cooldown but damages all enemies on screen.' }
+        };
+
+        const ENEMY_DATA = { 
+            'normal': { health: 40, speed: 0.6, gold: 10 }, 
+            'scout': { health: 25, speed: 1.2, gold: 7 },
+            'bruiser': { health: 200, speed: 0.3, gold: 20 },
+            'popper': { health: 50, speed: 0.7, gold: 15, onDeath: 'explode', damage: 50, radius: 0.05 },
+            'moldy': { health: 60, speed: 0.5, gold: 22, onDeath: 'disable', radius: 0.05, duration: 180 },
+            'pbj': { health: 80, speed: 0.5, gold: 50, resistance: 'slow' },
+            'goliath': { health: 1000, speed: 0.2, gold: 100 },
+            'medic': { health: 150, speed: 0.6, gold: 40, ability: 'regenerate', regenRate: 5 },
+            'speeder': { health: 50, speed: 2.5, gold: 30 },
+            'breeder': { health: 200, speed: 0.5, gold: 50, onDeath: 'spawn', spawnType: 'scout', spawnCount: 2 },
+            'saboteur': { health: 100, speed: 0.7, gold: 60, onDeath: 'disable', radius: 0.1, duration: 360 },
+            'boss': { health: 4000, speed: 0.25, gold: 750 } 
+        };
+
+        const ENEMY_DESCRIPTIONS = {
+            'normal': { name: 'Crumb', description: 'A basic, everyday crumb. Not much of a threat alone.' },
+            'scout': { name: 'Crouton Scout', description: 'Fast and crunchy, these scouts rush ahead of the main force.' },
+            'bruiser': { name: 'Burnt Bit', description: 'Slow but tough. These overcooked morsels can take a lot of heat.' },
+            'popper': { name: 'Jalapeño Popper', description: 'Spicy and volatile. Explodes upon defeat, damaging nearby towers.' },
+            'moldy': { name: 'Moldy Morsel', description: 'Disgusting and debilitating. Disables the tower that defeats it.' },
+            'pbj': { name: 'PB&J Crust', description: 'A strange, sweet and savory hybrid with surprising resilience. Resistant to slowing effects.' },
+            'goliath': { name: 'Goliath Crumb', description: 'An absolute unit of a crumb. Extremely high health.' },
+            'medic': { name: 'Milk Globule', description: 'A splash of milk that constantly regenerates its health.' },
+            'speeder': { name: 'Grease Streak', description: 'A slippery, fast-moving enemy that zips along the path.' },
+            'breeder': { name: 'Dough Ball', description: 'Uncooked and unstable. Splits into two smaller scouts when defeated.' },
+            'saboteur': { name: 'Soggy Spot', description: 'A dreadful spill that disables all nearby towers upon its demise.' },
+            'boss': { name: 'The Big Cheese', description: 'The leader of the hungry horde. A massive, molten monstrosity.' }
+        };
+
+        const path = [ { x: -0.05, y: 0.1 }, { x: 0.25, y: 0.1 }, { x: 0.25, y: 0.5 }, { x: 0.1, y: 0.5 }, { x: 0.1, y: 0.8 }, { x: 0.4, y: 0.8 }, { x: 0.4, y: 0.3 }, { x: 0.7, y: 0.3 }, { x: 0.7, y: 0.9 }, { x: 0.9, y: 0.9 }, { x: 0.9, y: 0.1 }, { x: 1.05, y: 0.1 } ];
+        let scaledPath = [];
+        const goldCheatCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'o', 'r', 'a', 'n', 'g', 'e'];
+        const speedCheatCode = ['q', 'w', 'e', 'r', 't', 'y', 'ArrowUp'];
+        const demonSkipCheatCode = ['d', 'e', 'm', 'o', 'n', '1', '2', '3'];
+
+        // --- Drawing Functions ---
+        function drawTower(tower, targetCtx = ctx) {
+            const { x, y, size, type, level } = tower; 
+            targetCtx.lineWidth = 2; targetCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+            if (tower.disabled > 0) { targetCtx.globalAlpha = 0.5; }
+            
+            targetCtx.save();
+            targetCtx.translate(x, y);
+
+            // --- TOWER REDESIGNS ---
+            if (type === 'gunner') {
+                // Base
+                targetCtx.fillStyle = '#D2B48C';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                // Cheese
+                targetCtx.fillStyle = '#FFD700';
+                targetCtx.fillRect(-size/2 + 4, -size/2 + 4, size - 8, size - 8);
+                // Barrel
+                targetCtx.fillStyle = '#696969';
+                targetCtx.fillRect(-4, -size/2 - 8, 8, 12);
+            } else if (type === 'mg') {
+                // Base
+                targetCtx.fillStyle = '#E0E0E0';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                // Barrels
+                targetCtx.fillStyle = '#555';
+                targetCtx.fillRect(0, -2, size/2 + 5, 4);
+                targetCtx.fillRect(-2, size/2 - 10, 4, size/2 + 5);
+                 targetCtx.fillRect(-2, -size/2 - 5, 4, size/2 - 10);
+            } else if (type === 'lazar') {
+                // Base
+                targetCtx.fillStyle = '#BDB76B';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                // Crystal
+                targetCtx.fillStyle = 'cyan';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/2);
+                targetCtx.lineTo(size/4, 0);
+                targetCtx.lineTo(0, size/4);
+                targetCtx.lineTo(-size/4, 0);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'bomber') {
+                // Base
+                targetCtx.fillStyle = '#FFA500';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                // Catapult arm
+                targetCtx.fillStyle = '#8B4513';
+                targetCtx.fillRect(-4, -size/2, 8, size);
+            } else if (type === 'slower') {
+                targetCtx.fillStyle = '#3498DB'; // Blue
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'white';
+                targetCtx.lineWidth = 2;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, 0);
+                targetCtx.quadraticCurveTo(-size/4, -size/4, 0, 0);
+                targetCtx.quadraticCurveTo(size/4, size/4, size/2, 0);
+                targetCtx.stroke();
+            } else if (type === 'gold') {
+                targetCtx.fillStyle = '#F1C40F'; // Gold
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = 'rgba(255,255,255,0.3)';
+                targetCtx.fillRect(-size/2, -size/2, size/2, size/2);
+            } else if (type === 'piercer') {
+                targetCtx.fillStyle = '#E74C3C'; // Red
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/1.5);
+                targetCtx.lineTo(size/2, size/2);
+                targetCtx.lineTo(-size/2, size/2);
+                targetCtx.closePath();
+                targetCtx.fill();
+                targetCtx.stroke();
+            } else if (type === 'gasser') {
+                targetCtx.fillStyle = '#2ECC71'; // Green
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'rgba(255,255,255,0.5)';
+                targetCtx.beginPath();
+                targetCtx.arc(size/4, -size/4, size/6, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.beginPath();
+                targetCtx.arc(-size/4, size/4, size/8, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'fountain') {
+                targetCtx.fillStyle = '#E67E22'; // Orange
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.fillStyle = '#F39C12';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 3, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'prism') {
+                targetCtx.fillStyle = '#9B59B6'; // Purple
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/2);
+                targetCtx.lineTo(size/2, 0);
+                targetCtx.lineTo(0, size/2);
+                targetCtx.lineTo(-size/2, 0);
+                targetCtx.closePath();
+                targetCtx.fill();
+                targetCtx.stroke();
+            } else if (type === 'rocket') {
+                targetCtx.fillStyle = '#95A5A6'; // Grey
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/1.5);
+                targetCtx.lineTo(size/2, size/2);
+                targetCtx.lineTo(-size/2, size/2);
+                targetCtx.closePath();
+                targetCtx.fill();
+                targetCtx.fillStyle = '#E74C3C'; // Red tip
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/1.5);
+                targetCtx.lineTo(size/4, -size/2);
+                targetCtx.lineTo(-size/4, -size/2);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'partitioner') {
+                targetCtx.fillStyle = '#ECF0F1'; // White
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = '#34495E';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 4, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'monolith') {
+                targetCtx.fillStyle = '#34495E'; // Dark blue/grey
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                
+                // Monolith health bar
+                if (tower.health > 0) {
+                    const barWidth = size;
+                    targetCtx.fillStyle = '#DC2626'; // Red background
+                    targetCtx.fillRect(-barWidth / 2, -size/2 - 15, barWidth, 8);
+                    targetCtx.fillStyle = '#22C55E'; // Green health
+                    targetCtx.fillRect(-barWidth / 2, -size/2 - 15, barWidth * (tower.health / tower.maxHealth), 8);
+                }
+            } else if (type === 'blimp') {
+                targetCtx.fillStyle = '#BDC3C7'; // Silver
+                targetCtx.beginPath();
+                targetCtx.ellipse(0, 0, size/1.5, size/2.5, 0, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = '#34495E';
+                targetCtx.fillRect(-size/3, size/2.5 - 5, size*2/3, 10);
+            } else if (type === 'assassin') {
+                targetCtx.fillStyle = '#2C3E50'; // Very dark blue
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/2);
+                targetCtx.lineTo(size/2, size/2);
+                targetCtx.lineTo(0, size/4);
+                targetCtx.lineTo(-size/2, size/2);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'hailstorm') {
+                targetCtx.fillStyle = '#3498DB'; // Blue
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'rgba(255,255,255,0.7)';
+                for(let i=0; i<5; i++) {
+                    targetCtx.beginPath();
+                    targetCtx.arc((Math.random()-0.5)*size/2, (Math.random()-0.5)*size/2, size/8, 0, Math.PI*2);
+                    targetCtx.fill();
+                }
+            } else if (type === 'freezer') {
+                targetCtx.fillStyle = '#A9CCE3'; // Light blue
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'white';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, 0); targetCtx.lineTo(size/2, 0);
+                targetCtx.moveTo(0, -size/2); targetCtx.lineTo(0, size/2);
+                targetCtx.moveTo(-size/3, -size/3); targetCtx.lineTo(size/3, size/3);
+                targetCtx.moveTo(size/3, -size/3); targetCtx.lineTo(-size/3, size/3);
+                targetCtx.stroke();
+            } else if (type === 'commander') {
+                targetCtx.fillStyle = '#F1C40F'; // Gold
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/2);
+                for (let i = 1; i < 5; i++) {
+                    const angle = i * Math.PI * 0.4;
+                    targetCtx.lineTo(Math.sin(angle) * size/2, -Math.cos(angle) * size/2);
+                    const innerAngle = angle + Math.PI * 0.2;
+                    targetCtx.lineTo(Math.sin(innerAngle) * size/4, -Math.cos(innerAngle) * size/4);
+                }
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'gouda_guardian') {
+                targetCtx.fillStyle = '#F39C12'; // Orange
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, -size/2);
+                targetCtx.lineTo(size/2, -size/2);
+                targetCtx.lineTo(size/2, size/4);
+                targetCtx.lineTo(0, size/2);
+                targetCtx.lineTo(-size/2, size/4);
+                targetCtx.closePath();
+                targetCtx.fill();
+                targetCtx.stroke();
+            } else if (type === 'blue_bio') {
+                targetCtx.fillStyle = '#2980B9'; // Blue
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = 'yellow';
+                targetCtx.lineWidth = 2;
+                targetCtx.beginPath();
+                targetCtx.arc(0,0, size/4, 0, Math.PI*2);
+                targetCtx.moveTo(size/4, 0); targetCtx.arc(0,0, size/4, 0, Math.PI*2/3, false);
+                targetCtx.moveTo(size/4, 0); targetCtx.arc(0,0, size/4, Math.PI, Math.PI*5/3, false);
+                targetCtx.moveTo(size/4, 0); targetCtx.arc(0,0, size/4, Math.PI*2/3, Math.PI*4/3, true);
+                targetCtx.stroke();
+            } else if (type === 'romano_repeater') {
+                targetCtx.fillStyle = '#7F8C8D'; // Grey
+                targetCtx.fillRect(-size/2, -size/4, size, size/2);
+                targetCtx.strokeRect(-size/2, -size/4, size, size/2);
+                targetCtx.fillStyle = '#34495E';
+                targetCtx.fillRect(size/4, -size/2, 4, size);
+                targetCtx.fillRect(-size/4-4, -size/2, 4, size);
+            } else if (type === 'manchego_mortar') {
+                targetCtx.fillStyle = '#D35400'; // Dark orange
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = '#34495E';
+                targetCtx.save();
+                targetCtx.rotate(Math.PI / 4);
+                targetCtx.fillRect(-size/6, -size/2, size/3, size);
+                targetCtx.restore();
+            } else if (type === 'chevre_chain') {
+                targetCtx.fillStyle = '#ECF0F1'; // White
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = 'yellow';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/3, -size/2);
+                targetCtx.lineTo(size/6, 0);
+                targetCtx.lineTo(-size/6, 0);
+                targetCtx.lineTo(size/3, size/2);
+                targetCtx.stroke();
+            } else if (type === 'pecorino_pulverizer') {
+                targetCtx.fillStyle = '#BDC3C7'; // Silver
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#7F8C8D';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 3, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'camembert_comet') {
+                targetCtx.fillStyle = '#1ABC9C'; // Teal
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'white';
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/3, -size/3);
+                targetCtx.lineTo(0, -size/2);
+                targetCtx.lineTo(size/3, -size/3);
+                targetCtx.lineTo(0, 0);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'brie_barrage') {
+                targetCtx.fillStyle = '#FDFEFE'; // Off-white
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#566573';
+                for(let i=0; i<3; i++) {
+                    for(let j=0; j<3; j++) {
+                        targetCtx.beginPath();
+                        targetCtx.arc(-size/3 + i*size/3, -size/3 + j*size/3, size/12, 0, Math.PI*2);
+                        targetCtx.fill();
+                    }
+                }
+            } else if (type === 'swiss_behemoth') {
+                targetCtx.fillStyle = '#F7DC6F'; // Light yellow
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#D4AC0D';
+                for(let i=0; i<5; i++) {
+                    targetCtx.beginPath();
+                    targetCtx.arc((Math.random()-0.5)*size/2, (Math.random()-0.5)*size/2, size/8, 0, Math.PI*2);
+                    targetCtx.fill();
+                }
+            } else if (type === 'gruyere_golem') {
+                targetCtx.fillStyle = '#D2B48C';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#8B4513';
+                targetCtx.fillRect(-size/4, -size/4, size/2, size/2);
+            } else if (type === 'limburger_lazer') {
+                targetCtx.fillStyle = '#3CB371';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = 'lime';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 4, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'edam_eradicator') {
+                targetCtx.fillStyle = '#FF4500';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = 'yellow';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/2);
+                targetCtx.lineTo(size/4, 0);
+                targetCtx.lineTo(-size/4, 0);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'morbier_maelstrom') {
+                targetCtx.fillStyle = '#483D8B';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = '#E6E6FA';
+                targetCtx.save();
+                targetCtx.globalAlpha = 0.5;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/3, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.restore();
+            } else if (type === 'burrata_bomber') {
+                targetCtx.fillStyle = '#F5F5DC';
+                targetCtx.beginPath();
+                targetCtx.ellipse(0, 0, size/1.5, size/2, 0, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = 'red';
+                targetCtx.fillRect(-size/3, size/2 - 5, size*2/3, 5);
+            } else if (type === 'stilton_singularity') {
+                targetCtx.fillStyle = '#000080';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                const grad = targetCtx.createRadialGradient(0, 0, 1, 0, 0, size/3);
+                grad.addColorStop(0, 'black');
+                grad.addColorStop(1, 'purple');
+                targetCtx.fillStyle = grad;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/3, 0, Math.PI*2);
+                targetCtx.fill();
+            } else if (type === 'fondue') {
+                targetCtx.fillStyle = '#8B4513'; // Brown pot
+                targetCtx.beginPath();
+                targetCtx.arc(0, size/4, size/2, 0, Math.PI, true);
+                targetCtx.rect(-size/2, -size/4, size, size/2);
+                targetCtx.fill();
+                targetCtx.fillStyle = '#FFA500'; // Cheese
+                targetCtx.beginPath();
+                targetCtx.arc(0, -size/4, size/2.2, 0, Math.PI*2);
+                targetCtx.fill();
+            } else {
+                // Default fallback design for any towers not explicitly defined
+                targetCtx.fillStyle = '#cccccc';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = 'black';
+                targetCtx.font = 'bold 12px Inter';
+                targetCtx.textAlign = 'center';
+                targetCtx.textBaseline = 'middle';
+                targetCtx.fillText('?', 0, 0);
+            }
+            // --- END TOWER REDESIGNS ---
+
+            targetCtx.restore();
+
+            if (tower.shield > 0) { 
+                targetCtx.strokeStyle = 'cyan'; 
+                targetCtx.lineWidth = 3; 
+                targetCtx.beginPath(); 
+                targetCtx.arc(x, y, size/2 + 5, 0, Math.PI*2); 
+                targetCtx.stroke(); 
+            }
+            targetCtx.globalAlpha = 1.0;
+        }
+
+        function drawEnemy(enemy, targetCtx = ctx) { 
+            const { x, y, size, type, visual } = enemy; 
+            targetCtx.save();
+            targetCtx.translate(x, y);
+
+            if (enemy.isFrozen) { targetCtx.globalAlpha = 0.7; }
+
+            // --- ENEMY REDESIGNS ---
+            if (type === 'normal') {
+                const grad = targetCtx.createLinearGradient(-size, -size, size, size);
+                grad.addColorStop(0, '#F9E79F');
+                grad.addColorStop(1, '#F1C40F');
+                targetCtx.fillStyle = grad;
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+            } else if (type === 'scout') {
+                targetCtx.fillStyle = '#F39C12';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size);
+                targetCtx.lineTo(size/2, size/2);
+                targetCtx.lineTo(-size/2, size/2);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'bruiser') {
+                targetCtx.fillStyle = '#AF601A';
+                targetCtx.fillRect(-size, -size, size*2, size*2);
+            } else if (type === 'popper') {
+                targetCtx.fillStyle = '#2ECC71';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'lime';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+            } else if (type === 'moldy') {
+                targetCtx.fillStyle = '#556B2F';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size, 0, Math.PI*2);
+                targetCtx.fill();
+                for(let i=0; i<5; i++) { 
+                    targetCtx.fillStyle = '#9ACD32'; 
+                    targetCtx.beginPath(); 
+                    targetCtx.arc((Math.random()-0.5)*size, (Math.random()-0.5)*size, size/4, 0, Math.PI*2); 
+                    targetCtx.fill(); 
+                }
+            } else if (type === 'pbj') {
+                // Bread crust color
+                targetCtx.fillStyle = '#A0522D';
+                targetCtx.fillRect(-size, -size/2, size*2, size);
+                // Peanut butter smear
+                targetCtx.fillStyle = '#D2B48C';
+                targetCtx.beginPath();
+                targetCtx.arc(-size/2, 0, size/3, 0, Math.PI*2);
+                targetCtx.fill();
+                // Jelly smear
+                targetCtx.fillStyle = '#8E44AD';
+                targetCtx.beginPath();
+                targetCtx.arc(size/2, 0, size/3, 0, Math.PI*2);
+                targetCtx.fill();
+            } else if (type === 'goliath') {
+                targetCtx.fillStyle = '#5C4033';
+                targetCtx.fillRect(-size * 1.5, -size * 1.5, size * 3, size * 3);
+                targetCtx.fillStyle = '#856047';
+                targetCtx.fillRect(-size, -size, size*2, size*2);
+            } else if (type === 'medic') {
+                targetCtx.fillStyle = 'white';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = 'red';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, 0);
+                targetCtx.lineTo(size/2, 0);
+                targetCtx.moveTo(0, -size/2);
+                targetCtx.lineTo(0, size/2);
+                targetCtx.stroke();
+            } else if (type === 'speeder') {
+                targetCtx.fillStyle = 'yellow';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size*1.5);
+                targetCtx.lineTo(size/2, size*1.5);
+                targetCtx.lineTo(0, size);
+                targetCtx.lineTo(-size/2, size*1.5);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'breeder') {
+                targetCtx.fillStyle = 'purple';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'grey';
+                targetCtx.beginPath();
+                targetCtx.arc(-size/3, 0, size/3, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.beginPath();
+                targetCtx.arc(size/3, 0, size/3, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'saboteur') {
+                targetCtx.fillStyle = 'black';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = 'red';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, -size/2);
+                targetCtx.lineTo(size/2, size/2);
+                targetCtx.moveTo(size/2, -size/2);
+                targetCtx.lineTo(-size/2, size/2);
+                targetCtx.stroke();
+            } else if (type === 'boss') {
+                // Bread
+                targetCtx.fillStyle = '#D2691E';
+                targetCtx.fillRect(-size*2, -size*2, size*4, size*4);
+                // Cheese
+                targetCtx.fillStyle = '#FFD700';
+                targetCtx.fillRect(-size*1.8, -size*1.8, size*3.6, size*3.6);
+                // Eyes
+                targetCtx.fillStyle = 'red';
+                targetCtx.beginPath();
+                targetCtx.arc(-size, -size/2, size/3, 0, Math.PI*2);
+                targetCtx.arc(size, -size/2, size/3, 0, Math.PI*2);
+                targetCtx.fill();
+            }
+            // --- END ENEMY REDESIGNS ---
+
+            targetCtx.restore();
+
+            if (enemy.isBurning) { ctx.fillStyle = `rgba(255, 100, 0, ${Math.random() * 0.5 + 0.5})`; ctx.beginPath(); ctx.arc(x, y, size * 1.2, 0, Math.PI * 2); ctx.fill(); } 
+            if (enemy.isShocked) { ctx.fillStyle = `rgba(255, 255, 0, ${Math.random() * 0.5 + 0.5})`; ctx.beginPath(); ctx.arc(x, y, size * 1.2, 0, Math.PI * 2); ctx.fill(); }
+            if (enemy.isFrozen) { ctx.fillStyle = 'rgba(0, 255, 255, 0.5)'; ctx.fillRect(x - size * 1.2, y - size * 1.2, size * 2.4, size * 2.4); ctx.globalAlpha = 1.0; }
+        }
+        
+        function drawProjectile(p) { if (p.type === 'lazar' || p.type === 'continuous_lazar') { ctx.strokeStyle = p.color; ctx.lineWidth = p.duration / 2; ctx.beginPath(); ctx.moveTo(p.originX, p.originY); ctx.lineTo(p.x, p.y); ctx.stroke(); } else if (p.type === 'bomb' || p.type === 'rocket' || p.type === 'blimp_bomb' || p.type === 'carpet_bomb' || p.type === 'shock_blast') { if (p.detonated) { ctx.fillStyle = p.blastColor || `rgba(255, 165, 0, ${p.blastDuration / 15})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.blastRadius, 0, Math.PI * 2); ctx.fill(); } else { ctx.fillStyle = p.type === 'rocket' ? '#C0C0C0' : '#2F4F4F'; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); } } else if (p.type === 'brie_rocket') { ctx.fillStyle = '#DEB887'; ctx.beginPath(); ctx.ellipse(p.x, p.y, p.size, p.size/1.5, 0, 0, Math.PI*2); ctx.fill(); } else { ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); } }
+
+        function drawDecorations() { 
+            ctx.globalAlpha = 0.8;
+            decorations.forEach(d => {
+                if (d.type === 'tree') { 
+                    ctx.fillStyle = '#8B4513'; // Trunk
+                    ctx.fillRect(d.x - 5, d.y, 10, 20); 
+                    ctx.fillStyle = '#228B22'; // Leaves
+                    ctx.beginPath(); 
+                    ctx.arc(d.x, d.y, 20, 0, Math.PI * 2); 
+                    ctx.fill(); 
+                } else if (d.type === 'flowers') { 
+                    for(let i=0; i<5; i++) { 
+                        ctx.fillStyle = d.colors[i]; 
+                        ctx.beginPath(); 
+                        ctx.arc(d.x + d.pos[i].x, d.y + d.pos[i].y, 3, 0, Math.PI*2); 
+                        ctx.fill(); 
+                    } 
+                } else if (d.type === 'mushrooms') { 
+                    for(let i=0; i<3; i++) { 
+                        ctx.fillStyle = '#A0A0A0'; // Stem
+                        ctx.fillRect(d.x + d.pos[i].x - 2, d.y + d.pos[i].y, 4, 10); 
+                        ctx.fillStyle = '#FF6347'; // Cap
+                        ctx.beginPath(); 
+                        ctx.arc(d.x + d.pos[i].x, d.y + d.pos[i].y, 6, Math.PI, 0); 
+                        ctx.fill(); 
+                    } 
+                } 
+            }); 
+            ctx.globalAlpha = 1; 
+        }
+        
+        function drawSpecialEffects() { for (let i = specialEffects.length - 1; i >= 0; i--) { const effect = specialEffects[i]; if (effect.type === 'gas_cloud') { ctx.fillStyle = `rgba(107, 142, 35, ${0.4 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'prism_aura') { ctx.strokeStyle = `rgba(218, 112, 214, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.stroke(); } else if (effect.type === 'fondue_wave') { ctx.fillStyle = `rgba(255, 140, 0, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'spore_cloud') { ctx.fillStyle = `rgba(128, 128, 0, ${0.6 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'popper_explosion') { ctx.fillStyle = `rgba(255, 69, 0, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'hailstorm') { ctx.fillStyle = `rgba(173, 216, 230, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'vortex') { ctx.strokeStyle = `rgba(72, 61, 139, ${0.6 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius * (1 - (effect.duration / effect.maxDuration)), 0, Math.PI * 2); ctx.stroke(); } effect.duration--; if (effect.duration <= 0) specialEffects.splice(i, 1); } }
+
+        function drawBase() { const endPoint = scaledPath[scaledPath.length - 1]; ctx.fillStyle = '#CD853F'; ctx.fillRect(endPoint.x, endPoint.y - 50, 50, 100); ctx.fillStyle = '#8B4513'; ctx.beginPath(); ctx.moveTo(endPoint.x, endPoint.y - 50); ctx.lineTo(endPoint.x + 50, endPoint.y - 50); ctx.lineTo(endPoint.x + 25, endPoint.y - 80); ctx.closePath(); ctx.fill(); const barWidth = 100; ctx.fillStyle = '#DC2626'; ctx.fillRect(endPoint.x - 25, endPoint.y - 100, barWidth, 10); ctx.fillStyle = '#22C55E'; ctx.fillRect(endPoint.x - 25, endPoint.y - 100, barWidth * (baseHealth / maxBaseHealth), 10); }
+
+        function drawFloatingTexts() { ctx.textAlign = 'center'; for (let i = floatingTexts.length - 1; i >= 0; i--) { const text = floatingTexts[i]; ctx.fillStyle = `rgba(${text.color}, ${text.duration / 60})`; ctx.font = `bold ${text.size}px Inter`; ctx.fillText(text.content, text.x, text.y); text.y -= 0.5; text.duration--; if (text.duration <= 0) floatingTexts.splice(i, 1); } }
+        
+        function drawUpgradeMenu() {
+            if (!selectedTower) return;
+            const { x, y, size, upgradeCost, level, type, totalSpent } = selectedTower;
+            const menuWidth = 120;
+            let menuHeight = 70; // Base height for upgrade + sell
+            if (type === 'fondue') menuHeight += 35; // Extra space for launch button
+
+            const menuX = x + size/2 + 10;
+            const menuY = y - menuHeight / 2;
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; ctx.strokeStyle = '#6B4F32'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(menuX, menuY, menuWidth, menuHeight, [10]); ctx.fill(); ctx.stroke();
+            
+            // Upgrade section
+            ctx.fillStyle = 'black'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            let upgradeText = TOWER_DATA[type].upgrade.charAt(0).toUpperCase() + TOWER_DATA[type].upgrade.slice(1);
+            if (type === 'gold') {
+                upgradeText = 'Gold Prod.';
+            }
+            ctx.fillText(`Lvl ${level} ${upgradeText}`, menuX + 5, menuY + 10);
+            ctx.fillText(`Cost: ${upgradeCost}`, menuX + 5, menuY + 28);
+            
+            const btnX = menuX + menuWidth - 40; const btnY = menuY + 5;
+            ctx.fillStyle = gold >= upgradeCost ? '#fcd34d' : '#9ca3af';
+            ctx.beginPath(); ctx.roundRect(btnX, btnY, 35, 30, [8]); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = 'black'; ctx.font = 'bold 18px Inter'; ctx.textAlign = 'center';
+            ctx.fillText('+', btnX + 17.5, btnY + 16);
+
+            // Sell section
+            const sellBtnY = menuY + 40;
+            ctx.fillStyle = '#fca5a5';
+            ctx.beginPath(); ctx.roundRect(menuX + 5, sellBtnY, menuWidth - 10, 25, [8]); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = 'black'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center';
+            ctx.fillText(`Sell for ${Math.floor(totalSpent / 2)}`, menuX + menuWidth / 2, sellBtnY + 13);
+
+            // Special button for Fondue
+            if (type === 'fondue') {
+                const specialBtnY = menuY + 75;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.beginPath(); ctx.roundRect(menuX, specialBtnY, menuWidth, 30, [8]); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = selectedTower.fireCooldown > 0 ? '#9ca3af' : '#ef4444';
+                ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+                ctx.fillText(selectedTower.fireCooldown > 0 ? `CD: ${Math.ceil(selectedTower.fireCooldown/60)}` : 'LAUNCH', menuX + 60, specialBtnY + 15);
+            }
+        }
+
+        // --- Game Logic ---
+        function init() {
+            gold = 100; 
+            wave = 0; 
+            maxBaseHealth = 1500; 
+            baseHealth = maxBaseHealth; 
+            enemyStrengthModifier = 1.0;
+            enemies = []; towers = []; projectiles = []; decorations = []; floatingTexts = []; specialEffects = [];
+            gameOver = false; waveInProgress = false; bossWave = false; bossSpawned = false; demonModeActive = false; hellModeActive = false;
+            selectedTowerType = null; selectedTower = null;
+            
+            if (gameInterval) clearInterval(gameInterval); if (timerInterval) clearInterval(timerInterval);
+            resizeCanvas(); 
+            createTowerButtons(); 
+            populateIndex();
+            updateUI();
+            setGameSpeed(1); // Reset to normal speed
+            if (isPaused) togglePause(); // Unpause if paused
+            gameInterval = setInterval(gameLoop, 1000 / 60);
+            startWaveTimer();
+            gameOverModal.classList.add('opacity-0', 'scale-90');
+            setTimeout(() => gameOverModal.classList.add('hidden'), 300);
+        }
+
+        function resizeCanvas() { 
+            canvasWidth = parentDiv.clientWidth; 
+            canvasHeight = parentDiv.clientHeight; 
+            canvas.width = canvasWidth; 
+            canvas.height = canvasHeight; 
+            scaledPath = path.map(p => ({ x: p.x * canvasWidth, y: p.y * canvasHeight })); 
+            createGreenBackground();
+            generateDecorations();
+        }
+
+        function createGreenBackground() {
+            backgroundCanvas = document.createElement('canvas');
+            backgroundCanvas.width = canvasWidth;
+            backgroundCanvas.height = canvasHeight;
+            const bgCtx = backgroundCanvas.getContext('2d');
+            // A nice, solid green color
+            bgCtx.fillStyle = '#2E8B57'; // SeaGreen
+            bgCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
+
+        function generateDecorations() {
+            decorations = [];
+            for(let i = 0; i < 40; i++) {
+                const x = Math.random() * canvasWidth; 
+                const y = Math.random() * canvasHeight;
+                if (!isNearPath(x, y, canvasWidth * 0.1)) {
+                    const rand = Math.random();
+                    if (rand < 0.5) { // 50% chance for a tree
+                        decorations.push({ x, y, type: 'tree' });
+                    } else if (rand < 0.85) { // 35% chance for flowers
+                        decorations.push({ 
+                            x, y, type: 'flowers', 
+                            colors: Array(5).fill(0).map(()=>`hsl(${Math.random()*360}, 90%, 70%)`), 
+                            pos: Array(5).fill(0).map(()=>({x: (Math.random()-0.5)*20, y: (Math.random()-0.5)*20})) 
+                        });
+                    } else { // 15% chance for mushrooms
+                        decorations.push({ 
+                            x, y, type: 'mushrooms', 
+                            pos: Array(3).fill(0).map(()=>({x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*10})) 
+                        });
+                    }
+                }
+            }
+        }
+        
+        function createTowerButtons() {
+            towerSelectionContainer.innerHTML = '';
+            Object.keys(TOWER_DATA).forEach(type => {
+                const tower = TOWER_DATA[type];
+                const button = document.createElement('button');
+                button.className = 'tower-select-button p-2 bg-white rounded-lg shadow-md border-2 border-gray-300 transition-all w-32 text-center';
+                
+                const iconCanvas = document.createElement('canvas');
+                iconCanvas.width = 64;
+                iconCanvas.height = 64;
+                iconCanvas.className = 'mx-auto';
+                
+                const nameP = document.createElement('p');
+                nameP.className = 'font-semibold text-gray-700 text-sm';
+                nameP.textContent = tower.name;
+
+                const costP = document.createElement('p');
+                costP.className = 'font-bold text-amber-600 text-sm';
+                costP.textContent = `${tower.cost} Gold`;
+
+                button.append(iconCanvas, nameP, costP);
+                button.onclick = () => selectTower(type, button);
+                towerSelectionContainer.appendChild(button);
+
+                const iconCtx = iconCanvas.getContext('2d');
+                drawTower({x:32, y:32, size:40, type:type, level: 1, holes: Array(5).fill(0).map(()=>({x:0,y:0})), fountainLevel: 10}, iconCtx);
+            });
+        }
+
+        function selectTower(type, button) {
+            if (TOWER_DATA[type].unique && towers.some(t => t.type === type)) return;
+            if (selectedTowerType === type) {
+                selectedTowerType = null; button.classList.remove('selected'); canvas.style.cursor = 'not-allowed';
+            } else {
+                selectedTowerType = type; selectedTower = null;
+                document.querySelectorAll('.tower-select-button').forEach(b => b.classList.remove('selected'));
+                button.classList.add('selected'); canvas.style.cursor = `crosshair`;
+            }
+        }
+
+        function updateUI() { goldDisplay.textContent = gold; livesDisplay.textContent = Math.round(baseHealth); waveDisplay.textContent = wave; timerDisplay.textContent = waveTimer; }
+
+        function startWaveTimer(startTime = 10) { 
+            waveTimer = startTime; 
+            updateUI(); 
+            if (timerInterval) clearInterval(timerInterval); 
+            if (waveInProgress || gameOver) return;
+            timerInterval = setInterval(() => { 
+                waveTimer--; 
+                updateUI(); 
+                if (waveTimer <= 0) { 
+                    clearInterval(timerInterval); 
+                    startNextWave(); 
+                } 
+            }, 1000 / gameSpeed); 
+        }
+
+        function startNextWave() {
+            wave++; waveInProgress = true; bossWave = (wave % 10 === 0 && wave > 0); bossSpawned = false;
+            
+            if (wave >= 1000) { 
+                hellModeActive = true; 
+                demonModeActive = false; // Ensure demon mode is off
+                flashHellAlert(); 
+            } else if (wave >= 100) { 
+                demonModeActive = true; 
+                flashDemonAlert(); 
+            }
+
+            if (bossWave) flashBossAlert();
+            
+            let enemyCount;
+            if (wave === 1) enemyCount = 5;
+            else if (wave === 2) enemyCount = 8;
+            else if (wave === 3) enemyCount = 12;
+            else enemyCount = 10 + wave * 2;
+
+            const enemyTypes = ['normal', 'scout', 'bruiser', 'popper', 'moldy', 'pbj', 'goliath', 'medic', 'speeder', 'breeder', 'saboteur'];
+            for (let i = 0; i < enemyCount; i++) {
+                let enemyType = 'normal';
+                if (wave > 1) {
+                    enemyType = enemyTypes[Math.floor(Math.random() * Math.min(wave/2, enemyTypes.length))];
+                }
+                const data = ENEMY_DATA[enemyType];
+                
+                let healthMultiplier = (1 + (wave * 0.18)) * enemyStrengthModifier;
+                let speedMultiplier = 1;
+
+                if (hellModeActive) {
+                    healthMultiplier *= 600;
+                    speedMultiplier *= 200;
+                } else if (demonModeActive) {
+                    healthMultiplier *= 150;
+                    speedMultiplier *= 3;
+                }
+
+                const health = data.health * healthMultiplier;
+                const speed = data.speed * speedMultiplier;
+                let visual = {};
+                if (enemyType === 'pbj') visual.color = `hsl(300, 50%, ${60 - wave * 1.5}%)`;
+                else visual.color = `hsl(${20 + wave * 2}, 70%, 50%)`;
+                enemies.push({ x: scaledPath[0].x - i * 40, y: scaledPath[0].y, pathIndex: 0, speed: speed, health: health, maxHealth: health, size: canvasWidth * 0.015 * (1 + wave * 0.02), gold: data.gold, type: enemyType, visual: visual, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, ability: data.ability || null, resistance: data.resistance || null, lastHitBy: null, attackingMonolith: null });
+            }
+            updateUI();
+        }
+
+        function spawnBoss() {
+            bossSpawned = true; const data = ENEMY_DATA['boss']; const waveMultiplier = wave / 10;
+
+            let healthMultiplier = waveMultiplier * enemyStrengthModifier;
+            let speedMultiplier = 1;
+
+            if (hellModeActive) {
+                healthMultiplier *= 600;
+                speedMultiplier *= 200;
+            } else if (demonModeActive) {
+                healthMultiplier *= 150;
+                speedMultiplier *= 3;
+            }
+
+            const bossHealth = data.health * healthMultiplier;
+            const bossSize = canvasWidth * 0.02 * (2.5 + waveMultiplier * 0.5);
+            const speed = data.speed * speedMultiplier;
+            enemies.push({ x: scaledPath[0].x, y: scaledPath[0].y, pathIndex: 0, speed: speed, health: bossHealth, maxHealth: bossHealth, size: bossSize, gold: data.gold * waveMultiplier, type: 'boss', visual: { color: `hsl(0, 80%, ${40 - waveMultiplier*2}%)`}, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, lastHitBy: null, attackingMonolith: null });
+        }
+
+        function isNearPath(x, y, threshold) { for (let i = 0; i < scaledPath.length - 1; i++) { const p1 = scaledPath[i]; const p2 = scaledPath[i+1]; const dx = p2.x - p1.x; const dy = p2.y - p1.y; const l2 = dx * dx + dy * dy; if (l2 === 0) continue; let t = ((x - p1.x) * dx + (y - p1.y) * dy) / l2; t = Math.max(0, Math.min(1, t)); const closestX = p1.x + t * dx; const closestY = p1.y + t * dy; const dist = Math.hypot(x - closestX, y - closestY); if (dist < threshold) return true; } return false; }
+        
+        function canPlaceTower(x, y) {
+            const towerSize = canvasWidth * 0.035;
+            if (selectedTowerType === 'monolith') {
+                return isNearPath(x, y, canvasWidth * 0.03) && !towers.some(t => Math.hypot(x - t.x, y - t.y) < towerSize);
+            }
+            for (const tower of towers) {
+                if (Math.hypot(x - tower.x, y - tower.y) < towerSize) return false;
+            }
+            return !isNearPath(x, y, canvasWidth * 0.03);
+        }
+
+        function handleCanvasClick(e) {
+            if (!audioStarted) setupAudio();
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+            
+            if (selectedTower) {
+                const { x, y, size, upgradeCost, level, type, totalSpent } = selectedTower;
+                const menuWidth = 120; let menuHeight = 70;
+                if (type === 'fondue') menuHeight += 35;
+                const menuX = x + size/2 + 10; const menuY = y - menuHeight / 2;
+                const btnX = menuX + menuWidth - 40; const btnY = menuY + 5;
+                const sellBtnY = menuY + 40;
+                
+                if (clickX >= btnX && clickX <= btnX + 35 && clickY >= btnY && clickY <= btnY + 30) { if (gold >= upgradeCost) upgradeTower(selectedTower); return; }
+                if (clickX >= menuX + 5 && clickX <= menuX + menuWidth - 5 && clickY >= sellBtnY && clickY <= sellBtnY + 25) { sellTower(selectedTower); return; }
+                if (type === 'fondue' && selectedTower.fireCooldown <= 0) {
+                    const specialBtnY = menuY + 75;
+                    if (clickX >= menuX && clickX <= menuX + menuWidth && clickY >= specialBtnY && clickY <= specialBtnY + 30) {
+                        selectedTower.fireCooldown = selectedTower.fireRate;
+                        specialEffects.push({type: 'fondue_wave', x: canvasWidth/2, y: canvasHeight/2, radius: 0, maxDuration: 60, duration: 60, damage: selectedTower.damage });
+                        return;
+                    }
+                }
+            }
+
+            for (const tower of towers) { if (Math.hypot(clickX - tower.x, clickY - tower.y) < tower.size / 2) { selectedTower = tower; selectedTowerType = null; document.querySelectorAll('.tower-select-button').forEach(b => b.classList.remove('selected')); canvas.style.cursor = 'default'; return; } }
+            if (selectedTowerType) { placeTower(); } else { selectedTower = null; }
+        }
+
+        function sellTower(tower) {
+            gold += Math.floor(tower.totalSpent / 2);
+            towers = towers.filter(t => t !== tower);
+            selectedTower = null;
+            updateUI();
+        }
+
+        function upgradeTower(tower) {
+            gold -= tower.upgradeCost;
+            tower.totalSpent += tower.upgradeCost;
+            tower.level++;
+            const upgradeType = TOWER_DATA[tower.type].upgrade;
+            if (upgradeType === 'damage') tower.damage *= 1.25;
+            else if (upgradeType === 'fireRate') tower.fireRate *= 0.85;
+            else if (upgradeType === 'effect') tower.damage *= 1.2;
+            tower.upgradeCost *= 2;
+            updateUI();
+        }
+
+        function placeTower() {
+            if (gameOver || !selectedTowerType) return;
+            const towerData = TOWER_DATA[selectedTowerType];
+            if (towerData.limit) {
+                const existingTowers = towers.filter(t => t.type === selectedTowerType).length;
+                if (existingTowers >= towerData.limit) {
+                    const button = Array.from(document.querySelectorAll('.tower-select-button')).find(b => b.textContent.includes(towerData.name));
+                    if (button) {
+                        button.classList.add('bg-red-300');
+                        setTimeout(() => button.classList.remove('bg-red-300'), 500);
+                    }
+                    floatingTexts.push({x: mousePos.x, y: mousePos.y, content: `Limit Reached!`, color: '255,0,0', duration: 60, size: 16});
+                    return;
+                }
+            }
+            if (gold < towerData.cost) { goldDisplay.classList.add('animate-pulse', 'text-red-600'); setTimeout(() => goldDisplay.classList.remove('animate-pulse', 'text-red-600'), 500); return; }
+            if (canPlaceTower(mousePos.x, mousePos.y)) {
+                gold -= towerData.cost;
+                let newTower = { x: mousePos.x, y: mousePos.y, type: selectedTowerType, size: canvasWidth * 0.035, range: canvasWidth * towerData.range, fireRate: towerData.fireRate, fireCooldown: 0, damage: towerData.damage, projectileType: towerData.projectile, level: 1, upgradeCost: towerData.cost * 2, totalSpent: towerData.cost, shield: 0, disabled: 0, currentTarget: null, damageBonus: 0 };
+                if (selectedTowerType === 'lazar' || selectedTowerType === 'gasser') newTower.holes = Array(5).fill(0).map(()=>({x: Math.random()-0.5, y: Math.random()-0.5}));
+                if (selectedTowerType === 'fountain') newTower.fountainLevel = 5;
+                if (selectedTowerType === 'monolith') {
+                    newTower.health = towerData.health;
+                    newTower.maxHealth = towerData.maxHealth;
+                }
+                towers.push(newTower); 
+                playSound('build');
+                updateUI();
+            }
+        }
+        
+        function update() {
+            let totalCommanders = towers.filter(t=>t.type==='commander').length;
+            towers.forEach(t => { t.currentFireRate = t.fireRate; t.currentRange = t.range; if (t.disabled > 0) t.disabled--; });
+            if (totalCommanders > 0) { const commander = towers.find(t=>t.type==='commander'); if (commander) { towers.forEach(t => { if (t.type !== 'commander') { t.currentFireRate *= (1 - commander.damage * totalCommanders); t.currentRange *= (1 + commander.damage * totalCommanders); } }); } }
+            towers.filter(t => t.type === 'prism').forEach(prism => { if (prism.disabled > 0) return; specialEffects.push({type: 'prism_aura', x: prism.x, y: prism.y, radius: prism.currentRange, duration: 2, maxDuration: 2}); towers.forEach(otherTower => { if (otherTower !== prism && Math.hypot(prism.x - otherTower.x, prism.y - otherTower.y) < prism.currentRange) { otherTower.currentFireRate *= (1 - prism.damage); } }); });
+            towers.forEach(tower => {
+                if (tower.disabled > 0) return;
+                tower.fireCooldown--;
+                if (tower.fireCooldown <= 0) {
+                    if (tower.type === 'gold' || tower.type === 'fondue') { if (tower.type === 'gold') { gold += tower.damage; floatingTexts.push({x: tower.x, y: tower.y, content: `+${Math.round(tower.damage)}`, color: '255,215,0', duration: 60, size: 16}); tower.fireCooldown = tower.currentFireRate; updateUI(); } return; }
+                    if (tower.type === 'fountain') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - tower.x, enemy.y - tower.y) < tower.currentRange) { enemy.isBurning = true; enemy.burnTimer = 30; enemy.burnDamage = tower.damage; if (enemy.resistance !== 'slow') { enemy.slowed = true; enemy.slowTimer = 15; } } }); return; }
+                    if (tower.type === 'monolith') { return; }
+                    if (tower.type === 'hailstorm') { specialEffects.push({type: 'hailstorm', x: tower.x, y: tower.y, radius: tower.currentRange, duration: 120, maxDuration: 120, damage: tower.damage}); tower.fireCooldown = tower.currentFireRate; return; }
+                    if (tower.type === 'morbier_maelstrom') { specialEffects.push({type: 'vortex', x: tower.x, y: tower.y, radius: tower.currentRange, duration: 120, maxDuration: 120, damage: tower.damage}); tower.fireCooldown = tower.currentFireRate; return; }
+                    let target = null;
+                    enemies.forEach(enemy => { if (Math.hypot(enemy.x - tower.x, enemy.y - tower.y) < tower.currentRange) if (!target) target = enemy; });
+                    if (target) {
+                        if (tower.type === 'assassin') { if (tower.currentTarget === target) { tower.damageBonus += 2; } else { tower.currentTarget = target; tower.damageBonus = 0; } }
+                        let p = { originX: tower.x, originY: tower.y, x: tower.x, y: tower.y, target: target, speed: 8, damage: tower.damage + (tower.damageBonus || 0), size: 5, type: tower.projectileType, tower: tower };
+                        if ((p.type === 'slow' || p.type === 'singularity_slow') && p.target.resistance !== 'slow') { p.color = '#FFA500'; p.slowDuration = 300; }
+                        else if (p.type === 'lazar' || p.type === 'continuous_lazar') { p.color = '#FFFF00'; p.duration = 10; p.burnDuration = 240; p.burnDamage = p.damage / 4; }
+                        else if (p.type === 'bomb' || p.type === 'rocket' || p.type === 'blimp_bomb' || p.type === 'carpet_bomb' || p.type === 'shock_blast') { 
+                            p.color = '#2F4F4F'; 
+                            p.blastRadius = canvasWidth * (p.type==='rocket' ? 0.07 : (p.type === 'carpet_bomb' ? 0.12 : 0.05)); 
+                            p.detonated = false; 
+                            p.blastDuration = 15; 
+                            if(p.type === 'carpet_bomb') p.blastColor = `rgba(255, 0, 0, ${p.blastDuration / 15})`;
+                            if(p.type === 'shock_blast') p.blastColor = `rgba(255, 255, 0, ${p.blastDuration / 15})`;
+                        }
+                        else if (p.type === 'pierce') { p.color = '#FF4500'; }
+                        else if (p.type === 'gas_cloud') { specialEffects.push({type: 'gas_cloud', x: target.x, y: target.y, radius: canvasWidth * 0.06, duration: 300, maxDuration: 300, damage: p.damage}); }
+                        else if (p.type === 'bounce') { p.color = '#E0E0E0'; p.bouncesLeft = 2; }
+                        else if (p.type === 'brie_rocket') { 
+                            p.color = '#DEB887'; 
+                            p.speed = 4; 
+                            p.size = 15; 
+                            p.targetX = target.x; 
+                            p.targetY = target.y; 
+                            p.originalTarget = target; 
+                        }
+                        else if (p.type === 'freeze') { p.color = '#00FFFF'; p.freezeDuration = 120; }
+                        else { p.color = '#FFC107'; }
+                        if (p.type !== 'gas_cloud') projectiles.push(p);
+                        tower.fireCooldown = tower.currentFireRate;
+                        playSound(p.type === 'lazar' ? 'lazar' : 'shoot');
+                    } else { if (tower.type === 'assassin') tower.currentTarget = null; tower.damageBonus = 0; }
+                }
+            });
+
+            specialEffects.forEach(effect => { if (effect.type === 'gas_cloud' || effect.type === 'hailstorm') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - effect.x, enemy.y - effect.y) < effect.radius) { enemy.health -= effect.damage / 60; if (effect.type === 'hailstorm' && Math.random() < 0.01) enemy.freezeTimer = 10; } }); } else if (effect.type === 'vortex') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - effect.x, enemy.y - effect.y) < effect.radius) { enemy.health -= effect.damage / 60; if (enemy.resistance !== 'slow') { enemy.slowed = true; enemy.slowTimer = 10; } } }); } else if (effect.type === 'fondue_wave') { effect.radius += canvasWidth/30; enemies.forEach(e => e.health -= effect.damage/60); } else if (effect.type === 'spore_cloud' && effect.towerToDisable) { effect.towerToDisable.disabled = ENEMY_DATA['moldy'].duration; specialEffects.splice(specialEffects.indexOf(effect), 1); } else if (effect.type === 'popper_explosion') { towers.forEach(t => { if (Math.hypot(t.x - effect.x, t.y - effect.y) < effect.radius) { let damageDealt = effect.damage; if (t.shield > 0) { const shieldDamage = Math.min(t.shield, damageDealt); t.shield -= shieldDamage; } } }); specialEffects.splice(specialEffects.indexOf(effect), 1); } });
+
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                const p = projectiles[i];
+                if (p.detonated) { p.blastDuration--; if (p.blastDuration <= 0) projectiles.splice(i, 1); continue; }
+                if (p.type === 'lazar' || p.type === 'continuous_lazar') { p.duration--; if (p.target) { p.x = p.target.x; p.y = p.target.y; p.target.health -= p.damage; } if (p.duration <= 0) projectiles.splice(i, 1); continue; }
+                
+                if (p.type === 'brie_rocket') {
+                    const dx = p.targetX - p.x;
+                    const dy = p.targetY - p.y;
+                    const dist = Math.hypot(dx, dy);
+
+                    if (dist < p.speed) {
+                        projectiles.splice(i, 1);
+                    } else {
+                        p.x += (dx / dist) * p.speed;
+                        p.y += (dy / dist) * p.speed;
+                    }
+
+                    if (p.originalTarget && p.originalTarget.health > 0) {
+                        const hitDist = Math.hypot(p.x - p.originalTarget.x, p.y - p.originalTarget.y);
+                        if (hitDist < p.originalTarget.size) {
+                            p.originalTarget.health -= p.damage;
+                            p.originalTarget.lastHitBy = p.tower;
+                            projectiles.splice(i, 1);
+                        }
+                    }
+                    continue;
+                }
+
+                if (!p.target || p.target.health <= 0) { projectiles.splice(i, 1); continue; }
+                const dx = p.target.x - p.x; const dy = p.target.y - p.y; const dist = Math.hypot(dx, dy);
+                if (dist < p.speed) {
+                    let damageDealt = p.damage; p.target.lastHitBy = p.tower;
+                    if (p.type === 'bomb' || p.type === 'rocket' || p.type === 'blimp_bomb' || p.type === 'carpet_bomb' || p.type === 'shock_blast') { 
+                        p.detonated = true; 
+                        playSound('explode'); 
+                        enemies.forEach(enemy => { 
+                            if (Math.hypot(enemy.x - p.target.x, enemy.y - p.target.y) < p.blastRadius) { 
+                                enemy.health -= damageDealt; 
+                                enemy.lastHitBy = p.tower; 
+                                if(p.type === 'shock_blast') {
+                                    enemy.isShocked = true;
+                                    enemy.shockTimer = 180;
+                                }
+                            } 
+                        }); 
+                    } else {
+                        p.target.health -= damageDealt;
+                        if ((p.type === 'slow' || p.type === 'singularity_slow') && p.target.resistance !== 'slow') { p.target.slowed = true; p.target.slowTimer = p.slowDuration; }
+                        if (p.type === 'freeze') { p.target.isFrozen = true; p.target.freezeTimer = p.freezeDuration; }
+                        if (p.type === 'pierce') { p.target.health -= p.target.maxHealth * 0.05; }
+                        if (p.type === 'lazar') { p.target.isAcidified = true; p.target.burnTimer = p.burnDuration; p.target.burnDamage = damageDealt / 4; }
+                        if (p.type === 'bounce' && p.bouncesLeft > 0) {
+                            p.bouncesLeft--; let nextTarget = null; let minDist = Infinity;
+                            enemies.forEach(e => { if (e !== p.target && e.health > 0 && !e.isBounced) { const d = Math.hypot(p.target.x - e.x, p.target.y - e.y); if (d < minDist) { minDist = d; nextTarget = e; } } });
+                            if (nextTarget) { p.target = nextTarget; p.target.isBounced = true; } else { projectiles.splice(i, 1); }
+                        } else if (!p.detonated) { 
+                            projectiles.splice(i, 1); 
+                        }
+                    }
+                } else { 
+                    p.x += (dx / dist) * p.speed; 
+                    p.y += (dy / dist) * p.speed; 
+                }
+            }
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                enemy.isBounced = false;
+
+                // --- MONOLITH BLOCKING LOGIC ---
+                if (enemy.attackingMonolith && enemy.attackingMonolith.health <= 0) {
+                    enemy.attackingMonolith = null;
+                }
+
+                if (enemy.attackingMonolith) {
+                    enemy.attackingMonolith.health -= (enemy.maxHealth * 0.005) / 60; // Deal damage
+                    if (enemy.attackingMonolith.health <= 0) {
+                        const destroyedMonolith = enemy.attackingMonolith;
+                        towers = towers.filter(t => t !== destroyedMonolith);
+                        if (selectedTower === destroyedMonolith) selectedTower = null;
+                        enemy.attackingMonolith = null;
+                    }
+                    continue; // Skip movement if attacking
+                }
+
+                let isBlocked = false;
+                for (const tower of towers) {
+                    if (tower.type === 'monolith' && tower.health > 0) {
+                        const distToMonolith = Math.hypot(enemy.x - tower.x, enemy.y - tower.y);
+                        if (distToMonolith < enemy.size + tower.size / 2 + 5) {
+                            enemy.attackingMonolith = tower;
+                            isBlocked = true;
+                            break;
+                        }
+                    }
+                }
+                if (isBlocked) continue;
+                // --- END MONOLITH LOGIC ---
+
+
+                if (enemy.health <= 0) { 
+                    playSound('death');
+                    const onDeath = ENEMY_DATA[enemy.type];
+                    if (onDeath.onDeath === 'explode') {
+                        specialEffects.push({type: 'popper_explosion', x: enemy.x, y: enemy.y, radius: canvasWidth * onDeath.radius, duration: 10, maxDuration: 10, damage: onDeath.damage});
+                    }
+                    if (onDeath.onDeath === 'disable') { 
+                        towers.forEach(t => {
+                            if (Math.hypot(t.x - enemy.x, t.y - enemy.y) < canvasWidth * onDeath.radius) {
+                                t.disabled = onDeath.duration;
+                            }
+                        });
+                    }
+                    if (onDeath.onDeath === 'spawn') {
+                        for (let j = 0; j < onDeath.spawnCount; j++) {
+                            const newEnemyData = ENEMY_DATA[onDeath.spawnType];
+                            const newEnemy = {
+                                x: enemy.x - (j * 10), y: enemy.y, pathIndex: enemy.pathIndex, speed: newEnemyData.speed, health: newEnemyData.health, maxHealth: newEnemyData.health, size: canvasWidth * 0.015, gold: newEnemyData.gold, type: onDeath.spawnType, visual: { color: `hsl(${20 + wave * 2}, 70%, 50%)` }, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, ability: newEnemyData.ability || null, lastHitBy: null, attackingMonolith: null
+                            };
+                            enemies.push(newEnemy);
+                        }
+                    }
+                    gold += enemy.gold; 
+                    enemies.splice(i, 1); 
+                    updateUI(); 
+                    continue; 
+                }
+                if (enemy.isFrozen) { enemy.freezeTimer--; if (enemy.freezeTimer <= 0) enemy.isFrozen = false; continue; }
+                if (enemy.slowed) { enemy.slowTimer--; if (enemy.slowTimer <= 0) enemy.slowed = false; }
+                if (enemy.isShocked) { enemy.shockTimer--; if (enemy.shockTimer <= 0) enemy.isShocked = false; else { enemy.health -= 5; } }
+                if (enemy.isAcidified) { enemy.health -= enemy.burnDamage / 60; enemy.burnTimer--; if (enemy.burnTimer <= 0) enemy.isAcidified = false; }
+                if (enemy.ability === 'regenerate' && enemy.health < enemy.maxHealth) { enemy.health += (ENEMY_DATA[enemy.type].regenRate / 60); }
+                const currentSpeed = (enemy.slowed || enemy.isShocked) ? enemy.speed * 0.5 : enemy.speed;
+                let targetPoint = scaledPath[enemy.pathIndex + 1];
+                if (!targetPoint) { baseHealth -= enemy.maxHealth * 0.5; enemyStrengthModifier += 0.015; enemies.splice(i, 1); updateUI(); if (baseHealth <= 0) endGame(false); continue; }
+                const dx = targetPoint.x - enemy.x; const dy = targetPoint.y - enemy.y; const dist = Math.hypot(dx, dy);
+                if (dist < currentSpeed) enemy.pathIndex++;
+                else { enemy.x += (dx / dist) * currentSpeed; enemy.y += (dy / dist) * currentSpeed; }
+            }
+            
+            if (waveInProgress && enemies.length === 0) { if (bossWave && !bossSpawned) spawnBoss(); else { waveInProgress = false; gold += 100 + wave * 10; updateUI(); startWaveTimer(); } }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            
+            // Draw pre-rendered background
+            if (backgroundCanvas) {
+                ctx.drawImage(backgroundCanvas, 0, 0);
+            }
+
+            if (demonModeActive || hellModeActive) { ctx.fillStyle = 'rgba(255, 0, 0, 0.25)'; ctx.fillRect(0, 0, canvasWidth, canvasHeight); }
+            
+            ctx.strokeStyle = '#A0522D'; ctx.lineWidth = canvasWidth * 0.06; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(scaledPath[0].x, scaledPath[0].y); for (let i = 1; i < scaledPath.length; i++) ctx.lineTo(scaledPath[i].x, scaledPath[i].y); ctx.stroke();
+            
+            drawDecorations();
+            drawBase();
+            
+            if (selectedTowerType) { const towerData = TOWER_DATA[selectedTowerType]; const placeable = canPlaceTower(mousePos.x, mousePos.y); ctx.beginPath(); ctx.arc(mousePos.x, mousePos.y, canvasWidth * towerData.range, 0, Math.PI * 2); ctx.fillStyle = placeable ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 0, 0, 0.3)'; ctx.fill(); }
+            if (selectedTower) { ctx.strokeStyle = 'yellow'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(selectedTower.x, selectedTower.y, selectedTower.currentRange, 0, Math.PI*2); ctx.stroke(); }
+            
+            towers.forEach(tower => drawTower(tower, ctx));
+            drawSpecialEffects();
+            projectiles.forEach(drawProjectile);
+            enemies.forEach(enemy => { drawEnemy(enemy, ctx); const healthBarWidth = enemy.size * 1.5; ctx.fillStyle = '#DC2626'; ctx.fillRect(enemy.x - healthBarWidth / 2, enemy.y - enemy.size - 10, healthBarWidth, 5); ctx.fillStyle = enemy.slowed ? '#3498DB' : '#22C55E'; ctx.fillRect(enemy.x - healthBarWidth / 2, enemy.y - enemy.size - 10, healthBarWidth * (enemy.health / enemy.maxHealth), 5); });
+            drawFloatingTexts();
+            drawUpgradeMenu();
+        }
+
+        function gameLoop() { 
+            if (!gameHasStarted) return;
+
+            if (!isPaused && !gameOver) {
+                for (let i = 0; i < gameSpeed; i++) {
+                    frameCount++;
+                    update();
+                }
+            }
+            
+            draw(); // Always draw to show the current state (playing or paused)
+        }
+
+        function togglePause() {
+            if (!gameHasStarted) return;
+            isPaused = !isPaused;
+            if (isPaused) {
+                clearInterval(timerInterval);
+                pauseOverlay.classList.remove('hidden');
+                pauseButton.innerHTML = '▶';
+            } else {
+                startWaveTimer(waveTimer); // Restart timer with remaining time
+                pauseOverlay.classList.add('hidden');
+                pauseButton.innerHTML = '❚❚';
+            }
+        }
+
+        function setGameSpeed(speed) {
+            if (!gameHasStarted) return;
+            gameSpeed = speed;
+            
+            speedIndicator.classList.toggle('hidden', speed !== 2);
+            document.querySelectorAll('.speed-button').forEach(b => b.classList.remove('active'));
+            if (speed === 1) {
+                normalSpeedButton.classList.add('active');
+            } else {
+                twoxSpeedButton.classList.add('active');
+            }
+
+            if (!waveInProgress && !isPaused) {
+                clearInterval(timerInterval);
+                startWaveTimer(waveTimer);
+            }
+        }
+
+        function endGame(isWin) { gameOver = true; clearInterval(gameInterval); clearInterval(timerInterval); gameOverModal.classList.remove('hidden'); setTimeout(() => gameOverModal.classList.remove('opacity-0', 'scale-90'), 10); if (isWin) { gameOverTitle.textContent = "You Win!"; gameOverMessage.textContent = "Congratulations! You are the Grilled Cheese Champion!"; } else { gameOverTitle.textContent = "Game Over"; gameOverMessage.textContent = "Your home base has been devoured!"; } }
+        
+        function flashBossAlert() { bossAlert.classList.remove('hidden'); setTimeout(() => bossAlert.classList.remove('opacity-0'), 10); setTimeout(() => { bossAlert.classList.add('opacity-0'); setTimeout(() => bossAlert.classList.add('hidden'), 300); }, 2000); }
+        function flashDemonAlert() { demonModeAlert.classList.remove('hidden'); setTimeout(() => demonModeAlert.classList.remove('opacity-0'), 10); setTimeout(() => { demonModeAlert.classList.add('opacity-0'); setTimeout(() => demonModeAlert.classList.add('hidden'), 3000); }, 2500); }
+        function flashHellAlert() { hellModeAlert.classList.remove('hidden'); setTimeout(() => hellModeAlert.classList.remove('opacity-0'), 10); setTimeout(() => { hellModeAlert.classList.add('opacity-0'); setTimeout(() => hellModeAlert.classList.add('hidden'), 3000); }, 2500); }
+
+        function populateIndex() {
+            enemyIndexContent.innerHTML = '';
+            Object.keys(ENEMY_DATA).forEach(type => {
+                const enemyData = ENEMY_DATA[type];
+                const enemyDesc = ENEMY_DESCRIPTIONS[type];
+                if (!enemyDesc) return;
+
+                const entry = document.createElement('div');
+                entry.className = 'flex items-center bg-white p-2 rounded-lg shadow';
+
+                const iconCanvas = document.createElement('canvas');
+                iconCanvas.width = 64;
+                iconCanvas.height = 64;
+                entry.appendChild(iconCanvas);
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'ml-4 text-left';
+                
+                const nameP = document.createElement('p');
+                nameP.className = 'font-bold text-lg text-amber-800';
+                nameP.textContent = enemyDesc.name;
+                infoDiv.appendChild(nameP);
+
+                const statsP = document.createElement('p');
+                statsP.className = 'text-sm text-gray-600';
+                let abilityText = enemyData.ability ? `, Ability: ${enemyData.ability}` : (enemyData.onDeath ? `, On Death: ${enemyData.onDeath}` : '');
+                statsP.textContent = `HP: ${enemyData.health} | Speed: ${enemyData.speed} | Base Damage: ${enemyData.health * 0.5}${abilityText}`;
+                infoDiv.appendChild(statsP);
+
+                const descP = document.createElement('p');
+                descP.className = 'text-sm text-gray-800 mt-1';
+                descP.textContent = enemyDesc.description;
+                infoDiv.appendChild(descP);
+
+                entry.appendChild(infoDiv);
+                enemyIndexContent.appendChild(entry);
+
+                const iconCtx = iconCanvas.getContext('2d');
+                drawEnemy({x:32, y:32, size:15, type:type, visual: {color: 'hsl(30, 70%, 50%)'}}, iconCtx);
+            });
+            
+            towerIndexContent.innerHTML = '';
+            Object.keys(TOWER_DATA).forEach(type => {
+                const towerData = TOWER_DATA[type];
+                const entry = document.createElement('div');
+                entry.className = 'flex items-center bg-white p-2 rounded-lg shadow';
+
+                const iconCanvas = document.createElement('canvas');
+                iconCanvas.width = 64;
+                iconCanvas.height = 64;
+                entry.appendChild(iconCanvas);
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'ml-4 text-left flex-grow';
+                
+                const nameP = document.createElement('p');
+                nameP.className = 'font-bold text-lg text-amber-800';
+                nameP.textContent = towerData.name;
+                infoDiv.appendChild(nameP);
+
+                const statsP = document.createElement('p');
+                statsP.className = 'text-sm text-gray-600';
+                let statsText = `Cost: ${towerData.cost}`;
+                if (type === 'gold') {
+                    statsText += ` | Money Gen: ${towerData.damage}`;
+                } else if (type === 'monolith') {
+                    statsText += ` | Health: ${towerData.health}`;
+                } else {
+                    statsText += ` | Damage: ${towerData.damage} | Cooldown: ${towerData.fireRate} | Range: ${towerData.range * 100}`;
+                }
+                statsP.textContent = statsText;
+                infoDiv.appendChild(statsP);
+                
+                const descP = document.createElement('p');
+                descP.className = 'text-sm text-gray-800 mt-1';
+                descP.textContent = towerData.description;
+                infoDiv.appendChild(descP);
+
+                entry.appendChild(infoDiv);
+                towerIndexContent.appendChild(entry);
+
+                const iconCtx = iconCanvas.getContext('2d');
+                drawTower({x:32, y:32, size:40, type:type, level: 1, holes: Array(5).fill(0).map(()=>({x:0,y:0})), fountainLevel: 10}, iconCtx);
+            });
+        }
+
+        // --- Event Listeners ---
+        window.addEventListener('resize', () => {
+            if (gameHasStarted) {
+                init();
+            } else {
+                resizeCanvas();
+            }
+        });
+        canvas.addEventListener('click', handleCanvasClick);
+        canvas.addEventListener('mousemove', e => { const rect = canvas.getBoundingClientRect(); mousePos.x = e.clientX - rect.left; mousePos.y = e.clientY - rect.top; });
+        restartButton.addEventListener('click', init);
+        soundToggleButton.addEventListener('click', toggleSound);
+        pauseButton.addEventListener('click', togglePause);
+        normalSpeedButton.addEventListener('click', () => setGameSpeed(1));
+        twoxSpeedButton.addEventListener('click', () => setGameSpeed(2));
+        
+        const startFunction = (e) => {
+            e.preventDefault();
+            if (!gameHasStarted) {
+                init();
+                gameHasStarted = true;
+                preGameOverlay.style.display = 'none';
+            }
+            document.getElementById('game-section').scrollIntoView();
+        };
+
+        startGameButton.addEventListener('click', startFunction);
+        playNowButton.addEventListener('click', startFunction);
+
+        indexButton.addEventListener('click', () => {
+            if (!isPaused) togglePause();
+            gameIndexModal.classList.remove('hidden');
+            setTimeout(() => gameIndexModal.classList.remove('opacity-0', 'scale-90'), 10);
+        });
+        closeIndexButton.addEventListener('click', () => {
+            if(isPaused) togglePause();
+            gameIndexModal.classList.add('opacity-0', 'scale-90');
+            setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && gameHasStarted && !isPaused) {
+                togglePause();
+            }
+        });
+        
+        showTowersTab.addEventListener('click', () => {
+            towerIndexContent.classList.remove('hidden');
+            enemyIndexContent.classList.add('hidden');
+            showTowersTab.classList.add('active');
+            showEnemiesTab.classList.remove('active');
+        });
+        
+        showEnemiesTab.addEventListener('click', () => {
+            towerIndexContent.classList.add('hidden');
+            enemyIndexContent.classList.remove('hidden');
+            showTowersTab.classList.remove('active');
+            showEnemiesTab.classList.add('active');
+        });
+
+        window.addEventListener('keydown', handleCheatCode);
+
+        function handleCheatCode(e) {
+            if (gameOver) return;
+            keySequence.push(e.key);
+            if (keySequence.length > 20) {
+                keySequence.shift();
+            }
+
+            const goldCodeStr = goldCheatCode.join('');
+            const speedCodeStr = speedCheatCode.join('');
+            const demonSkipCodeStr = demonSkipCheatCode.join('');
+            const currentSequenceStr = keySequence.join('');
+
+            if (currentSequenceStr.endsWith(goldCodeStr)) {
+                gold = 999999;
+                updateUI();
+                floatingTexts.push({
+                    x: canvasWidth / 2,
+                    y: canvasHeight / 2,
+                    content: 'Admin Mode Initiated',
+                    color: '0, 191, 255',
+                    duration: 240,
+                    size: 50
+                });
+                if (audioStarted) buildSynth.triggerAttackRelease("C5", "4n");
+                keySequence = []; // Reset sequence
+            }
+            
+            if (currentSequenceStr.endsWith(speedCodeStr)) {
+                skipWave(10);
+                keySequence = []; // Reset sequence
+            }
+
+            if (currentSequenceStr.endsWith(demonSkipCodeStr)) {
+                skipWave(99);
+                keySequence = []; // Reset sequence
+            }
+        }
+
+        function skipWave(numWaves) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            enemies = [];
+            projectiles = [];
+            waveInProgress = false;
+            bossSpawned = false;
+
+            for (let i = 0; i < numWaves; i++) {
+                gold += 100 + (wave + i + 1) * 10;
+            }
+            wave += numWaves;
+            
+            floatingTexts.push({
+                x: canvasWidth / 2,
+                y: canvasHeight / 2,
+                content: `+${numWaves} Waves!`,
+                color: '0, 255, 255',
+                duration: 180,
+                size: 50
+            });
+
+            if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
+            
+            updateUI();
+            startWaveTimer();
+        }
+
+        // --- Initialisation on page load (for non-game elements) ---
+        resizeCanvas();
+        createTowerButtons();
+        populateIndex();
+
+    </script>
+</body>
+</html>
