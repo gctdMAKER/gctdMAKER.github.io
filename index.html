@@ -26,21 +26,21 @@
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
             border-color: #FBBF24;
         }
-        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert {
+        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert, #mode-select-modal {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
-        #enemy-index-content::-webkit-scrollbar, #tower-index-content::-webkit-scrollbar {
+        #enemy-index-content::-webkit-scrollbar, #tower-index-content::-webkit-scrollbar, #admin-panel div::-webkit-scrollbar {
             width: 8px;
         }
-        #enemy-index-content::-webkit-scrollbar-track, #tower-index-content::-webkit-scrollbar-track {
+        #enemy-index-content::-webkit-scrollbar-track, #tower-index-content::-webkit-scrollbar-track, #admin-panel div::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        #enemy-index-content::-webkit-scrollbar-thumb, #tower-index-content::-webkit-scrollbar-thumb {
+        #enemy-index-content::-webkit-scrollbar-thumb, #tower-index-content::-webkit-scrollbar-thumb, #admin-panel div::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
-        #enemy-index-content::-webkit-scrollbar-thumb:hover, #tower-index-content::-webkit-scrollbar-thumb:hover {
+        #enemy-index-content::-webkit-scrollbar-thumb:hover, #tower-index-content::-webkit-scrollbar-thumb:hover, #admin-panel div::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
         .hero-bg {
@@ -56,6 +56,13 @@
             background-color: #3b82f6;
             transform: scale(1.05);
         }
+        .mode-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .mode-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="bg-yellow-50">
@@ -63,7 +70,7 @@
     <!-- Header -->
     <header class="bg-amber-500 shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">G.C.T.D</div>
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 28</div>
             <div>
                 <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
                 <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
@@ -143,6 +150,25 @@
                     <p class="text-lg">Click "Start Defending!" above to begin the cheesy onslaught!</p>
                 </div>
                 <canvas id="gameCanvas"></canvas>
+
+                <!-- Mode Select Modal -->
+                <div id="mode-select-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center text-white p-8 text-center hidden z-40">
+                    <h2 class="text-6xl font-chewy text-amber-400 mb-8">Select a Mode</h2>
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64">
+                            <h3 class="text-3xl font-chewy">Normal Mode</h3>
+                            <p class="mt-2">The standard cheesy challenge.</p>
+                        </button>
+                        <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64">
+                            <h3 class="text-3xl font-chewy">Hard Mode</h3>
+                            <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
+                        </button>
+                        <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
+                            <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
+                            <p class="mt-2">Start with 50 Gold. Tougher enemies & expensive towers!</p>
+                        </button>
+                    </div>
+                </div>
                 
                 <!-- Game Over Modal -->
                 <div id="game-over-modal" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white p-8 text-center hidden opacity-0 scale-90 z-30">
@@ -189,6 +215,94 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Admin Panel -->
+                <div id="admin-panel" class="absolute bottom-4 right-4 bg-gray-800 bg-opacity-90 text-white p-4 rounded-lg shadow-lg w-80 hidden z-50 text-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg font-chewy text-amber-400">Admin Panel</h3>
+                        <button id="close-admin-panel" class="text-2xl leading-none">&times;</button>
+                    </div>
+                    <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                        <!-- Gameplay Controls -->
+                        <h4 class="font-bold text-amber-500">Gameplay</h4>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="skip-waves-input">Skip Waves:</label>
+                            <input type="number" id="skip-waves-input" class="w-full text-black rounded px-1" value="10">
+                            <button id="execute-skip-waves" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                         <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="set-wave-input">Set Wave:</label>
+                            <input type="number" id="set-wave-input" class="w-full text-black rounded px-1" value="1">
+                            <button id="execute-set-wave" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="set-speed-input">Set Speed:</label>
+                            <input type="number" id="set-speed-input" class="w-full text-black rounded px-1" step="any" value="1">
+                            <button id="execute-set-speed" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                         <div class="grid grid-cols-3 items-center gap-2">
+                            <label>Kill On-Screen:</label>
+                            <span class="col-span-1"></span>
+                            <button id="execute-kill-all" class="bg-red-500 hover:bg-red-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label>Disable Towers:</label>
+                            <span class="col-span-1"></span>
+                            <button id="execute-disable-towers" class="bg-red-500 hover:bg-red-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                         <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="spawn-enemy-input">Spawn Enemy:</label>
+                             <input type="text" id="spawn-enemy-input" class="w-full text-black rounded px-1" placeholder="Crumb">
+                            <button id="execute-spawn-enemy" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+
+                        <hr class="border-gray-600 my-2">
+                        <!-- Player Stats -->
+                         <h4 class="font-bold text-amber-500">Player Stats</h4>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="add-gold-input">Add Gold:</label>
+                            <input type="number" id="add-gold-input" class="w-full text-black rounded px-1" value="1000">
+                             <button id="execute-add-gold" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="set-health-input">Set Base Health:</label>
+                            <input type="number" id="set-health-input" class="w-full text-black rounded px-1" value="1500">
+                             <button id="execute-set-health" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                         <div class="flex items-center gap-2">
+                            <input type="checkbox" id="invincible-base-toggle">
+                            <label for="invincible-base-toggle">Invincible Base</label>
+                        </div>
+
+                        <hr class="border-gray-600 my-2">
+                        <!-- Enemy Modifiers -->
+                         <h4 class="font-bold text-amber-500">Enemy Modifiers</h4>
+                         <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="enemy-health-mod-input">Enemy HP x:</label>
+                            <input type="number" id="enemy-health-mod-input" class="w-full text-black rounded px-1" step="0.5" value="1">
+                             <button id="execute-enemy-health-mod" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="enemy-speed-mod-input">Enemy Speed x:</label>
+                            <input type="number" id="enemy-speed-mod-input" class="w-full text-black rounded px-1" step="0.5" value="1">
+                             <button id="execute-enemy-speed-mod" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+
+                        <hr class="border-gray-600 my-2">
+                        <!-- Visuals -->
+                        <h4 class="font-bold text-amber-500">Visuals & Audio</h4>
+                        <div class="grid grid-cols-3 items-center gap-2">
+                            <label for="grass-color-input">Grass Color:</label>
+                            <input type="text" id="grass-color-input" class="w-full text-black rounded px-1" value="#2E8B57">
+                            <button id="execute-grass-color" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">Execute</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="music-toggle">
+                            <label for="music-toggle">Enable Music</label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             
             <div class="mt-2 text-center flex justify-center items-center gap-4">
@@ -198,6 +312,7 @@
                     <button id="2x-speed-button" class="speed-button bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10">2x</button>
                 </div>
                 <button id="index-button" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">Game Index</button>
+                <button id="admin-panel-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Admin Panel</button>
                 <button id="sound-toggle-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">🔊 Sound On</button>
             </div>
             
@@ -259,6 +374,38 @@
         const startGameButton = document.getElementById('start-game-button');
         const playNowButton = document.getElementById('play-now-button');
 
+        const modeSelectModal = document.getElementById('mode-select-modal');
+        const normalModeButton = document.getElementById('normal-mode-button');
+        const hardModeButton = document.getElementById('hard-mode-button');
+        const hardcoreModeButton = document.getElementById('hardcore-mode-button');
+        
+        // Admin Panel UI
+        const adminPanelButton = document.getElementById('admin-panel-button');
+        const adminPanel = document.getElementById('admin-panel');
+        const closeAdminPanel = document.getElementById('close-admin-panel');
+        const skipWavesInput = document.getElementById('skip-waves-input');
+        const executeSkipWaves = document.getElementById('execute-skip-waves');
+        const setWaveInput = document.getElementById('set-wave-input');
+        const executeSetWave = document.getElementById('execute-set-wave');
+        const setSpeedInput = document.getElementById('set-speed-input');
+        const executeSetSpeed = document.getElementById('execute-set-speed');
+        const addGoldInput = document.getElementById('add-gold-input');
+        const executeAddGold = document.getElementById('execute-add-gold');
+        const executeKillAll = document.getElementById('execute-kill-all');
+        const setHealthInput = document.getElementById('set-health-input');
+        const executeSetHealth = document.getElementById('execute-set-health');
+        const invincibleBaseToggle = document.getElementById('invincible-base-toggle');
+        const grassColorInput = document.getElementById('grass-color-input');
+        const executeGrassColor = document.getElementById('execute-grass-color');
+        const musicToggle = document.getElementById('music-toggle');
+        const enemyHealthModInput = document.getElementById('enemy-health-mod-input');
+        const executeEnemyHealthMod = document.getElementById('execute-enemy-health-mod');
+        const enemySpeedModInput = document.getElementById('enemy-speed-mod-input');
+        const executeEnemySpeedMod = document.getElementById('execute-enemy-speed-mod');
+        const executeDisableTowers = document.getElementById('execute-disable-towers');
+        const spawnEnemyInput = document.getElementById('spawn-enemy-input');
+        const executeSpawnEnemy = document.getElementById('execute-spawn-enemy');
+
 
         let canvasWidth, canvasHeight;
         let backgroundCanvas; // Offscreen canvas for the background
@@ -269,14 +416,20 @@
         let gameOver, waveInProgress, bossWave, bossSpawned, demonModeActive, hellModeActive, gameHasStarted = false;
         let selectedTowerType = null, selectedTower = null;
         let mousePos = { x: 0, y: 0 };
-        let baseHealth, maxBaseHealth, enemyStrengthModifier;
+        let baseHealth, maxBaseHealth, enemyStrengthModifier, enemySpeedModifier;
+        let isBaseInvincible = false;
+        let backgroundColor = '#2E8B57';
         let audioStarted = false;
         let isMuted = false;
         let isPaused = false, gameSpeed = 1;
         let keySequence = [];
+        let difficultyModifier = { health: 1, speed: 1 };
+        let originalTowerData = {}; // To store original costs
 
-        // --- Audio Setup ---
-        let popSynth, lazarSynth, explodeSynth, deathSynth, buildSynth;
+        // --- Audio & Music Setup ---
+        let popSynth, lazarSynth, explodeSynth, deathSynth, buildSynth, musicSynth, musicLoop;
+        let isMusicPlaying = false;
+        
         function setupAudio() {
             if (audioStarted) return;
             try {
@@ -294,6 +447,22 @@
                 explodeSynth = new Tone.NoiseSynth({ noise: { type: "white" }, envelope: { attack: 0.005, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination();
                 deathSynth = new Tone.MembraneSynth({ pitchDecay: 0.1, octaves: 2, envelope: { attack: 0.01, decay: 0.3, sustain: 0.01, release: 0.1 }, }).toDestination();
                 buildSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 } }).toDestination();
+
+                // Music synth and loop
+                const musicVolume = new Tone.Volume(-12).toDestination();
+                musicSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "triangle8" },
+                    envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 },
+                }).connect(musicVolume);
+
+                const notes = ["C3", "E3", "G3", "B3", "C4", "E4", "G4", "B4"];
+                let noteIndex = 0;
+                musicLoop = new Tone.Loop(time => {
+                    let note = notes[noteIndex % notes.length];
+                    musicSynth.triggerAttackRelease(note, "8n", time);
+                    noteIndex++;
+                }, "8n");
+                Tone.Transport.bpm.value = 100;
 
                 audioStarted = true;
             } catch (e) {
@@ -314,6 +483,18 @@
             }
         }
 
+        function toggleMusic() {
+            if (!audioStarted) setupAudio();
+            isMusicPlaying = !isMusicPlaying;
+            if(isMusicPlaying) {
+                Tone.Transport.start();
+                musicLoop.start(0);
+            } else {
+                musicLoop.stop(0);
+                Tone.Transport.stop();
+            }
+        }
+
         function toggleSound() {
             isMuted = !isMuted;
             if (audioStarted) {
@@ -327,42 +508,84 @@
         }
 
         // --- Game Configuration ---
-        const TOWER_DATA = {
-            'gunner': { name: 'Gunner Cheese', cost: 50, range: 0.12, fireRate: 60, damage: 12, projectile: 'normal', upgrade: 'damage', description: 'Your trusty bread-and-butter tower. Fires single, reliable cheese globs.' },
-            'slower': { name: 'Slo-mo Melter', cost: 125, range: 0.09, fireRate: 60, damage: 15, projectile: 'slow', upgrade: 'effect', description: 'Launches sticky, melted cheese that significantly slows down enemies.' },
-            'gold': { name: 'Gold Grill', cost: 150, range: 0, fireRate: 400, damage: 15, projectile: 'none', upgrade: 'damage', description: 'A passive tower that grills up extra gold for you every few seconds.', limit: 5 },
-            'mg': { name: 'Machine Gun Mozz', cost: 175, range: 0.1, fireRate: 10, damage: 10, projectile: 'normal', upgrade: 'fireRate', description: 'Shreds enemies with a blistering fast stream of mozzarella strings.' },
-            'bomber': { name: 'Cheddar Bomber', cost: 180, range: 0.15, fireRate: 90, damage: 40, projectile: 'bomb', upgrade: 'damage', description: 'Hurls explosive cheddar balls that deal damage to groups of enemies.' },
-            'piercer': { name: 'PepperJack Piercer', cost: 225, range: 0.18, fireRate: 75, damage: 15, projectile: 'pierce', upgrade: 'damage', description: 'Fires a spicy shard of pepperjack that pierces through multiple enemies.' },
-            'lazar': { name: 'Lazar Swiss', cost: 250, range: 0.2, fireRate: 120, damage: 120, projectile: 'lazar', upgrade: 'effect', description: 'Channels sunlight through its holes to fire a high-damage laser beam.' },
-            'gasser': { name: 'Gorgonzola Gasser', cost: 250, range: 0.1, fireRate: 150, damage: 15, projectile: 'gas_cloud', upgrade: 'effect', description: 'Releases a pungent cloud of gas that deals damage over time to enemies inside.' },
-            'fountain': { name: 'Fondue Fountain', cost: 300, range: 0.1, fireRate: 10, damage: 2, projectile: 'none', upgrade: 'damage', description: 'A continuous fountain of hot cheese that damages and slows nearby enemies.' },
-            'prism': { name: 'Provolone Prism', cost: 350, range: 0.12, fireRate: 0, damage: 0.25, projectile: 'none', upgrade: 'effect', description: 'A support tower that passively increases the fire rate of all towers in its radius.' },
-            'rocket': { name: 'Ricotta Rocket', cost: 400, range: 0.25, fireRate: 240, damage: 200, projectile: 'rocket', upgrade: 'damage', description: 'Launches a long-range rocket with a large and powerful explosion.' },
-            'partitioner': { name: 'Parmesan Partitioner', cost: 450, range: 0.15, fireRate: 100, damage: 50, projectile: 'bounce', upgrade: 'damage', description: 'Fires a hard parmesan disc that ricochets between several enemies.' },
-            'blue_bio': { name: 'Blue Cheese Bio-Tower', cost: 500, range: 0.15, fireRate: 100, damage: 20, projectile: 'gas_cloud', upgrade: 'effect', description: 'Spreads a virulent mold cloud that deals significant damage over time.' },
-            'blimp': { name: 'Brie Blimp', cost: 550, range: 1.0, fireRate: 180, damage: 150, projectile: 'brie_rocket', upgrade: 'damage', description: 'Launches a powerful rocket in a straight line towards a target.' },
-            'assassin': { name: 'Asiago Assassin', cost: 600, range: 0.3, fireRate: 120, damage: 150, projectile: 'normal', upgrade: 'damage', description: 'Focuses on a single target, dealing more damage the longer it attacks it.' },
-            'hailstorm': { name: 'Havarti Hailstorm', cost: 650, range: 0.15, fireRate: 180, damage: 15, projectile: 'none', upgrade: 'effect', description: 'Creates a damaging hailstorm with a chance to briefly freeze enemies.' },
-            'freezer': { name: 'Feta Freezer', cost: 700, range: 0.2, fireRate: 200, damage: 25, projectile: 'freeze', upgrade: 'effect', description: 'Fires a shard of feta that completely freezes a target for a moderate duration.' },
-            'commander': { name: 'Colby Commander', cost: 750, range: 0, fireRate: 0, damage: 0.08, projectile: 'none', upgrade: 'effect', description: 'A global command tower that provides a small fire rate and range buff to all towers.' },
-            'gouda_guardian': { name: 'Gouda Guardian', cost: 800, range: 0.1, fireRate: 20, damage: 30, projectile: 'normal', upgrade: 'damage', description: 'A powerful short-range defender that fires a spread of three projectiles.' },
-            'monolith': { name: 'Muenster Monolith', cost: 850, range: 0, fireRate: 0, damage: 0, projectile: 'none', upgrade: 'health', description: 'A defensive wall placed on the path. It has its own health and must be destroyed by enemies.', health: 75, maxHealth: 75, thornsUpgradeCost: 250, healthUpgradeCost: 200 },
-            'romano_repeater': { name: 'Romano Repeater', cost: 1100, range: 0.2, fireRate: 30, damage: 25, projectile: 'bounce', upgrade: 'fireRate', description: 'Rapidly fires multiple projectiles that bounce between enemies.' },
-            'manchego_mortar': { name: 'Manchego Mortar', cost: 1500, range: 0.4, fireRate: 300, damage: 300, projectile: 'bomb', upgrade: 'damage', description: 'A very long-range artillery tower with a massive explosive impact.' },
-            'chevre_chain': { name: 'Chevre Chain Lightning', cost: 1800, range: 0.25, fireRate: 75, damage: 100, projectile: 'bounce', upgrade: 'damage', description: 'Zaps a primary target with lightning that then arcs to many nearby enemies.' },
-            'pecorino_pulverizer': { name: 'Pecorino Pulverizer', cost: 2200, range: 0.1, fireRate: 45, damage: 200, projectile: 'normal', upgrade: 'damage', description: 'A heavy-hitting tower that excels at taking down single, powerful enemies.' },
-            'camembert_comet': { name: 'Camembert Comet', cost: 2700, range: 0.5, fireRate: 480, damage: 1000, projectile: 'rocket', upgrade: 'damage', description: 'Targets the densest group of enemies and calls down a devastating comet.' },
-            'brie_barrage': { name: 'Brie Barrage', cost: 3500, range: 0.3, fireRate: 5, damage: 15, projectile: 'slow', upgrade: 'fireRate', description: 'Fills the screen with an overwhelming number of slowing projectiles.' },
-            'swiss_behemoth': { name: 'Swiss Behemoth', cost: 5000, range: 0.25, fireRate: 30, damage: 1200, projectile: 'bomb', upgrade: 'damage', description: 'Flings giant, explosive wheels of swiss cheese out in a spinning pattern.' },
-            'gruyere_golem': { name: 'Gruyere Golem', cost: 6000, range: 0.25, fireRate: 90, damage: 3200, projectile: 'stun', upgrade: 'damage', description: 'A slow but incredibly powerful tower whose attacks can stun enemies.' },
-            'limburger_lazer': { name: 'Limburger Lazer', cost: 7500, range: 0.4, fireRate: 5, damage: 450, projectile: 'continuous_lazar', upgrade: 'damage', description: 'Projects a continuous, high-damage laser that melts everything in its path.' },
-            'edam_eradicator': { name: 'Edam Eradicator', cost: 9000, range: 0.5, fireRate: 90, damage: 3600, projectile: 'shock_blast', upgrade: 'fireRate', description: 'Charges up and releases a massive blast of energy, shocking and damaging enemies.' },
-            'morbier_maelstrom': { name: 'Morbier Maelstrom', cost: 10500, range: 0.35, fireRate: 20, damage: 900, projectile: 'vortex', upgrade: 'effect', description: 'Creates a powerful vortex that damages and slows all enemies in its radius.' },
-            'burrata_bomber': { name: 'Burrata Bomber', cost: 12000, range: 0.5, fireRate: 240, damage: 4500, projectile: 'carpet_bomb', upgrade: 'damage', description: 'Calls in a bombing run that carpets a section of the path with explosions.' },
-            'stilton_singularity': { name: 'Stilton Singularity', cost: 14000, range: 0.4, fireRate: 30, damage: 2000, projectile: 'singularity_slow', upgrade: 'effect', description: 'Summons a miniature black hole that slows and damages all enemies on screen.' },
-            'fondue': { name: 'The Final Fondue', cost: 15000, range: 0, fireRate: 21000, damage: 5000, projectile: 'none', upgrade: 'damage', description: 'The ultimate weapon. Has a very long cooldown but damages all enemies on screen.' }
-        };
+        let TOWER_DATA = {};
+        function setupTowerData() {
+            TOWER_DATA = {
+                'gunner': { name: 'Gunner Cheese', cost: 50, range: 0.12, fireRate: 60, damage: 12, projectile: 'normal', upgrade: 'damage', description: 'Your trusty bread-and-butter tower. Fires single, reliable cheese globs.' },
+                'slower': { name: 'Slo-mo Melter', cost: 125, range: 0.09, fireRate: 60, damage: 15, projectile: 'slow', upgrade: 'effect', description: 'Launches sticky, melted cheese that significantly slows down enemies.' },
+                'gold': { name: 'Gold Grill', cost: 150, range: 0, fireRate: 400, damage: 15, projectile: 'none', upgrade: 'damage', description: 'A passive tower that grills up extra gold for you every few seconds.', limit: 5 },
+                'mg': { name: 'Machine Gun Mozz', cost: 175, range: 0.1, fireRate: 10, damage: 10, projectile: 'normal', upgrade: 'fireRate', description: 'Shreds enemies with a blistering fast stream of mozzarella strings.' },
+                'bomber': { name: 'Cheddar Bomber', cost: 180, range: 0.15, fireRate: 90, damage: 40, projectile: 'bomb', upgrade: 'damage', description: 'Hurls explosive cheddar balls that deal damage to groups of enemies.' },
+                'piercer': { name: 'PepperJack Piercer', cost: 225, range: 0.18, fireRate: 75, damage: 15, projectile: 'pierce', upgrade: 'damage', description: 'Fires a spicy shard of pepperjack that pierces through multiple enemies.' },
+                'lazar': { name: 'Lazar Swiss', cost: 250, range: 0.2, fireRate: 120, damage: 120, projectile: 'lazar', upgrade: 'effect', description: 'Channels sunlight through its holes to fire a high-damage laser beam.' },
+                'gasser': { name: 'Gorgonzola Gasser', cost: 250, range: 0.1, fireRate: 150, damage: 15, projectile: 'gas_cloud', upgrade: 'effect', description: 'Releases a pungent cloud of gas that deals damage over time to enemies inside.' },
+                'fountain': { name: 'Fondue Fountain', cost: 300, range: 0.1, fireRate: 10, damage: 2, projectile: 'none', upgrade: 'damage', description: 'A continuous fountain of hot cheese that damages and slows nearby enemies.' },
+                'prism': { name: 'Provolone Prism', cost: 350, range: 0.12, fireRate: 0, damage: 0.25, projectile: 'none', upgrade: 'effect', description: 'A support tower that passively increases the fire rate of all towers in its radius.' },
+                'rocket': { name: 'Ricotta Rocket', cost: 400, range: 0.25, fireRate: 240, damage: 200, projectile: 'rocket', upgrade: 'damage', description: 'Launches a long-range rocket with a large and powerful explosion.' },
+                'partitioner': { name: 'Parmesan Partitioner', cost: 450, range: 0.15, fireRate: 100, damage: 50, projectile: 'bounce', upgrade: 'damage', description: 'Fires a hard parmesan disc that ricochets between several enemies.' },
+                'blue_bio': { name: 'Blue Cheese Bio-Tower', cost: 500, range: 0.15, fireRate: 100, damage: 20, projectile: 'gas_cloud', upgrade: 'effect', description: 'Spreads a virulent mold cloud that deals significant damage over time.' },
+                'colby_coin_op': { name: 'Colby Coin-op', cost: 520, range: 0, fireRate: 240, damage: 25, projectile: 'none', upgrade: 'cash', description: 'A reliable investment that generates a steady stream of gold.' },
+                'blimp': { name: 'Brie Blimp', cost: 550, range: 1.0, fireRate: 180, damage: 150, projectile: 'brie_rocket', upgrade: 'damage', description: 'Launches a powerful rocket in a straight line towards a target.' },
+                'assassin': { name: 'Asiago Assassin', cost: 600, range: 0.3, fireRate: 120, damage: 150, projectile: 'normal', upgrade: 'damage', description: 'Focuses on a single target, dealing more damage the longer it attacks it.' },
+                'hailstorm': { name: 'Havarti Hailstorm', cost: 650, range: 0.15, fireRate: 180, damage: 15, projectile: 'none', upgrade: 'effect', description: 'Creates a damaging hailstorm with a chance to briefly freeze enemies.' },
+                'freezer': { name: 'Feta Freezer', cost: 700, range: 0.2, fireRate: 200, damage: 25, projectile: 'freeze', upgrade: 'effect', description: 'Fires a shard of feta that completely freezes a target for a moderate duration.' },
+                'commander': { name: 'Colby Commander', cost: 750, range: 0, fireRate: 0, damage: 0.08, projectile: 'none', upgrade: 'effect', description: 'A global command tower that provides a small fire rate and range buff to all towers.' },
+                'gouda_guardian': { name: 'Gouda Guardian', cost: 800, range: 0.1, fireRate: 20, damage: 30, projectile: 'normal', upgrade: 'damage', description: 'A powerful short-range defender that fires a spread of three projectiles.' },
+                'monolith': { name: 'Muenster Monolith', cost: 850, range: 0, fireRate: 0, damage: 0, projectile: 'none', upgrade: 'health', description: 'A defensive wall placed on the path. It has its own health and must be destroyed by enemies.', health: 75, maxHealth: 75, thornsUpgradeCost: 250, healthUpgradeCost: 200 },
+                'romano_repeater': { name: 'Romano Repeater', cost: 1100, range: 0.2, fireRate: 30, damage: 25, projectile: 'bounce', upgrade: 'fireRate', description: 'Rapidly fires multiple projectiles that bounce between enemies.' },
+                'mimolette_mint': { name: 'Mimolette Mint', cost: 1123, range: 0, fireRate: 180, damage: 50, projectile: 'none', upgrade: 'cash', description: 'A more advanced gold generator that prints money faster.' },
+                'manchego_mortar': { name: 'Manchego Mortar', cost: 1500, range: 0.4, fireRate: 300, damage: 300, projectile: 'bomb', upgrade: 'damage', description: 'A very long-range artillery tower with a massive explosive impact.' },
+                'chevre_chain': { name: 'Chevre Chain Lightning', cost: 1800, range: 0.25, fireRate: 75, damage: 100, projectile: 'bounce', upgrade: 'damage', description: 'Zaps a primary target with lightning that then arcs to many nearby enemies.' },
+                'pecorino_pulverizer': { name: 'Pecorino Pulverizer', cost: 2200, range: 0.1, fireRate: 45, damage: 200, projectile: 'normal', upgrade: 'damage', description: 'A heavy-hitting tower that excels at taking down single, powerful enemies.' },
+                'camembert_comet': { name: 'Camembert Comet', cost: 2700, range: 0.5, fireRate: 480, damage: 1000, projectile: 'rocket', upgrade: 'damage', description: 'Targets the densest group of enemies and calls down a devastating comet.' },
+                'brie_barrage': { name: 'Brie Barrage', cost: 3500, range: 0.3, fireRate: 5, damage: 15, projectile: 'slow', upgrade: 'fireRate', description: 'Fills the screen with an overwhelming number of slowing projectiles.' },
+                'swiss_behemoth': { name: 'Swiss Behemoth', cost: 5000, range: 0.25, fireRate: 30, damage: 1200, projectile: 'bomb', upgrade: 'damage', description: 'Flings giant, explosive wheels of swiss cheese out in a spinning pattern.' },
+                'vacherin_vault': { name: 'Vacherin Vault', cost: 5500, range: 0, fireRate: 120, damage: 150, projectile: 'none', upgrade: 'cash', description: 'The ultimate economic tower, generating vast quantities of gold.' },
+                'gruyere_golem': { name: 'Gruyere Golem', cost: 6000, range: 0.25, fireRate: 90, damage: 3200, projectile: 'stun', upgrade: 'damage', description: 'A slow but incredibly powerful tower whose attacks can stun enemies.' },
+                'limburger_lazer': { name: 'Limburger Lazer', cost: 7500, range: 0.4, fireRate: 5, damage: 450, projectile: 'continuous_lazar', upgrade: 'damage', description: 'Projects a continuous, high-damage laser that melts everything in its path.' },
+                'edam_eradicator': { name: 'Edam Eradicator', cost: 9000, range: 0.5, fireRate: 90, damage: 3600, projectile: 'shock_blast', upgrade: 'fireRate', description: 'Charges up and releases a massive blast of energy, shocking and damaging enemies.' },
+                'morbier_maelstrom': { name: 'Morbier Maelstrom', cost: 10500, range: 0.35, fireRate: 20, damage: 900, projectile: 'vortex', upgrade: 'effect', description: 'Creates a powerful vortex that damages and slows all enemies in its radius.' },
+                'burrata_bomber': { name: 'Burrata Bomber', cost: 12000, range: 0.5, fireRate: 240, damage: 4500, projectile: 'carpet_bomb', upgrade: 'damage', description: 'Calls in a bombing run that carpets a section of the path with explosions.' },
+                'stilton_singularity': { name: 'Stilton Singularity', cost: 14000, range: 0.4, fireRate: 30, damage: 2000, projectile: 'singularity_slow', upgrade: 'effect', description: 'Summons a miniature black hole that slows and damages all enemies on screen.' },
+                'wensleydale_whirlwind': { name: 'Wensleydale Whirlwind', cost: 15500, range: 0.3, fireRate: 300, damage: 2500, projectile: 'tornado', upgrade: 'effect', description: 'Summons a powerful tornado that travels along the path, damaging all enemies it touches.' },
+                'jarlsberg_juggernaut': { name: 'Jarlsberg Juggernaut', cost: 17000, range: 0.2, fireRate: 400, damage: 4000, projectile: 'earthquake', upgrade: 'damage', description: 'Slams the ground, creating a powerful earthquake that stuns and damages a huge area.' },
+                'feta_fleet': { name: 'Feta Fleet', cost: 18500, range: 0, fireRate: 600, damage: 500, projectile: 'drones', upgrade: 'effect', description: 'Launches a fleet of 5 cheese drones that attack enemies globally for 10 seconds.' },
+                'asiago_annihilator': { name: 'Asiago Annihilator', cost: 20000, range: 1.0, fireRate: 450, damage: 8000, projectile: 'sweep_lazar', upgrade: 'damage', description: 'Fires a massive laser beam that sweeps across the entire path.' },
+                'roquefort_rain': { name: 'Roquefort Rain', cost: 21500, range: 0.5, fireRate: 500, damage: 6000, projectile: 'meteor', upgrade: 'damage', description: 'Calls down a meteor shower of pungent blue cheese, leaving a damage-over-time field.' },
+                'mascarpone_matrix': { name: 'Mascarpone Matrix', cost: 23000, range: 0.25, fireRate: 0, damage: 0.75, projectile: 'none', upgrade: 'effect', description: 'Creates a large field that dramatically slows and weakens all enemies inside it (75% slow).' },
+                'halloumi_hellfire': { name: 'Halloumi Hellfire', cost: 24500, range: 0.2, fireRate: 3, damage: 300, projectile: 'flamethrower', upgrade: 'damage', description: 'Sprays a cone of continuous fire, incinerating enemies.' },
+                'cotija_citadel': { name: 'Cotija Citadel', cost: 26000, range: 0, fireRate: 0, damage: 0.15, projectile: 'none', upgrade: 'effect', description: 'A massive defensive structure that buffs all other towers damage on the map by 15%.' },
+                'velveeta_volcano': { name: 'Velveeta Volcano', cost: 27500, range: 0, fireRate: 300, damage: 5000, projectile: 'volcano', upgrade: 'damage', description: 'Erupts periodically, spewing molten cheese bombs all over the map.' },
+                'paneer_pulsar': { name: 'Paneer Pulsar', cost: 29000, range: 0.3, fireRate: 60, damage: 2500, projectile: 'chain_infinite', upgrade: 'damage', description: 'Releases pulses of energy that chain between an infinite number of enemies.' },
+                'gjetost_giant': { name: 'Gjetost Giant', cost: 31000, range: 0.1, fireRate: 180, damage: 10000, projectile: 'smash', upgrade: 'damage', description: 'A giant golem tower that periodically smashes the ground, dealing huge damage in a line.' },
+                'bocconcini_barrage': { name: 'Bocconcini Barrage', cost: 33000, range: 0.4, fireRate: 300, damage: 100, projectile: 'barrage', upgrade: 'fireRate', description: 'Launches a massive volley of 50 small projectiles that cover the entire screen.' },
+                'teleggio_tesseract': { name: 'Teleggio Tesseract', cost: 35000, range: 0.5, fireRate: 400, damage: 15000, projectile: 'trap', upgrade: 'effect', description: 'Traps the strongest enemy on screen in a cube, dealing continuous damage.' },
+                'raclette_reactor': { name: 'Raclette Reactor', cost: 38000, range: 0, fireRate: 900, damage: 25000, projectile: 'reactor_blast', upgrade: 'damage', description: 'Charges up and unleashes a screen-clearing blast.' },
+                'provolone_pantheon': { name: 'Provolone Pantheon', cost: 42000, range: 0, fireRate: 0, damage: 0.1, projectile: 'none', upgrade: 'effect', description: 'A global tower that gives every other tower a 10% chance to fire a powerful secondary projectile.' },
+                'queso_quattro': { name: 'Queso Quattro-Cannon', cost: 46000, range: 0.3, fireRate: 120, damage: 5000, projectile: 'quattro', upgrade: 'damage', description: 'Fires a devastating volley of 4 different powerful projectiles.' },
+                'epoisses_erupter': { name: 'Epoisses Erupter', cost: 50000, range: 0.4, fireRate: 300, damage: 1000, projectile: 'large_gas_cloud', upgrade: 'effect', description: 'Erupts with a massive, lingering cloud of unbelievably foul cheese.' },
+                'gorgonzola_grid': { name: 'Gorgonzola Grid', cost: 55000, range: 0.3, fireRate: 150, damage: 7000, projectile: 'laser_grid', upgrade: 'damage', description: 'Fires a grid of lasers, damaging everything in a square area.' },
+                'stinking_bishops_smite': { name: 'Stinking Bishop\'s Smite', cost: 60000, range: 0.5, fireRate: 500, damage: 25000, projectile: 'smite_beam', upgrade: 'damage', description: 'Calls down a holy beam of light that smites a single target for immense damage.' },
+                'valdeon_vortex': { name: 'Valdeon Vortex', cost: 65000, range: 0.4, fireRate: 90, damage: 8000, projectile: 'super_vortex', upgrade: 'effect', description: 'A powerful vortex that pulls enemies towards its center while dealing damage.' },
+                'casu_marzus_call': { name: 'Casu Marzu\'s Call', cost: 70000, range: 0, fireRate: 600, damage: 100, projectile: 'spawn_friendly', upgrade: 'effect', description: 'Spawns friendly cheese maggots on the track that attack enemies.' },
+                'halloumi_hellstorm': { name: 'Halloumi Hell-storm', cost: 75000, range: 0.5, fireRate: 400, damage: 9000, projectile: 'fire_storm', upgrade: 'damage', description: 'Rains down fiery chunks of grilled halloumi over a large area.' },
+                'pule_pummeler': { name: 'Pule Pummeler', cost: 80000, range: 0.3, fireRate: 180, damage: 30000, projectile: 'super_pierce', upgrade: 'damage', description: 'The most expensive cheese in the world, fired as a high-velocity piercing projectile.' },
+                'pont-leveque_portal': { name: 'Pont-l\'Évêque Portal', cost: 85000, range: 0.4, fireRate: 240, damage: 1000, projectile: 'teleport_blast', upgrade: 'effect', description: 'Has a chance to open a portal that sends enemies back to the start.' },
+                'stilton_supernova': { name: 'Stilton Supernova', cost: 90000, range: 0.6, fireRate: 700, damage: 15000, projectile: 'supernova_blast', upgrade: 'damage', description: 'Unleashes a massive explosion, damaging and stunning everything on screen.' },
+                'roquefort_rift': { name: 'Roquefort Rift', cost: 95000, range: 0.4, fireRate: 60, damage: 2000, projectile: 'rift', upgrade: 'effect', description: 'Tears a rift in reality on the path that deals massive damage over time.' },
+                'gouda_god-hand': { name: 'Gouda God-Hand', cost: 110000, range: 0.5, fireRate: 600, damage: 50000, projectile: 'god_hand', upgrade: 'damage', description: 'Summons a giant hand of cheese to slam down on your enemies.' },
+                'cheddar_cataclysm': { name: 'Cheddar Cataclysm', cost: 125000, range: 0, fireRate: 800, damage: 10000, projectile: 'screen_shake_damage', upgrade: 'damage', description: 'Causes a screen-shattering earthquake, damaging all enemies.' },
+                'brie_black_hole': { name: 'Brie Black Hole', cost: 140000, range: 0.5, fireRate: 900, damage: 20000, projectile: 'black_hole', upgrade: 'effect', description: 'Creates a black hole that pulls in and destroys nearby enemies.' },
+                'mozzarella_moonfall': { name: 'Mozzarella Moonfall', cost: 160000, range: 1.0, fireRate: 1200, damage: 100000, projectile: 'moonfall', upgrade: 'damage', description: 'Drops a literal moon made of mozzarella on the battlefield.' },
+                'provolone_pandemic': { name: 'Provolone Pandemic', cost: 180000, range: 0.4, fireRate: 120, damage: 5000, projectile: 'infection', upgrade: 'effect', description: 'Infects an enemy with a virulent plague that spreads to others.' },
+                'gouda_chill': { name: 'Gouda Chill', cost: 200000, range: 0, fireRate: 1500, damage: 10000, projectile: 'global_freeze', upgrade: 'effect', description: 'Completely freezes every enemy on the screen for a significant duration.' },
+                'swiss_singularity': { name: 'Swiss Singularity', cost: 225000, range: 0.5, fireRate: 800, damage: 30000, projectile: 'super_vortex', upgrade: 'effect', description: 'A stronger, more permanent black hole that devastates everything.' },
+                'parmesan_paradox': { name: 'Parmesan Paradox', cost: 250000, range: 1.0, fireRate: 400, damage: 1, projectile: 'time_rewind', upgrade: 'effect', description: 'Sends the strongest enemy back to the start of the path, weakened.' },
+                'the_cheesus_christ': { name: 'The Cheesus Christ', cost: 500000, range: 1.0, fireRate: 1800, damage: 999999, projectile: 'rapture', upgrade: 'damage', description: 'The final prayer. Erases all non-boss enemies from existence.' }
+            };
+        }
+        setupTowerData(); // Initial setup
+        originalTowerData = JSON.parse(JSON.stringify(TOWER_DATA)); // Deep copy for resetting
 
         const ENEMY_DATA = { 
             'normal': { health: 40, speed: 0.6, gold: 10 }, 
@@ -376,7 +599,20 @@
             'speeder': { health: 50, speed: 2.5, gold: 30 },
             'breeder': { health: 200, speed: 0.5, gold: 50, onDeath: 'spawn', spawnType: 'scout', spawnCount: 2 },
             'saboteur': { health: 100, speed: 0.7, gold: 60, onDeath: 'disable', radius: 0.1, duration: 360 },
-            'boss': { health: 4000, speed: 0.25, gold: 750 } 
+            'boss': { health: 4000, speed: 0.25, gold: 750 },
+            'burnt_beast': { health: 6000, speed: 0.2, gold: 1000, resistance: ['burn'] },
+            'moldy_monarch': { health: 3500, speed: 0.3, gold: 850, onDeath: 'disable_large', radius: 0.2, duration: 600 },
+            // 10 new enemies
+            'ghost_pepper': { health: 10, speed: 3.0, gold: 25, ability: 'fire_trail' },
+            'teleporter': { health: 100, speed: 0.8, gold: 45, ability: 'teleport' },
+            'healer': { health: 300, speed: 0.4, gold: 35, ability: 'heal_aura' },
+            'thief': { health: 75, speed: 1.5, gold: 10, ability: 'steal' },
+            'mimic': { health: 2500, speed: 0.6, gold: 200 },
+            'splitter': { health: 150, speed: 0.7, gold: 25, ability: 'split' },
+            'phasing': { health: 120, speed: 0.9, gold: 55, ability: 'phase' },
+            'general': { health: 500, speed: 0.5, gold: 120, ability: 'speed_aura' },
+            'kamikaze': { health: 20, speed: 2.8, gold: 15, onDeath: 'explode_kamikaze', damage: 150, radius: 0.07 },
+            'frost_crumb': { health: 150, speed: 0.6, gold: 40, resistance: ['slow', 'freeze'] }
         };
 
         const ENEMY_DESCRIPTIONS = {
@@ -391,14 +627,25 @@
             'speeder': { name: 'Grease Streak', description: 'A slippery, fast-moving enemy that zips along the path.' },
             'breeder': { name: 'Dough Ball', description: 'Uncooked and unstable. Splits into two smaller scouts when defeated.' },
             'saboteur': { name: 'Soggy Spot', description: 'A dreadful spill that disables all nearby towers upon its demise.' },
-            'boss': { name: 'The Big Cheese', description: 'The leader of the hungry horde. A massive, molten monstrosity.' }
+            'boss': { name: 'The Big Cheese', description: 'The leader of the hungry horde. A massive, molten monstrosity.' },
+            'burnt_beast': { name: 'The Burnt Beast', description: 'A colossal, charred crust that is completely immune to fire and burning effects. Incredibly durable.' },
+            'moldy_monarch': { name: 'The Moldy Monarch', description: 'A sentient colony of mold. Upon defeat, it releases a massive cloud of spores, disabling all towers in a huge radius for a long time.' },
+            // New descriptions
+            'ghost_pepper': { name: 'Ghost Pepper Flake', description: 'Extremely fast with low health. Leaves a trail of fire that damages towers over time.' },
+            'teleporter': { name: 'Sesame Seed', description: 'Moves normally, but occasionally blinks forward a short distance along the path.' },
+            'healer': { name: 'Cream Cheese Dollop', description: 'Slowly moves along the path, healing nearby enemies with its creamy goodness.' },
+            'thief': { name: 'Greedy Grater', description: 'Instead of damaging the base, it steals a chunk of your gold when it reaches the end.' },
+            'mimic': { name: 'Mimic Crumb', description: 'Looks like a normal crumb, but has a deceptively large amount of health.' },
+            'splitter': { name: 'Sourdough Starter', description: 'Splits into two smaller, faster versions of itself after taking enough damage.' },
+            'phasing': { name: 'Swiss Ghost', description: 'Periodically becomes transparent and immune to all projectiles for a short time.' },
+            'general': { name: 'Captain Crouton', description: 'A tough leader that provides a speed aura to all nearby enemies.' },
+            'kamikaze': { name: 'Pop Rock', description: 'Ignores the path and flies directly towards the nearest tower, exploding on impact.' },
+            'frost_crumb': { name: 'Frozen Breadcrumb', description: 'An icy morsel from the back of the freezer. Immune to all slowing and freezing effects.' }
         };
 
         const path = [ { x: -0.05, y: 0.1 }, { x: 0.25, y: 0.1 }, { x: 0.25, y: 0.5 }, { x: 0.1, y: 0.5 }, { x: 0.1, y: 0.8 }, { x: 0.4, y: 0.8 }, { x: 0.4, y: 0.3 }, { x: 0.7, y: 0.3 }, { x: 0.7, y: 0.9 }, { x: 0.9, y: 0.9 }, { x: 0.9, y: 0.1 }, { x: 1.05, y: 0.1 } ];
         let scaledPath = [];
-        const goldCheatCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'o', 'r', 'a', 'n', 'g', 'e'];
-        const speedCheatCode = ['q', 'w', 'e', 'r', 't', 'y', 'ArrowUp'];
-        const demonSkipCheatCode = ['d', 'e', 'm', 'o', 'n', '1', '2', '3'];
+        const adminCode = ['a', 'd', 'm', 'i', 'n', '1', '2', '3'];
 
         // --- Drawing Functions ---
         function drawTower(tower, targetCtx = ctx) {
@@ -467,11 +714,21 @@
                 targetCtx.quadraticCurveTo(-size/4, -size/4, 0, 0);
                 targetCtx.quadraticCurveTo(size/4, size/4, size/2, 0);
                 targetCtx.stroke();
-            } else if (type === 'gold') {
-                targetCtx.fillStyle = '#F1C40F'; // Gold
-                targetCtx.fillRect(-size/2, -size/2, size, size);
-                targetCtx.fillStyle = 'rgba(255,255,255,0.3)';
-                targetCtx.fillRect(-size/2, -size/2, size/2, size/2);
+            } else if (type === 'gold' || type === 'colby_coin_op' || type === 'mimolette_mint' || type === 'vacherin_vault') {
+                let baseColor = '#FFD700'; // Lighter yellow for Gold Grill
+                if (type === 'colby_coin_op') baseColor = '#F39C12'; // Orange
+                if (type === 'mimolette_mint') baseColor = '#E67E22'; // Darker Orange
+                if (type === 'vacherin_vault') baseColor = '#FDEBD0'; // Cream
+                targetCtx.fillStyle = baseColor;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.stroke();
+                targetCtx.fillStyle = 'black';
+                targetCtx.font = `bold ${size/1.5}px Inter`;
+                targetCtx.textAlign = 'center';
+                targetCtx.textBaseline = 'middle';
+                targetCtx.fillText('$', 0, 2);
             } else if (type === 'piercer') {
                 targetCtx.fillStyle = '#E74C3C'; // Red
                 targetCtx.beginPath();
@@ -749,8 +1006,8 @@
                 targetCtx.stroke();
                 targetCtx.fillStyle = 'red';
                 targetCtx.fillRect(-size/3, size/2 - 5, size*2/3, 5);
-            } else if (type === 'stilton_singularity') {
-                targetCtx.fillStyle = '#000080';
+            } else if (type === 'stilton_singularity' || type === 'swiss_singularity') {
+                targetCtx.fillStyle = type === 'stilton_singularity' ? '#000080' : 'black';
                 targetCtx.fillRect(-size/2, -size/2, size, size);
                 targetCtx.strokeRect(-size/2, -size/2, size, size);
                 const grad = targetCtx.createRadialGradient(0, 0, 1, 0, 0, size/3);
@@ -760,17 +1017,324 @@
                 targetCtx.beginPath();
                 targetCtx.arc(0, 0, size/3, 0, Math.PI*2);
                 targetCtx.fill();
-            } else if (type === 'fondue') {
-                targetCtx.fillStyle = '#8B4513'; // Brown pot
+            } else if (type === 'wensleydale_whirlwind') {
+                 targetCtx.fillStyle = '#F5F5F5';
+                 targetCtx.fillRect(-size/2, -size/2, size, size);
+                 targetCtx.strokeStyle = '#999';
+                 for(let i=0; i<3; i++) {
+                     targetCtx.beginPath();
+                     targetCtx.arc(0, 0, size/2 - i*5, 0, Math.PI*2);
+                     targetCtx.stroke();
+                 }
+            } else if (type === 'jarlsberg_juggernaut') {
+                targetCtx.fillStyle = '#F0E68C';
                 targetCtx.beginPath();
-                targetCtx.arc(0, size/4, size/2, 0, Math.PI, true);
-                targetCtx.rect(-size/2, -size/4, size, size/2);
+                targetCtx.arc(0,0,size/2, 0, Math.PI*2);
                 targetCtx.fill();
-                targetCtx.fillStyle = '#FFA500'; // Cheese
+                targetCtx.stroke();
+                targetCtx.fillStyle = '#DAA520';
                 targetCtx.beginPath();
-                targetCtx.arc(0, -size/4, size/2.2, 0, Math.PI*2);
+                targetCtx.arc(0,0,size/3, 0, Math.PI*2);
                 targetCtx.fill();
-            } else {
+            } else if (type === 'feta_fleet') {
+                 targetCtx.fillStyle = '#F8F9F9';
+                 targetCtx.fillRect(-size/2, -size/2, size, size);
+                 targetCtx.fillStyle = '#3498DB';
+                 targetCtx.beginPath();
+                 targetCtx.moveTo(0, -size/2); targetCtx.lineTo(size/2, size/2); targetCtx.lineTo(-size/2, size/2);
+                 targetCtx.closePath();
+                 targetCtx.fill();
+            } else if (type === 'asiago_annihilator') {
+                 targetCtx.fillStyle = '#17202A';
+                 targetCtx.fillRect(-size/2, -size/2, size, size);
+                 targetCtx.fillStyle = 'red';
+                 targetCtx.beginPath();
+                 targetCtx.arc(0,0,size/3, 0, Math.PI*2);
+                 targetCtx.fill();
+            } else if (type === 'roquefort_rain') {
+                targetCtx.fillStyle = '#2980B9';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#D6EAF8';
+                 for(let i=0; i<3; i++) {
+                     targetCtx.beginPath();
+                     targetCtx.arc((Math.random()-0.5)*size/2, (Math.random()-0.5)*size/2, size/8, 0, Math.PI*2);
+                     targetCtx.fill();
+                 }
+            } else if (type === 'mascarpone_matrix') {
+                targetCtx.fillStyle = '#FEF9E7';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = '#F7DC6F';
+                targetCtx.lineWidth = 4;
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+            } else if (type === 'halloumi_hellfire' || type === 'halloumi_hellstorm') {
+                targetCtx.fillStyle = '#C0392B';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = 'orange';
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/4, -size/2); targetCtx.lineTo(size/4, -size/2); targetCtx.lineTo(0, -size);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'cotija_citadel') {
+                 targetCtx.fillStyle = 'white';
+                 targetCtx.fillRect(-size/2, -size/2, size, size);
+                 targetCtx.strokeRect(-size/2, -size/2, size, size);
+                 targetCtx.fillStyle = 'gold';
+                 targetCtx.font = `bold ${size}px sans-serif`;
+                 targetCtx.textAlign = 'center';
+                 targetCtx.textBaseline = 'middle';
+                 targetCtx.fillText('★', 0, 2);
+            } else if (type === 'velveeta_volcano') {
+                targetCtx.fillStyle = '#E67E22';
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size, size/2); targetCtx.lineTo(size, size/2); targetCtx.lineTo(0, -size);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'paneer_pulsar') {
+                targetCtx.fillStyle = '#F4F6F7';
+                targetCtx.beginPath();
+                targetCtx.arc(0,0,size/2,0,Math.PI*2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = 'cyan';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.arc(0,0,size/3,0,Math.PI*2);
+                targetCtx.stroke();
+            } else if (type === 'gjetost_giant') {
+                targetCtx.fillStyle = '#935116';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = 'black';
+                targetCtx.fillRect(-size/4, -size/4, size/2, size/2);
+            } else if (type === 'bocconcini_barrage') {
+                targetCtx.fillStyle = '#FBFCFC';
+                targetCtx.beginPath();
+                targetCtx.arc(0,0,size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.stroke();
+            } else if (type === 'teleggio_tesseract') {
+                targetCtx.fillStyle = '#F5B041';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'black';
+                targetCtx.lineWidth = 3;
+                targetCtx.strokeRect(-size/3, -size/3, size*2/3, size*2/3);
+            } else if (type === 'raclette_reactor') {
+                 targetCtx.fillStyle = '#424949';
+                 targetCtx.beginPath();
+                 targetCtx.arc(0,0,size/2,0,Math.PI*2);
+                 targetCtx.fill();
+                 targetCtx.fillStyle = 'yellow';
+                 targetCtx.beginPath();
+                 targetCtx.arc(0,0,size/4,0,Math.PI*2);
+                 targetCtx.fill();
+            } else if (type === 'provolone_pantheon') {
+                targetCtx.fillStyle = '#FDEBD0';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                 targetCtx.fillStyle = '#D35400';
+                 targetCtx.font = `bold ${size/2}px sans-serif`;
+                 targetCtx.textAlign = 'center';
+                 targetCtx.textBaseline = 'middle';
+                 targetCtx.fillText('P', 0, 2);
+            } else if (type === 'queso_quattro') {
+                targetCtx.fillStyle = '#F1C40F';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = 'red';
+                targetCtx.fillRect(-size/2,-size/2,size/2,size/2);
+                targetCtx.fillStyle = 'blue';
+                targetCtx.fillRect(0,0,size/2,size/2);
+                 targetCtx.fillStyle = 'green';
+                targetCtx.fillRect(0,-size/2,size/2,size/2);
+            } else if (type === 'epoisses_erupter') {
+                targetCtx.fillStyle = '#D35400';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.fillStyle = '#F5CBA7';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size / 3, 0, Math.PI * 2);
+                targetCtx.fill();
+            } else if (type === 'gorgonzola_grid') {
+                targetCtx.fillStyle = '#3498DB';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = '#2980B9';
+                targetCtx.lineWidth = 2;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, 0); targetCtx.lineTo(size/2, 0);
+                targetCtx.moveTo(0, -size/2); targetCtx.lineTo(0, size/2);
+                targetCtx.stroke();
+            } else if (type === 'stinking_bishops_smite') {
+                targetCtx.fillStyle = '#F4D03F';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size/1.2);
+                targetCtx.lineTo(size/3, size/1.2);
+                targetCtx.lineTo(-size/3, size/1.2);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'valdeon_vortex') {
+                targetCtx.fillStyle = '#8E44AD';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = '#D2B4DE';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/3, Math.PI/4, Math.PI*3/4);
+                targetCtx.stroke();
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/3, Math.PI*5/4, Math.PI*7/4);
+                targetCtx.stroke();
+            } else if (type === 'casu_marzus_call') {
+                targetCtx.fillStyle = '#F5CBA7';
+                targetCtx.beginPath();
+                targetCtx.arc(0,0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = '#943126';
+                 for(let i=0; i<3; i++) {
+                     targetCtx.beginPath();
+                     targetCtx.arc((Math.random()-0.5)*size/2, (Math.random()-0.5)*size/2, size/10, 0, Math.PI*2);
+                     targetCtx.fill();
+                 }
+            } else if (type === 'pule_pummeler') {
+                targetCtx.fillStyle = '#FDFEFE';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = '#F1C40F';
+                targetCtx.lineWidth = 4;
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#B08D57';
+                targetCtx.fillRect(-size/4, -size/4, size/2, size/2);
+            } else if (type === 'pont-leveque_portal') {
+                targetCtx.fillStyle = '#FAD7A0';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                const grad = targetCtx.createRadialGradient(0, 0, size/10, 0, 0, size/2.5);
+                grad.addColorStop(0, '#A569BD');
+                grad.addColorStop(1, '#5B2C6F');
+                targetCtx.fillStyle = grad;
+                targetCtx.beginPath();
+                targetCtx.arc(0,0, size/2.5, 0, Math.PI*2);
+                targetCtx.fill();
+            } else if (type === 'stilton_supernova') {
+                targetCtx.fillStyle = '#2980B9';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'white';
+                 for (let i = 0; i < 8; i++) {
+                     const angle = i * Math.PI / 4;
+                     targetCtx.beginPath();
+                     targetCtx.moveTo(0,0);
+                     targetCtx.lineTo(Math.cos(angle) * size/2, Math.sin(angle) * size/2);
+                     targetCtx.lineTo(Math.cos(angle + 0.1) * size/3, Math.sin(angle + 0.1) * size/3);
+                     targetCtx.closePath();
+                     targetCtx.fill();
+                 }
+            } else if (type === 'roquefort_rift') {
+                targetCtx.fillStyle = 'black';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#4A235A';
+                targetCtx.fillRect(-size/2, -4, size, 8);
+                targetCtx.strokeStyle = '#D7BDE2';
+                targetCtx.lineWidth = 2;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, 0);
+                targetCtx.bezierCurveTo(-size/4, -size/4, size/4, size/4, size/2, 0);
+                targetCtx.stroke();
+            } else if (type === 'gouda_god-hand') {
+                targetCtx.fillStyle = '#F39C12';
+                targetCtx.fillRect(-size/2, size/4, size, size/2);
+                targetCtx.beginPath();
+                for(let i=0; i<5; i++) {
+                    targetCtx.roundRect(-size/2 + i*(size/5) + 2, -size/2, size/6, size/1.5, [5]);
+                }
+                targetCtx.fill();
+            } else if (type === 'cheddar_cataclysm') {
+                targetCtx.fillStyle = '#E67E22';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = '#A04000';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(-size/2, -size/4);
+                targetCtx.lineTo(0, -size/4);
+                targetCtx.lineTo(size/4, size/2);
+                targetCtx.moveTo(size/8, -size/2);
+                targetCtx.lineTo(size/8, size/8);
+                targetCtx.lineTo(size/2, size/8);
+                targetCtx.stroke();
+            } else if (type === 'brie_black_hole') {
+                targetCtx.fillStyle = 'black';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = '#C39BD3';
+                targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2.2, 0, Math.PI*2);
+                targetCtx.stroke();
+            } else if (type === 'mozzarella_moonfall') {
+                targetCtx.fillStyle = '#F2F3F4';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = '#BCC6CC';
+                targetCtx.beginPath();
+                targetCtx.arc(size/4, -size/6, size/8, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.beginPath();
+                targetCtx.arc(-size/4, size/5, size/6, 0, Math.PI*2);
+                targetCtx.fill();
+            } else if (type === 'provolone_pandemic') {
+                targetCtx.fillStyle = '#27AE60';
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.strokeStyle = '#1E8449';
+                targetCtx.lineWidth = 4;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/3, 0, Math.PI);
+                targetCtx.stroke();
+                targetCtx.beginPath();
+                targetCtx.arc(-size/4, 0, size/8, 0, Math.PI);
+                targetCtx.stroke();
+                 targetCtx.beginPath();
+                targetCtx.arc(size/4, 0, size/8, 0, Math.PI);
+                targetCtx.stroke();
+            } else if (type === 'gouda_chill') {
+                targetCtx.fillStyle = '#5DADE2';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'white';
+                targetCtx.lineWidth = 3;
+                for (let i = 0; i < 6; i++) {
+                    const angle = i * Math.PI / 3;
+                    targetCtx.beginPath();
+                    targetCtx.moveTo(0,0);
+                    targetCtx.lineTo(Math.cos(angle) * size/2, Math.sin(angle) * size/2);
+                    targetCtx.stroke();
+                }
+            } else if (type === 'parmesan_paradox') {
+                targetCtx.fillStyle = '#F4D03F';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'black';
+                targetCtx.lineWidth = 2;
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size/2.5, 0, Math.PI*2);
+                targetCtx.stroke();
+                targetCtx.beginPath();
+                targetCtx.moveTo(0,0);
+                targetCtx.lineTo(0, -size/3);
+                targetCtx.moveTo(0,0);
+                targetCtx.lineTo(size/4, 0);
+                targetCtx.stroke();
+            } else if (type === 'the_cheesus_christ') {
+                targetCtx.fillStyle = 'white';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'gold';
+                targetCtx.lineWidth = 4;
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
+                targetCtx.font = `bold ${size/2}px Inter`;
+                targetCtx.textAlign = 'center';
+                targetCtx.textBaseline = 'middle';
+                targetCtx.fillStyle = 'gold';
+                targetCtx.fillText('JC', 0, 2);
+            }
+            else {
                 // Default fallback design for any towers not explicitly defined
                 targetCtx.fillStyle = '#cccccc';
                 targetCtx.fillRect(-size/2, -size/2, size, size);
@@ -801,6 +1365,7 @@
             targetCtx.translate(x, y);
 
             if (enemy.isFrozen) { targetCtx.globalAlpha = 0.7; }
+            if (enemy.phasing) { targetCtx.globalAlpha = 0.3; }
 
             // --- ENEMY REDESIGNS ---
             if (type === 'normal') {
@@ -919,7 +1484,100 @@
                 targetCtx.arc(-size, -size/2, size/3, 0, Math.PI*2);
                 targetCtx.arc(size, -size/2, size/3, 0, Math.PI*2);
                 targetCtx.fill();
+            } else if (type === 'burnt_beast') {
+                targetCtx.fillStyle = '#3E2723'; // Dark, burnt brown
+                targetCtx.fillRect(-size*2, -size*2, size*4, size*4);
+                targetCtx.strokeStyle = '#FF7043'; // Lava cracks
+                targetCtx.lineWidth = 3;
+                for (let i = 0; i < 5; i++) {
+                    targetCtx.beginPath();
+                    targetCtx.moveTo((Math.random() - 0.5) * size * 4, (Math.random() - 0.5) * size * 4);
+                    targetCtx.lineTo((Math.random() - 0.5) * size * 4, (Math.random() - 0.5) * size * 4);
+                    targetCtx.stroke();
+                }
+            } else if (type === 'moldy_monarch') {
+                targetCtx.fillStyle = '#4CAF50'; // Main green
+                targetCtx.beginPath();
+                targetCtx.arc(0, 0, size * 2, 0, Math.PI*2);
+                targetCtx.fill();
+                for (let i = 0; i < 20; i++) {
+                    targetCtx.fillStyle = '#388E3C'; // Darker spots
+                    targetCtx.beginPath();
+                    targetCtx.arc((Math.random() - 0.5) * size * 3, (Math.random() - 0.5) * size * 3, size / 3, 0, Math.PI*2);
+                    targetCtx.fill();
+                }
+            } else if (type === 'ghost_pepper') {
+                targetCtx.fillStyle = '#FF4500';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -size*1.2);
+                targetCtx.bezierCurveTo(size, -size, size, size, 0, size*1.2);
+                targetCtx.bezierCurveTo(-size, size, -size, -size, 0, -size*1.2);
+                targetCtx.fill();
+            } else if (type === 'teleporter') {
+                targetCtx.fillStyle = '#FDFEFE';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = 'black';
+                targetCtx.fillRect(-size/3, -size/3, size/3, size/3);
+                targetCtx.fillRect(0, 0, size/3, size/3);
+            } else if (type === 'healer') {
+                targetCtx.fillStyle = '#F8F9F9';
+                targetCtx.beginPath();
+                targetCtx.arc(0,0,size*1.2, 0, Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = '#ABEBC6';
+                targetCtx.font = `bold ${size}px sans-serif`;
+                targetCtx.textAlign = 'center';
+                targetCtx.textBaseline = 'middle';
+                targetCtx.fillText('+', 0, 2);
+            } else if (type === 'thief') {
+                targetCtx.fillStyle = '#566573';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.fillStyle = '#F1C40F';
+                targetCtx.font = `bold ${size}px sans-serif`;
+                targetCtx.textAlign = 'center';
+                targetCtx.textBaseline = 'middle';
+                targetCtx.fillText('$', 0, 2);
+            } else if (type === 'mimic') {
+                targetCtx.fillStyle = '#FAD7A0'; // Looks like normal crumb but slightly off-color
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+            } else if (type === 'splitter') {
+                 targetCtx.fillStyle = '#D5D8DC';
+                targetCtx.beginPath();
+                targetCtx.arc(0,0,size,0,Math.PI*2);
+                targetCtx.fill();
+            } else if (type === 'phasing') {
+                 targetCtx.fillStyle = '#D6EAF8';
+                 targetCtx.fillRect(-size, -size, size*2, size*2);
+            } else if (type === 'general') {
+                targetCtx.fillStyle = '#D4AC0D';
+                targetCtx.fillRect(-size, -size, size*2, size*2);
+                targetCtx.fillStyle = 'white';
+                targetCtx.font = `bold ${size*1.5}px sans-serif`;
+                targetCtx.textAlign = 'center';
+                targetCtx.textBaseline = 'middle';
+                targetCtx.fillText('★', 0, 2);
+            } else if (type === 'kamikaze') {
+                targetCtx.fillStyle = '#E74C3C';
+                targetCtx.beginPath();
+                targetCtx.arc(0,0,size,0,Math.PI*2);
+                targetCtx.fill();
+                targetCtx.fillStyle = 'yellow';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0,-size);
+                targetCtx.lineTo(size*0.5, 0);
+                targetCtx.lineTo(0, size*0.5);
+                targetCtx.lineTo(-size*0.5, 0);
+                targetCtx.closePath();
+                targetCtx.fill();
+            } else if (type === 'frost_crumb') {
+                targetCtx.fillStyle = '#AED6F1';
+                targetCtx.fillRect(-size/2, -size/2, size, size);
+                targetCtx.strokeStyle = 'white';
+                targetCtx.lineWidth = 2;
+                targetCtx.strokeRect(-size/2, -size/2, size, size);
             }
+
+
             // --- END ENEMY REDESIGNS ---
 
             targetCtx.restore();
@@ -962,7 +1620,7 @@
             ctx.globalAlpha = 1; 
         }
         
-        function drawSpecialEffects() { for (let i = specialEffects.length - 1; i >= 0; i--) { const effect = specialEffects[i]; if (effect.type === 'gas_cloud') { ctx.fillStyle = `rgba(107, 142, 35, ${0.4 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'prism_aura') { ctx.strokeStyle = `rgba(218, 112, 214, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.stroke(); } else if (effect.type === 'fondue_wave') { ctx.fillStyle = `rgba(255, 140, 0, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'spore_cloud') { ctx.fillStyle = `rgba(128, 128, 0, ${0.6 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'popper_explosion') { ctx.fillStyle = `rgba(255, 69, 0, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'hailstorm') { ctx.fillStyle = `rgba(173, 216, 230, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'vortex') { ctx.strokeStyle = `rgba(72, 61, 139, ${0.6 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius * (1 - (effect.duration / effect.maxDuration)), 0, Math.PI * 2); ctx.stroke(); } effect.duration--; if (effect.duration <= 0) specialEffects.splice(i, 1); } }
+        function drawSpecialEffects() { for (let i = specialEffects.length - 1; i >= 0; i--) { const effect = specialEffects[i]; if (effect.type === 'gas_cloud' || effect.type === 'large_gas_cloud') { ctx.fillStyle = `rgba(107, 142, 35, ${0.4 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'prism_aura') { ctx.strokeStyle = `rgba(218, 112, 214, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.stroke(); } else if (effect.type === 'fondue_wave') { ctx.fillStyle = `rgba(255, 140, 0, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'spore_cloud') { ctx.fillStyle = `rgba(128, 128, 0, ${0.6 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'popper_explosion') { ctx.fillStyle = `rgba(255, 69, 0, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'hailstorm') { ctx.fillStyle = `rgba(173, 216, 230, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI*2); ctx.fill(); } else if (effect.type === 'vortex' || effect.type === 'super_vortex') { ctx.strokeStyle = `rgba(72, 61, 139, ${0.6 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius * (1 - (effect.duration / effect.maxDuration)), 0, Math.PI * 2); ctx.stroke(); } else if (effect.type === 'fire_trail') { ctx.fillStyle = `rgba(255, 69, 0, ${0.5 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, 5, 0, Math.PI * 2); ctx.fill(); } else if (effect.type === 'heal_aura') { ctx.fillStyle = `rgba(173, 255, 47, ${0.3 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2); ctx.fill(); } else if (effect.type === 'speed_aura') { ctx.strokeStyle = `rgba(255, 255, 0, ${0.4 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2); ctx.stroke(); } else if (effect.type === 'earthquake') { ctx.strokeStyle = `rgba(139, 69, 19, ${0.8 * (effect.duration / effect.maxDuration)})`; ctx.lineWidth = effect.radius * 0.1; ctx.beginPath(); ctx.arc(effect.x, effect.y, effect.radius * (1 - (effect.duration / effect.maxDuration)), 0, Math.PI * 2); ctx.stroke(); } else if (effect.type === 'reactor_blast') { ctx.fillStyle = `rgba(255, 255, 0, ${0.9 * (effect.duration / effect.maxDuration)})`; ctx.beginPath(); ctx.arc(canvasWidth/2, canvasHeight/2, effect.radius, 0, Math.PI*2); ctx.fill(); } effect.duration--; if (effect.duration <= 0) specialEffects.splice(i, 1); } }
 
         function drawBase() { const endPoint = scaledPath[scaledPath.length - 1]; ctx.fillStyle = '#CD853F'; ctx.fillRect(endPoint.x, endPoint.y - 50, 50, 100); ctx.fillStyle = '#8B4513'; ctx.beginPath(); ctx.moveTo(endPoint.x, endPoint.y - 50); ctx.lineTo(endPoint.x + 50, endPoint.y - 50); ctx.lineTo(endPoint.x + 25, endPoint.y - 80); ctx.closePath(); ctx.fill(); const barWidth = 100; ctx.fillStyle = '#DC2626'; ctx.fillRect(endPoint.x - 25, endPoint.y - 100, barWidth, 10); ctx.fillStyle = '#22C55E'; ctx.fillRect(endPoint.x - 25, endPoint.y - 100, barWidth * (baseHealth / maxBaseHealth), 10); }
 
@@ -984,8 +1642,8 @@
             // Upgrade section
             ctx.fillStyle = 'black'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
             let upgradeText = TOWER_DATA[type].upgrade.charAt(0).toUpperCase() + TOWER_DATA[type].upgrade.slice(1);
-            if (type === 'gold') {
-                upgradeText = 'Gold Prod.';
+            if (type === 'gold' || TOWER_DATA[type].upgrade === 'cash') {
+                upgradeText = 'Cash Prod.';
             }
             ctx.fillText(`Lvl ${level} ${upgradeText}`, menuX + 5, menuY + 10);
             ctx.fillText(`Cost: ${upgradeCost}`, menuX + 5, menuY + 28);
@@ -1015,18 +1673,52 @@
         }
 
         // --- Game Logic ---
-        function init() {
-            gold = 100; 
+        function init(difficulty = 'normal') {
+            setupTowerData(); // Reset tower data to original values
+            if (difficulty === 'normal') {
+                difficultyModifier = { health: 1, speed: 1 };
+                backgroundColor = '#2E8B57';
+            } else if (difficulty === 'hard') {
+                difficultyModifier = { health: 1.5, speed: 1.2 };
+                backgroundColor = '#2E8B57'; // Base for tint
+            } else if (difficulty === 'hardcore') {
+                difficultyModifier = { health: 3, speed: 3 };
+                backgroundColor = '#8B0000'; // Full red for hardcore
+            }
+
+
+            gold = 100;
+            if (difficulty === 'hardcore') {
+                gold = 50;
+                // Adjust tower costs for hardcore mode
+                const expensiveTowerTypes = Object.keys(TOWER_DATA).slice(Object.keys(TOWER_DATA).indexOf('bomber'));
+                 expensiveTowerTypes.forEach(type => {
+                     if (TOWER_DATA[type]) {
+                         TOWER_DATA[type].cost = Math.round(TOWER_DATA[type].cost * 1.5);
+                     }
+                });
+            }
+
             wave = 0; 
             maxBaseHealth = 1500; 
             baseHealth = maxBaseHealth; 
             enemyStrengthModifier = 1.0;
+            enemySpeedModifier = 1.0;
+            isBaseInvincible = false;
+            invincibleBaseToggle.checked = false;
             enemies = []; towers = []; projectiles = []; decorations = []; floatingTexts = []; specialEffects = [];
             gameOver = false; waveInProgress = false; bossWave = false; bossSpawned = false; demonModeActive = false; hellModeActive = false;
             selectedTowerType = null; selectedTower = null;
             
             if (gameInterval) clearInterval(gameInterval); if (timerInterval) clearInterval(timerInterval);
             resizeCanvas(); 
+
+            if (difficulty === 'hard') {
+                const bgCtx = backgroundCanvas.getContext('2d');
+                bgCtx.fillStyle = 'rgba(255, 0, 0, 0.2)'; // Add red tint
+                bgCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+            }
+            
             createTowerButtons(); 
             populateIndex();
             updateUI();
@@ -1036,6 +1728,9 @@
             startWaveTimer();
             gameOverModal.classList.add('opacity-0', 'scale-90');
             setTimeout(() => gameOverModal.classList.add('hidden'), 300);
+            adminPanel.classList.add('hidden');
+            adminPanelButton.classList.add('hidden');
+            preGameOverlay.style.display = 'none';
         }
 
         function resizeCanvas() { 
@@ -1053,8 +1748,7 @@
             backgroundCanvas.width = canvasWidth;
             backgroundCanvas.height = canvasHeight;
             const bgCtx = backgroundCanvas.getContext('2d');
-            // A nice, solid green color
-            bgCtx.fillStyle = '#2E8B57'; // SeaGreen
+            bgCtx.fillStyle = backgroundColor;
             bgCtx.fillRect(0, 0, canvasWidth, canvasHeight);
         }
 
@@ -1085,7 +1779,9 @@
         
         function createTowerButtons() {
             towerSelectionContainer.innerHTML = '';
-            Object.keys(TOWER_DATA).forEach(type => {
+            // Sort towers by cost before creating buttons
+            const towerOrder = Object.keys(TOWER_DATA).sort((a, b) => TOWER_DATA[a].cost - TOWER_DATA[b].cost);
+            towerOrder.forEach(type => {
                 const tower = TOWER_DATA[type];
                 const button = document.createElement('button');
                 button.className = 'tower-select-button p-2 bg-white rounded-lg shadow-md border-2 border-gray-300 transition-all w-32 text-center';
@@ -1160,16 +1856,18 @@
             else if (wave === 3) enemyCount = 12;
             else enemyCount = 10 + wave * 2;
 
-            const enemyTypes = ['normal', 'scout', 'bruiser', 'popper', 'moldy', 'pbj', 'goliath', 'medic', 'speeder', 'breeder', 'saboteur'];
+            const enemyTypes = Object.keys(ENEMY_DATA);
             for (let i = 0; i < enemyCount; i++) {
                 let enemyType = 'normal';
                 if (wave > 1) {
-                    enemyType = enemyTypes[Math.floor(Math.random() * Math.min(wave/2, enemyTypes.length))];
+                     // Introduce new enemies gradually
+                    const availableEnemyTypes = enemyTypes.slice(0, Math.min(enemyTypes.length, 2 + Math.floor(wave / 3)));
+                    enemyType = availableEnemyTypes[Math.floor(Math.random() * availableEnemyTypes.length)];
                 }
                 const data = ENEMY_DATA[enemyType];
                 
-                let healthMultiplier = (1 + (wave * 0.18)) * enemyStrengthModifier;
-                let speedMultiplier = 1;
+                let healthMultiplier = (1 + (wave * 0.18)) * enemyStrengthModifier * difficultyModifier.health;
+                let speedMultiplier = enemySpeedModifier * difficultyModifier.speed;
 
                 if (hellModeActive) {
                     healthMultiplier *= 600;
@@ -1190,10 +1888,14 @@
         }
 
         function spawnBoss() {
-            bossSpawned = true; const data = ENEMY_DATA['boss']; const waveMultiplier = wave / 10;
+            bossSpawned = true; 
+            const bossTypes = ['boss', 'burnt_beast', 'moldy_monarch'];
+            const chosenBossType = bossTypes[Math.floor(Math.random() * bossTypes.length)];
+            const data = ENEMY_DATA[chosenBossType]; 
+            const waveMultiplier = wave / 10;
 
-            let healthMultiplier = waveMultiplier * enemyStrengthModifier;
-            let speedMultiplier = 1;
+            let healthMultiplier = waveMultiplier * enemyStrengthModifier * difficultyModifier.health;
+            let speedMultiplier = enemySpeedModifier * difficultyModifier.speed;
 
             if (hellModeActive) {
                 healthMultiplier *= 600;
@@ -1206,7 +1908,7 @@
             const bossHealth = data.health * healthMultiplier;
             const bossSize = canvasWidth * 0.02 * (2.5 + waveMultiplier * 0.5);
             const speed = data.speed * speedMultiplier;
-            enemies.push({ x: scaledPath[0].x, y: scaledPath[0].y, pathIndex: 0, speed: speed, health: bossHealth, maxHealth: bossHealth, size: bossSize, gold: data.gold * waveMultiplier, type: 'boss', visual: { color: `hsl(0, 80%, ${40 - waveMultiplier*2}%)`}, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, lastHitBy: null, attackingMonolith: null });
+            enemies.push({ x: scaledPath[0].x, y: scaledPath[0].y, pathIndex: 0, speed: speed, health: bossHealth, maxHealth: bossHealth, size: bossSize, gold: data.gold * waveMultiplier, type: chosenBossType, visual: { color: `hsl(0, 80%, ${40 - waveMultiplier*2}%)`}, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, lastHitBy: null, attackingMonolith: null, resistance: data.resistance || null });
         }
 
         function isNearPath(x, y, threshold) { for (let i = 0; i < scaledPath.length - 1; i++) { const p1 = scaledPath[i]; const p2 = scaledPath[i+1]; const dx = p2.x - p1.x; const dy = p2.y - p1.y; const l2 = dx * dx + dy * dy; if (l2 === 0) continue; let t = ((x - p1.x) * dx + (y - p1.y) * dy) / l2; t = Math.max(0, Math.min(1, t)); const closestX = p1.x + t * dx; const closestY = p1.y + t * dy; const dist = Math.hypot(x - closestX, y - closestY); if (dist < threshold) return true; } return false; }
@@ -1266,6 +1968,7 @@
             if (upgradeType === 'damage') tower.damage *= 1.25;
             else if (upgradeType === 'fireRate') tower.fireRate *= 0.85;
             else if (upgradeType === 'effect') tower.damage *= 1.2;
+            else if (upgradeType === 'cash') { tower.damage *= 1.5; tower.fireRate *= 0.9; }
             tower.upgradeCost *= 2;
             updateUI();
         }
@@ -1303,61 +2006,128 @@
         
         function update() {
             let totalCommanders = towers.filter(t=>t.type==='commander').length;
-            towers.forEach(t => { t.currentFireRate = t.fireRate; t.currentRange = t.range; if (t.disabled > 0) t.disabled--; });
+            let cotijaBonus = towers.filter(t=>t.type==='cotija_citadel').reduce((acc, t) => acc + t.damage, 1);
+            let pantheonChance = towers.filter(t=>t.type==='provolone_pantheon').reduce((acc, t) => acc + t.damage, 0);
+
+            towers.forEach(t => { 
+                t.currentFireRate = t.fireRate; 
+                t.currentRange = t.range; 
+                t.currentDamage = t.damage * cotijaBonus;
+                if (t.disabled > 0) t.disabled--; 
+            });
             if (totalCommanders > 0) { const commander = towers.find(t=>t.type==='commander'); if (commander) { towers.forEach(t => { if (t.type !== 'commander') { t.currentFireRate *= (1 - commander.damage * totalCommanders); t.currentRange *= (1 + commander.damage * totalCommanders); } }); } }
             towers.filter(t => t.type === 'prism').forEach(prism => { if (prism.disabled > 0) return; specialEffects.push({type: 'prism_aura', x: prism.x, y: prism.y, radius: prism.currentRange, duration: 2, maxDuration: 2}); towers.forEach(otherTower => { if (otherTower !== prism && Math.hypot(prism.x - otherTower.x, prism.y - otherTower.y) < prism.currentRange) { otherTower.currentFireRate *= (1 - prism.damage); } }); });
+            
             towers.forEach(tower => {
                 if (tower.disabled > 0) return;
                 tower.fireCooldown--;
+
+                if (Math.random() < pantheonChance && tower.fireCooldown > 10 && tower.type !== 'provolone_pantheon') {
+                    let target = null;
+                    enemies.forEach(enemy => { if (Math.hypot(enemy.x - tower.x, enemy.y - tower.y) < tower.currentRange) if (!target) target = enemy; });
+                    if(target) projectiles.push({ originX: tower.x, originY: tower.y, x: tower.x, y: tower.y, target: target, speed: 10, damage: 500, size: 8, type: 'normal', color: 'gold', tower: tower });
+                }
+
                 if (tower.fireCooldown <= 0) {
-                    if (tower.type === 'gold' || tower.type === 'fondue') { if (tower.type === 'gold') { gold += tower.damage; floatingTexts.push({x: tower.x, y: tower.y, content: `+${Math.round(tower.damage)}`, color: '255,215,0', duration: 60, size: 16}); tower.fireCooldown = tower.currentFireRate; updateUI(); } return; }
-                    if (tower.type === 'fountain') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - tower.x, enemy.y - tower.y) < tower.currentRange) { enemy.isBurning = true; enemy.burnTimer = 30; enemy.burnDamage = tower.damage; if (enemy.resistance !== 'slow') { enemy.slowed = true; enemy.slowTimer = 15; } } }); return; }
+                    if (['gold', 'colby_coin_op', 'mimolette_mint', 'vacherin_vault', 'fondue', 'mascarpone_matrix', 'cotija_citadel', 'provolone_pantheon'].includes(tower.type)) { 
+                        if (tower.type === 'gold' || TOWER_DATA[tower.type].upgrade === 'cash') { gold += tower.currentDamage; floatingTexts.push({x: tower.x, y: tower.y, content: `+${Math.round(tower.currentDamage)}`, color: '255,215,0', duration: 60, size: 16}); tower.fireCooldown = tower.currentFireRate; updateUI(); }
+                        if (tower.type === 'mascarpone_matrix') { enemies.forEach(e => { if(Math.hypot(e.x - tower.x, e.y - tower.y) < tower.currentRange) e.slowed = true; e.slowTimer = 5; e.weakened = true; }); }
+                        return; 
+                    }
+                    if (tower.type === 'fountain') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - tower.x, enemy.y - tower.y) < tower.currentRange) { enemy.isBurning = true; enemy.burnTimer = 30; enemy.burnDamage = tower.currentDamage; if (!enemy.resistance?.includes('slow')) { enemy.slowed = true; enemy.slowTimer = 15; } } }); return; }
                     if (tower.type === 'monolith') { return; }
-                    if (tower.type === 'hailstorm') { specialEffects.push({type: 'hailstorm', x: tower.x, y: tower.y, radius: tower.currentRange, duration: 120, maxDuration: 120, damage: tower.damage}); tower.fireCooldown = tower.currentFireRate; return; }
-                    if (tower.type === 'morbier_maelstrom') { specialEffects.push({type: 'vortex', x: tower.x, y: tower.y, radius: tower.currentRange, duration: 120, maxDuration: 120, damage: tower.damage}); tower.fireCooldown = tower.currentFireRate; return; }
+                    if (['hailstorm', 'wensleydale_whirlwind', 'jarlsberg_juggernaut', 'feta_fleet', 'asiago_annihilator', 'roquefort_rain', 'velveeta_volcano', 'raclette_reactor', 'epoisses_erupter', 'halloumi_hellstorm', 'stilton_supernova', 'cheddar_cataclysm', 'gouda_chill', 'the_cheesus_christ'].includes(tower.type)) {
+                         specialEffects.push({type: tower.projectileType, x: tower.x, y: tower.y, radius: tower.currentRange, duration: 120, maxDuration: 120, damage: tower.currentDamage}); tower.fireCooldown = tower.currentFireRate; return; 
+                    }
+                    
                     let target = null;
                     enemies.forEach(enemy => { if (Math.hypot(enemy.x - tower.x, enemy.y - tower.y) < tower.currentRange) if (!target) target = enemy; });
                     if (target) {
                         if (tower.type === 'assassin') { if (tower.currentTarget === target) { tower.damageBonus += 2; } else { tower.currentTarget = target; tower.damageBonus = 0; } }
-                        let p = { originX: tower.x, originY: tower.y, x: tower.x, y: tower.y, target: target, speed: 8, damage: tower.damage + (tower.damageBonus || 0), size: 5, type: tower.projectileType, tower: tower };
-                        if ((p.type === 'slow' || p.type === 'singularity_slow') && p.target.resistance !== 'slow') { p.color = '#FFA500'; p.slowDuration = 300; }
+                        let p = { originX: tower.x, originY: tower.y, x: tower.x, y: tower.y, target: target, speed: 8, damage: tower.currentDamage + (tower.damageBonus || 0), size: 5, type: tower.projectileType, tower: tower };
+                        if ((p.type === 'slow' || p.type === 'singularity_slow') && !p.target.resistance?.includes('slow')) { p.color = '#FFA500'; p.slowDuration = 300; }
                         else if (p.type === 'lazar' || p.type === 'continuous_lazar') { p.color = '#FFFF00'; p.duration = 10; p.burnDuration = 240; p.burnDamage = p.damage / 4; }
-                        else if (p.type === 'bomb' || p.type === 'rocket' || p.type === 'blimp_bomb' || p.type === 'carpet_bomb' || p.type === 'shock_blast') { 
+                        else if (['bomb', 'rocket', 'blimp_bomb', 'carpet_bomb', 'shock_blast', 'meteor', 'moonfall'].includes(p.type)) { 
                             p.color = '#2F4F4F'; 
-                            p.blastRadius = canvasWidth * (p.type==='rocket' ? 0.07 : (p.type === 'carpet_bomb' ? 0.12 : 0.05)); 
+                            p.blastRadius = canvasWidth * (p.type==='rocket' ? 0.07 : (p.type === 'carpet_bomb' ? 0.12 : (p.type === 'meteor' ? 0.1 : (p.type === 'moonfall' ? 0.2 : 0.05)))); 
                             p.detonated = false; 
                             p.blastDuration = 15; 
                             if(p.type === 'carpet_bomb') p.blastColor = `rgba(255, 0, 0, ${p.blastDuration / 15})`;
                             if(p.type === 'shock_blast') p.blastColor = `rgba(255, 255, 0, ${p.blastDuration / 15})`;
                         }
-                        else if (p.type === 'pierce') { p.color = '#FF4500'; }
+                        else if (p.type === 'pierce' || p.type === 'super_pierce') { p.color = '#FF4500'; }
                         else if (p.type === 'gas_cloud') { specialEffects.push({type: 'gas_cloud', x: target.x, y: target.y, radius: canvasWidth * 0.06, duration: 300, maxDuration: 300, damage: p.damage}); }
                         else if (p.type === 'bounce') { p.color = '#E0E0E0'; p.bouncesLeft = 2; }
-                        else if (p.type === 'brie_rocket') { 
-                            p.color = '#DEB887'; 
-                            p.speed = 4; 
-                            p.size = 15; 
-                            p.targetX = target.x; 
-                            p.targetY = target.y; 
-                            p.originalTarget = target; 
+                        else if (p.type === 'chain_infinite') { p.color = 'cyan'; p.bouncesLeft = 99; }
+                        else if (p.type === 'brie_rocket') { p.color = '#DEB887'; p.speed = 4; p.size = 15; p.targetX = target.x; p.targetY = target.y; p.originalTarget = target; }
+                        else if (p.type === 'freeze' && !p.target.resistance?.includes('freeze')) { p.color = '#00FFFF'; p.freezeDuration = 120; }
+                        else if (p.type === 'flamethrower') { p.color = 'orange'; }
+                        else if (p.type === 'barrage') { for(let i=0; i<50; i++){ projectiles.push({...p, targetX: Math.random()*canvasWidth, targetY: Math.random()*canvasHeight}); } }
+                        else if (p.type === 'trap') { target.isTrapped = true; target.trapDamage = p.damage; target.trapDuration = 300; }
+                        else if (p.type === 'quattro') {
+                            projectiles.push({...p, type: 'pierce', color: 'red'});
+                            projectiles.push({...p, type: 'bomb', blastRadius: canvasWidth * 0.05, detonated: false, blastDuration: 15});
+                            projectiles.push({...p, type: 'slow', color: 'blue', slowDuration: 180});
+                            projectiles.push({...p, type: 'bounce', color: 'white', bouncesLeft: 3});
                         }
-                        else if (p.type === 'freeze') { p.color = '#00FFFF'; p.freezeDuration = 120; }
                         else { p.color = '#FFC107'; }
-                        if (p.type !== 'gas_cloud') projectiles.push(p);
+
+                        if (!['gas_cloud', 'barrage', 'trap', 'quattro'].includes(p.type)) projectiles.push(p);
                         tower.fireCooldown = tower.currentFireRate;
                         playSound(p.type === 'lazar' ? 'lazar' : 'shoot');
                     } else { if (tower.type === 'assassin') tower.currentTarget = null; tower.damageBonus = 0; }
                 }
             });
 
-            specialEffects.forEach(effect => { if (effect.type === 'gas_cloud' || effect.type === 'hailstorm') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - effect.x, enemy.y - effect.y) < effect.radius) { enemy.health -= effect.damage / 60; if (effect.type === 'hailstorm' && Math.random() < 0.01) enemy.freezeTimer = 10; } }); } else if (effect.type === 'vortex') { enemies.forEach(enemy => { if (Math.hypot(enemy.x - effect.x, enemy.y - effect.y) < effect.radius) { enemy.health -= effect.damage / 60; if (enemy.resistance !== 'slow') { enemy.slowed = true; enemy.slowTimer = 10; } } }); } else if (effect.type === 'fondue_wave') { effect.radius += canvasWidth/30; enemies.forEach(e => e.health -= effect.damage/60); } else if (effect.type === 'spore_cloud' && effect.towerToDisable) { effect.towerToDisable.disabled = ENEMY_DATA['moldy'].duration; specialEffects.splice(specialEffects.indexOf(effect), 1); } else if (effect.type === 'popper_explosion') { towers.forEach(t => { if (Math.hypot(t.x - effect.x, t.y - effect.y) < effect.radius) { let damageDealt = effect.damage; if (t.shield > 0) { const shieldDamage = Math.min(t.shield, damageDealt); t.shield -= shieldDamage; } } }); specialEffects.splice(specialEffects.indexOf(effect), 1); } });
+            specialEffects.forEach(effect => { 
+                if (['gas_cloud', 'large_gas_cloud', 'hailstorm', 'fire_storm', 'fire_trail', 'meteor', 'rift'].includes(effect.type)) { 
+                    enemies.forEach(enemy => { 
+                        if (Math.hypot(enemy.x - effect.x, enemy.y - effect.y) < effect.radius) { 
+                            enemy.health -= effect.damage / 60; 
+                            if (effect.type === 'hailstorm' && Math.random() < 0.01 && !enemy.resistance?.includes('freeze')) enemy.freezeTimer = 10; 
+                        } 
+                    }); 
+                } else if (effect.type === 'vortex' || effect.type === 'super_vortex' || effect.type === 'black_hole') { 
+                    enemies.forEach(enemy => { 
+                        if (Math.hypot(enemy.x - effect.x, enemy.y - effect.y) < effect.radius) { 
+                            enemy.health -= effect.damage / 60; 
+                            if (!enemy.resistance?.includes('slow')) { enemy.slowed = true; enemy.slowTimer = 10; } 
+                        } 
+                    }); 
+                } else if (effect.type === 'fondue_wave' || effect.type === 'reactor_blast' || effect.type === 'supernova_blast' || effect.type === 'rapture' || effect.type === 'screen_shake_damage') { 
+                    effect.radius += canvasWidth/30; enemies.forEach(e => e.health -= effect.damage/60); 
+                } else if (effect.type === 'spore_cloud' && effect.towerToDisable) { 
+                    effect.towerToDisable.disabled = ENEMY_DATA['moldy'].duration; specialEffects.splice(specialEffects.indexOf(effect), 1); 
+                } else if (effect.type === 'popper_explosion') { 
+                    towers.forEach(t => { 
+                        if (Math.hypot(t.x - effect.x, t.y - effect.y) < effect.radius) { 
+                            let damageDealt = effect.damage; if (t.shield > 0) { const shieldDamage = Math.min(t.shield, damageDealt); t.shield -= shieldDamage; } 
+                        } 
+                    }); specialEffects.splice(specialEffects.indexOf(effect), 1); 
+                } else if (effect.type === 'heal_aura') {
+                    enemies.forEach(e => {
+                        if (e !== effect.source && Math.hypot(e.x - effect.x, e.y - effect.y) < effect.radius) {
+                            e.health = Math.min(e.maxHealth, e.health + 10 / 60);
+                        }
+                    });
+                } else if (effect.type === 'speed_aura') {
+                    enemies.forEach(e => {
+                        if (e !== effect.source && Math.hypot(e.x - effect.x, e.y - effect.y) < effect.radius) {
+                            e.isBuffed = true;
+                        }
+                    });
+                } else if (effect.type === 'global_freeze') {
+                    enemies.forEach(e => { if(!e.resistance?.includes('freeze')) e.isFrozen = true; e.freezeTimer = 300; });
+                    specialEffects.splice(specialEffects.indexOf(effect), 1);
+                }
+            });
 
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 const p = projectiles[i];
                 if (p.detonated) { p.blastDuration--; if (p.blastDuration <= 0) projectiles.splice(i, 1); continue; }
-                if (p.type === 'lazar' || p.type === 'continuous_lazar') { p.duration--; if (p.target) { p.x = p.target.x; p.y = p.target.y; p.target.health -= p.damage; } if (p.duration <= 0) projectiles.splice(i, 1); continue; }
+                if (p.type === 'lazar' || p.type === 'continuous_lazar') { p.duration--; if (p.target) { p.x = p.target.x; p.y = p.target.y; if(!p.target.phasing){p.target.health -= p.damage;} } if (p.duration <= 0) projectiles.splice(i, 1); continue; }
                 
-                if (p.type === 'brie_rocket') {
+                if (p.type === 'brie_rocket' || p.type === 'barrage') {
                     const dx = p.targetX - p.x;
                     const dy = p.targetY - p.y;
                     const dist = Math.hypot(dx, dy);
@@ -1369,7 +2139,7 @@
                         p.y += (dy / dist) * p.speed;
                     }
 
-                    if (p.originalTarget && p.originalTarget.health > 0) {
+                    if (p.originalTarget && p.originalTarget.health > 0 && !p.originalTarget.phasing) {
                         const hitDist = Math.hypot(p.x - p.originalTarget.x, p.y - p.originalTarget.y);
                         if (hitDist < p.originalTarget.size) {
                             p.originalTarget.health -= p.damage;
@@ -1380,11 +2150,11 @@
                     continue;
                 }
 
-                if (!p.target || p.target.health <= 0) { projectiles.splice(i, 1); continue; }
+                if (!p.target || p.target.health <= 0 || p.target.phasing) { projectiles.splice(i, 1); continue; }
                 const dx = p.target.x - p.x; const dy = p.target.y - p.y; const dist = Math.hypot(dx, dy);
                 if (dist < p.speed) {
                     let damageDealt = p.damage; p.target.lastHitBy = p.tower;
-                    if (p.type === 'bomb' || p.type === 'rocket' || p.type === 'blimp_bomb' || p.type === 'carpet_bomb' || p.type === 'shock_blast') { 
+                    if (['bomb', 'rocket', 'blimp_bomb', 'carpet_bomb', 'shock_blast', 'meteor', 'moonfall'].includes(p.type)) { 
                         p.detonated = true; 
                         playSound('explode'); 
                         enemies.forEach(enemy => { 
@@ -1399,11 +2169,11 @@
                         }); 
                     } else {
                         p.target.health -= damageDealt;
-                        if ((p.type === 'slow' || p.type === 'singularity_slow') && p.target.resistance !== 'slow') { p.target.slowed = true; p.target.slowTimer = p.slowDuration; }
-                        if (p.type === 'freeze') { p.target.isFrozen = true; p.target.freezeTimer = p.freezeDuration; }
+                        if ((p.type === 'slow' || p.type === 'singularity_slow') && !p.target.resistance?.includes('slow')) { p.target.slowed = true; p.target.slowTimer = p.slowDuration; }
+                        if (p.type === 'freeze' && !p.target.resistance?.includes('freeze')) { p.target.isFrozen = true; p.target.freezeTimer = p.freezeDuration; }
                         if (p.type === 'pierce') { p.target.health -= p.target.maxHealth * 0.05; }
                         if (p.type === 'lazar') { p.target.isAcidified = true; p.target.burnTimer = p.burnDuration; p.target.burnDamage = damageDealt / 4; }
-                        if (p.type === 'bounce' && p.bouncesLeft > 0) {
+                        if ((p.type === 'bounce' || p.type === 'chain_infinite') && p.bouncesLeft > 0) {
                             p.bouncesLeft--; let nextTarget = null; let minDist = Infinity;
                             enemies.forEach(e => { if (e !== p.target && e.health > 0 && !e.isBounced) { const d = Math.hypot(p.target.x - e.x, p.target.y - e.y); if (d < minDist) { minDist = d; nextTarget = e; } } });
                             if (nextTarget) { p.target = nextTarget; p.target.isBounced = true; } else { projectiles.splice(i, 1); }
@@ -1419,7 +2189,8 @@
 
             for (let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i];
-                enemy.isBounced = false;
+                enemy.isBounced = false; // Reset for next frame
+                enemy.isBuffed = false; // Reset for next frame
 
                 // --- MONOLITH BLOCKING LOGIC ---
                 if (enemy.attackingMonolith && enemy.attackingMonolith.health <= 0) {
@@ -1458,7 +2229,10 @@
                     if (onDeath.onDeath === 'explode') {
                         specialEffects.push({type: 'popper_explosion', x: enemy.x, y: enemy.y, radius: canvasWidth * onDeath.radius, duration: 10, maxDuration: 10, damage: onDeath.damage});
                     }
-                    if (onDeath.onDeath === 'disable') { 
+                     if (onDeath.onDeath === 'explode_kamikaze') {
+                        specialEffects.push({type: 'popper_explosion', x: enemy.x, y: enemy.y, radius: canvasWidth * onDeath.radius, duration: 10, maxDuration: 10, damage: onDeath.damage});
+                    }
+                    if (onDeath.onDeath === 'disable' || onDeath.onDeath === 'disable_large') { 
                         towers.forEach(t => {
                             if (Math.hypot(t.x - enemy.x, t.y - enemy.y) < canvasWidth * onDeath.radius) {
                                 t.disabled = onDeath.duration;
@@ -1480,13 +2254,43 @@
                     continue; 
                 }
                 if (enemy.isFrozen) { enemy.freezeTimer--; if (enemy.freezeTimer <= 0) enemy.isFrozen = false; continue; }
+                if (enemy.isTrapped) { enemy.trapDuration--; enemy.health -= enemy.trapDamage/300; if(enemy.trapDuration <= 0) enemy.isTrapped = false; continue;}
                 if (enemy.slowed) { enemy.slowTimer--; if (enemy.slowTimer <= 0) enemy.slowed = false; }
                 if (enemy.isShocked) { enemy.shockTimer--; if (enemy.shockTimer <= 0) enemy.isShocked = false; else { enemy.health -= 5; } }
                 if (enemy.isAcidified) { enemy.health -= enemy.burnDamage / 60; enemy.burnTimer--; if (enemy.burnTimer <= 0) enemy.isAcidified = false; }
                 if (enemy.ability === 'regenerate' && enemy.health < enemy.maxHealth) { enemy.health += (ENEMY_DATA[enemy.type].regenRate / 60); }
-                const currentSpeed = (enemy.slowed || enemy.isShocked) ? enemy.speed * 0.5 : enemy.speed;
+                
+                // Handle new abilities
+                if(enemy.ability === 'fire_trail' && frameCount % 10 === 0) { specialEffects.push({type: 'fire_trail', x: enemy.x, y: enemy.y, radius: 10, duration: 120, maxDuration: 120, damage: 5}); }
+                if(enemy.ability === 'teleport' && frameCount % 180 === 0) { enemy.pathIndex = Math.min(enemy.pathIndex + 1, scaledPath.length - 2); enemy.x = scaledPath[enemy.pathIndex].x; enemy.y = scaledPath[enemy.pathIndex].y; }
+                if(enemy.ability === 'heal_aura' && frameCount % 30 === 0) { specialEffects.push({type: 'heal_aura', x: enemy.x, y: enemy.y, radius: canvasWidth * 0.05, duration: 2, maxDuration: 2, source: enemy}); }
+                if(enemy.ability === 'speed_aura' && frameCount % 10 === 0) { specialEffects.push({type: 'speed_aura', x: enemy.x, y: enemy.y, radius: canvasWidth * 0.06, duration: 2, maxDuration: 2, source: enemy}); }
+                if(enemy.ability === 'phase') { if(frameCount % 300 === 0) { enemy.phasing = true; enemy.phaseTimer = 120; } if(enemy.phasing) { enemy.phaseTimer--; if(enemy.phaseTimer <= 0) enemy.phasing = false; } }
+                if(enemy.ability === 'split' && enemy.health < enemy.maxHealth / 2 && !enemy.hasSplit) {
+                    enemy.hasSplit = true;
+                    enemy.health /= 2;
+                    enemy.maxHealth /=2;
+                    const newEnemy = { ...enemy, speed: enemy.speed * 1.5, size: enemy.size * 0.75, gold: Math.floor(enemy.gold / 2) };
+                    enemies.push(newEnemy);
+                }
+
+                const currentSpeed = (enemy.slowed || enemy.isShocked) ? (enemy.isBuffed ? enemy.speed * 1.5 * 0.5 : enemy.speed * 0.5) : (enemy.isBuffed ? enemy.speed * 1.5 : enemy.speed);
                 let targetPoint = scaledPath[enemy.pathIndex + 1];
-                if (!targetPoint) { baseHealth -= enemy.maxHealth * 0.5; enemyStrengthModifier += 0.015; enemies.splice(i, 1); updateUI(); if (baseHealth <= 0) endGame(false); continue; }
+                if (!targetPoint) { 
+                    if (!isBaseInvincible) {
+                        if(enemy.ability === 'steal') {
+                            gold = Math.max(0, gold - 50);
+                            floatingTexts.push({x: enemy.x, y: enemy.y, content: '-50 Gold!', color: '255,0,0', duration: 120, size: 20});
+                        } else {
+                            baseHealth -= enemy.maxHealth * 0.5; 
+                        }
+                        enemyStrengthModifier += 0.015; 
+                    }
+                    enemies.splice(i, 1); 
+                    updateUI(); 
+                    if (baseHealth <= 0) endGame(false); 
+                    continue; 
+                }
                 const dx = targetPoint.x - enemy.x; const dy = targetPoint.y - enemy.y; const dist = Math.hypot(dx, dy);
                 if (dist < currentSpeed) enemy.pathIndex++;
                 else { enemy.x += (dx / dist) * currentSpeed; enemy.y += (dy / dist) * currentSpeed; }
@@ -1552,13 +2356,19 @@
             if (!gameHasStarted) return;
             gameSpeed = speed;
             
-            speedIndicator.classList.toggle('hidden', speed !== 2);
             document.querySelectorAll('.speed-button').forEach(b => b.classList.remove('active'));
             if (speed === 1) {
                 normalSpeedButton.classList.add('active');
-            } else {
+                speedIndicator.classList.add('hidden');
+            } else if (speed === 2) {
                 twoxSpeedButton.classList.add('active');
+                speedIndicator.textContent = '2x Speed';
+                speedIndicator.classList.remove('hidden');
+            } else {
+                speedIndicator.textContent = `${speed}x Speed`;
+                speedIndicator.classList.remove('hidden');
             }
+
 
             if (!waveInProgress && !isPaused) {
                 clearInterval(timerInterval);
@@ -1598,7 +2408,7 @@
                 const statsP = document.createElement('p');
                 statsP.className = 'text-sm text-gray-600';
                 let abilityText = enemyData.ability ? `, Ability: ${enemyData.ability}` : (enemyData.onDeath ? `, On Death: ${enemyData.onDeath}` : '');
-                statsP.textContent = `HP: ${enemyData.health} | Speed: ${enemyData.speed} | Base Damage: ${enemyData.health * 0.5}${abilityText}`;
+                statsP.textContent = `HP: ${enemyData.health} | Speed: ${enemyData.speed} | Gold: ${enemyData.gold}${abilityText}`;
                 infoDiv.appendChild(statsP);
 
                 const descP = document.createElement('p');
@@ -1635,12 +2445,14 @@
                 const statsP = document.createElement('p');
                 statsP.className = 'text-sm text-gray-600';
                 let statsText = `Cost: ${towerData.cost}`;
-                if (type === 'gold') {
-                    statsText += ` | Money Gen: ${towerData.damage}`;
+                if (towerData.upgrade === 'cash') {
+                    statsText += ` | Cash/tick: ${towerData.damage} | Cooldown: ${towerData.fireRate}`;
                 } else if (type === 'monolith') {
                     statsText += ` | Health: ${towerData.health}`;
-                } else {
+                } else if (towerData.damage !== Infinity) {
                     statsText += ` | Damage: ${towerData.damage} | Cooldown: ${towerData.fireRate} | Range: ${towerData.range * 100}`;
+                } else {
+                    statsText += ` | Damage: Infinite | Cooldown: ${towerData.fireRate} | Range: Global`;
                 }
                 statsP.textContent = statsText;
                 infoDiv.appendChild(statsP);
@@ -1661,14 +2473,35 @@
         // --- Event Listeners ---
         window.addEventListener('resize', () => {
             if (gameHasStarted) {
-                init();
+                // Find a better way to handle resize, for now we restart
+                const currentIsMusicPlaying = isMusicPlaying;
+                init(difficultyModifier.health === 1 ? 'normal' : difficultyModifier.health === 1.5 ? 'hard' : 'hardcore');
+                if(currentIsMusicPlaying) {
+                    musicToggle.checked = true;
+                    toggleMusic();
+                }
             } else {
                 resizeCanvas();
             }
         });
         canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('mousemove', e => { const rect = canvas.getBoundingClientRect(); mousePos.x = e.clientX - rect.left; mousePos.y = e.clientY - rect.top; });
-        restartButton.addEventListener('click', init);
+        restartButton.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                toggleMusic(); // Stop music on restart
+                musicToggle.checked = false;
+            }
+            gameHasStarted = false;
+            preGameOverlay.style.display = 'none';
+            modeSelectModal.classList.remove('hidden');
+            gameOverModal.classList.add('hidden');
+            
+            // Reset stats display on UI for clarity before new game starts
+            goldDisplay.textContent = 100;
+            livesDisplay.textContent = 1500;
+            waveDisplay.textContent = 0;
+            timerDisplay.textContent = '--';
+        });
         soundToggleButton.addEventListener('click', toggleSound);
         pauseButton.addEventListener('click', togglePause);
         normalSpeedButton.addEventListener('click', () => setGameSpeed(1));
@@ -1676,21 +2509,48 @@
         
         const startFunction = (e) => {
             e.preventDefault();
-            if (!gameHasStarted) {
-                init();
-                gameHasStarted = true;
-                preGameOverlay.style.display = 'none';
-            }
             document.getElementById('game-section').scrollIntoView();
+            modeSelectModal.classList.remove('hidden');
+            preGameOverlay.style.display = 'none';
         };
 
         startGameButton.addEventListener('click', startFunction);
         playNowButton.addEventListener('click', startFunction);
 
+        normalModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            if(!gameHasStarted) {
+                init('normal');
+                gameHasStarted = true;
+            }
+        });
+        hardModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            if(!gameHasStarted) {
+                init('hard');
+                gameHasStarted = true;
+            }
+        });
+        hardcoreModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            if(!gameHasStarted) {
+                init('hardcore');
+                gameHasStarted = true;
+            }
+        });
+
         indexButton.addEventListener('click', () => {
-            if (!isPaused) togglePause();
-            gameIndexModal.classList.remove('hidden');
-            setTimeout(() => gameIndexModal.classList.remove('opacity-0', 'scale-90'), 10);
+            if (gameIndexModal.classList.contains('hidden')) {
+                // Open it
+                if (!isPaused) togglePause();
+                gameIndexModal.classList.remove('hidden');
+                setTimeout(() => gameIndexModal.classList.remove('opacity-0', 'scale-90'), 10);
+            } else {
+                // Close it
+                if (isPaused) togglePause();
+                gameIndexModal.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
+            }
         });
         closeIndexButton.addEventListener('click', () => {
             if(isPaused) togglePause();
@@ -1718,6 +2578,91 @@
             showEnemiesTab.classList.add('active');
         });
 
+        // --- Admin Panel Logic ---
+        adminPanelButton.addEventListener('click', () => {
+            adminPanel.classList.toggle('hidden');
+        });
+        closeAdminPanel.addEventListener('click', () => {
+            adminPanel.classList.add('hidden');
+        });
+        executeSkipWaves.addEventListener('click', () => {
+            const numWaves = parseInt(skipWavesInput.value, 10);
+            if (!isNaN(numWaves) && numWaves > 0) {
+                adminSkipWaves(numWaves);
+            }
+        });
+         executeSetWave.addEventListener('click', () => {
+            const targetWave = parseInt(setWaveInput.value, 10);
+            if (!isNaN(targetWave) && targetWave >= 1) { // Allow setting to any wave >= 1
+                adminSetWave(targetWave);
+            }
+        });
+        executeSetSpeed.addEventListener('click', () => {
+            const speed = parseFloat(setSpeedInput.value);
+            if (!isNaN(speed) && speed > 0) {
+                setGameSpeed(speed);
+            }
+        });
+        executeAddGold.addEventListener('click', () => {
+            const amount = parseInt(addGoldInput.value, 10);
+            if (!isNaN(amount)) {
+                gold += amount;
+                updateUI();
+            }
+        });
+        executeKillAll.addEventListener('click', () => {
+            enemies = enemies.filter(e => e.x < 0 || e.x > canvasWidth || e.y < 0 || e.y > canvasHeight);
+        });
+        executeSetHealth.addEventListener('click', () => {
+            const health = parseInt(setHealthInput.value, 10);
+            if(!isNaN(health) && health > 0) {
+                baseHealth = health;
+                maxBaseHealth = health;
+                updateUI();
+            }
+        });
+        invincibleBaseToggle.addEventListener('change', (e) => {
+            isBaseInvincible = e.target.checked;
+        });
+         executeGrassColor.addEventListener('click', () => {
+            const color = grassColorInput.value;
+            backgroundColor = color;
+            createGreenBackground(color);
+        });
+        musicToggle.addEventListener('change', toggleMusic);
+        executeEnemyHealthMod.addEventListener('click', () => {
+            const mod = parseFloat(enemyHealthModInput.value);
+            if(!isNaN(mod) && mod > 0) {
+                enemyStrengthModifier = mod;
+            }
+        });
+        executeEnemySpeedMod.addEventListener('click', () => {
+            const mod = parseFloat(enemySpeedModInput.value);
+            if(!isNaN(mod) && mod > 0) {
+                enemySpeedModifier = mod;
+            }
+        });
+        executeDisableTowers.addEventListener('click', () => {
+            towers.forEach(t => t.disabled = 300); // Disable for 5 seconds
+        });
+         executeSpawnEnemy.addEventListener('click', () => {
+            const enemyName = spawnEnemyInput.value.trim();
+            let enemyKey = null;
+
+            for (const key in ENEMY_DESCRIPTIONS) {
+                if (ENEMY_DESCRIPTIONS[key].name.toLowerCase() === enemyName.toLowerCase()) {
+                    enemyKey = key;
+                    break;
+                }
+            }
+
+            if(enemyKey && ENEMY_DATA[enemyKey]) {
+                 const data = ENEMY_DATA[enemyKey];
+                 enemies.push({ x: scaledPath[0].x, y: scaledPath[0].y, pathIndex: 0, speed: data.speed, health: data.health, maxHealth: data.health, size: canvasWidth * 0.02, gold: data.gold, type: enemyKey, visual: {}, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, ability: data.ability || null, resistance: data.resistance || null, lastHitBy: null, attackingMonolith: null });
+            }
+        });
+
+
         window.addEventListener('keydown', handleCheatCode);
 
         function handleCheatCode(e) {
@@ -1727,18 +2672,15 @@
                 keySequence.shift();
             }
 
-            const goldCodeStr = goldCheatCode.join('');
-            const speedCodeStr = speedCheatCode.join('');
-            const demonSkipCodeStr = demonSkipCheatCode.join('');
+            const adminCodeStr = adminCode.join('');
             const currentSequenceStr = keySequence.join('');
 
-            if (currentSequenceStr.endsWith(goldCodeStr)) {
-                gold = 999999;
-                updateUI();
+            if (currentSequenceStr.endsWith(adminCodeStr)) {
+                adminPanelButton.classList.remove('hidden');
                 floatingTexts.push({
                     x: canvasWidth / 2,
                     y: canvasHeight / 2,
-                    content: 'Admin Mode Initiated',
+                    content: 'Admin Panel Unlocked',
                     color: '0, 191, 255',
                     duration: 240,
                     size: 50
@@ -1746,19 +2688,9 @@
                 if (audioStarted) buildSynth.triggerAttackRelease("C5", "4n");
                 keySequence = []; // Reset sequence
             }
-            
-            if (currentSequenceStr.endsWith(speedCodeStr)) {
-                skipWave(10);
-                keySequence = []; // Reset sequence
-            }
-
-            if (currentSequenceStr.endsWith(demonSkipCodeStr)) {
-                skipWave(99);
-                keySequence = []; // Reset sequence
-            }
         }
 
-        function skipWave(numWaves) {
+        function adminSkipWaves(numWaves) {
             if (timerInterval) clearInterval(timerInterval);
             
             enemies = [];
@@ -1786,8 +2718,40 @@
             startWaveTimer();
         }
 
+        function adminSetWave(targetWave) {
+            if (timerInterval) clearInterval(timerInterval);
+
+            // Clear all active game elements
+            enemies = [];
+            projectiles = [];
+            specialEffects = [];
+            waveInProgress = false;
+            bossSpawned = false;
+
+            // Set the new wave number. We set it to targetWave - 1 because
+            // startNextWave will increment it to the target number.
+            wave = targetWave - 1;
+
+            floatingTexts.push({
+                x: canvasWidth / 2,
+                y: canvasHeight / 2,
+                content: `Set to Wave ${targetWave}`,
+                color: '0, 191, 255',
+                duration: 180,
+                size: 50
+            });
+
+            if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
+            
+            updateUI();
+            // Immediately trigger the next wave instead of waiting for the timer
+            startNextWave();
+        }
+
+
         // --- Initialisation on page load (for non-game elements) ---
         resizeCanvas();
+        setupTowerData();
         createTowerButtons();
         populateIndex();
 
