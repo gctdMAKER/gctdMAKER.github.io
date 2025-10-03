@@ -26,7 +26,7 @@
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
             border-color: #FBBF24;
         }
-        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert, #mode-select-modal {
+        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert, #mode-select-modal, #reset-save-modal {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
         #enemy-index-content::-webkit-scrollbar, #tower-index-content::-webkit-scrollbar, #admin-panel div::-webkit-scrollbar {
@@ -70,7 +70,7 @@
     <!-- Header -->
     <header class="bg-amber-500 shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 28</div>
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 29</div>
             <div>
                 <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
                 <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
@@ -154,19 +154,25 @@
                 <!-- Mode Select Modal -->
                 <div id="mode-select-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center text-white p-8 text-center hidden z-40">
                     <h2 class="text-6xl font-chewy text-amber-400 mb-8">Select a Mode</h2>
-                    <div class="flex flex-col md:flex-row gap-8">
-                        <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64">
-                            <h3 class="text-3xl font-chewy">Normal Mode</h3>
-                            <p class="mt-2">The standard cheesy challenge.</p>
+                    <div id="mode-select-container" class="flex flex-col items-center gap-8">
+                        <button id="continue-button" class="mode-button bg-sky-600 border-4 border-sky-400 p-6 rounded-xl w-64 hidden">
+                            <h3 class="text-3xl font-chewy">Continue Game</h3>
+                            <p id="continue-info" class="mt-2"></p>
                         </button>
-                        <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64">
-                            <h3 class="text-3xl font-chewy">Hard Mode</h3>
-                            <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
-                        </button>
-                        <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
-                            <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
-                            <p class="mt-2">Start with 50 Gold. Tougher enemies & expensive towers!</p>
-                        </button>
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64">
+                                <h3 class="text-3xl font-chewy">Normal Mode</h3>
+                                <p class="mt-2">The standard cheesy challenge.</p>
+                            </button>
+                            <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64">
+                                <h3 class="text-3xl font-chewy">Hard Mode</h3>
+                                <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
+                            </button>
+                            <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
+                                <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
+                                <p class="mt-2">Start with 50 Gold. Tougher enemies & expensive towers!</p>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -177,6 +183,16 @@
                     <button id="restart-button" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg transition-transform transform hover:scale-105">
                         Play Again
                     </button>
+                </div>
+
+                 <!-- Reset Save Confirmation Modal -->
+                <div id="reset-save-modal" class="absolute inset-0 bg-black bg-opacity-70 flex-col items-center justify-center text-white p-8 text-center hidden z-40">
+                    <h2 class="text-4xl font-chewy text-amber-400 mb-4">Reset Save File?</h2>
+                    <p class="text-lg mb-6">Are you sure? This will permanently delete your saved progress.<br>This action cannot be undone.</p>
+                    <div class="flex gap-4">
+                        <button id="confirm-reset-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg">Yes, Delete</button>
+                        <button id="cancel-reset-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg">Cancel</button>
+                    </div>
                 </div>
                 
                 <!-- Alerts -->
@@ -305,15 +321,17 @@
 
             </div>
             
-            <div class="mt-2 text-center flex justify-center items-center gap-4">
+            <div class="mt-2 text-center flex justify-center items-center gap-2 flex-wrap">
                 <div class="flex gap-2">
                     <button id="pause-button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10 flex items-center justify-center text-lg">❚❚</button>
                     <button id="normal-speed-button" class="speed-button bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10 active">1x</button>
                     <button id="2x-speed-button" class="speed-button bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-lg shadow-md w-10 h-10">2x</button>
                 </div>
-                <button id="index-button" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">Game Index</button>
-                <button id="admin-panel-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Admin Panel</button>
-                <button id="sound-toggle-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">🔊 Sound On</button>
+                <button id="index-button" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Game Index</button>
+                <button id="admin-panel-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Admin</button>
+                <button id="sound-toggle-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">🔊 Sound On</button>
+                <button id="save-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Game</button>
+                <button id="reset-save-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Reset Save</button>
             </div>
             
             <!-- Tower Selection Menu -->
@@ -378,6 +396,16 @@
         const normalModeButton = document.getElementById('normal-mode-button');
         const hardModeButton = document.getElementById('hard-mode-button');
         const hardcoreModeButton = document.getElementById('hardcore-mode-button');
+
+        // Save/Load UI
+        const saveButton = document.getElementById('save-button');
+        const resetSaveButton = document.getElementById('reset-save-button');
+        const continueButton = document.getElementById('continue-button');
+        const continueInfo = document.getElementById('continue-info');
+        const modeSelectContainer = document.getElementById('mode-select-container');
+        const resetSaveModal = document.getElementById('reset-save-modal');
+        const confirmResetButton = document.getElementById('confirm-reset-button');
+        const cancelResetButton = document.getElementById('cancel-reset-button');
         
         // Admin Panel UI
         const adminPanelButton = document.getElementById('admin-panel-button');
@@ -424,6 +452,7 @@
         let isPaused = false, gameSpeed = 1;
         let keySequence = [];
         let difficultyModifier = { health: 1, speed: 1 };
+        let currentDifficulty = 'normal';
         let originalTowerData = {}; // To store original costs
 
         // --- Audio & Music Setup ---
@@ -501,8 +530,8 @@
                 Tone.Master.mute = isMuted;
             }
             soundToggleButton.textContent = isMuted ? '🔇 Sound Off' : '🔊 Sound On';
-            soundToggleButton.classList.toggle('bg-green-500', !isMuted);
-            soundToggleButton.classList.toggle('hover:bg-green-600', !isMuted);
+            soundToggleButton.classList.toggle('bg-gray-500', !isMuted);
+            soundToggleButton.classList.toggle('hover:bg-gray-600', !isMuted);
             soundToggleButton.classList.toggle('bg-red-500', isMuted);
             soundToggleButton.classList.toggle('hover:bg-red-600', isMuted);
         }
@@ -1674,6 +1703,7 @@
 
         // --- Game Logic ---
         function init(difficulty = 'normal') {
+            currentDifficulty = difficulty;
             setupTowerData(); // Reset tower data to original values
             if (difficulty === 'normal') {
                 difficultyModifier = { health: 1, speed: 1 };
@@ -1694,7 +1724,7 @@
                 const expensiveTowerTypes = Object.keys(TOWER_DATA).slice(Object.keys(TOWER_DATA).indexOf('bomber'));
                  expensiveTowerTypes.forEach(type => {
                      if (TOWER_DATA[type]) {
-                         TOWER_DATA[type].cost = Math.round(TOWER_DATA[type].cost * 1.5);
+                         TOWER_DATA[type].cost = Math.round(originalTowerData[type].cost * 1.5);
                      }
                 });
             }
@@ -2470,12 +2500,87 @@
             });
         }
 
+        // --- Save and Load ---
+        function saveGame() {
+            if (!gameHasStarted || gameOver) return;
+
+            const savableTowers = towers.map(t => {
+                return {
+                    x: t.x, y: t.y, type: t.type, level: t.level, totalSpent: t.totalSpent,
+                    damage: t.damage, fireRate: t.fireRate, range: t.range, upgradeCost: t.upgradeCost,
+                    health: t.health, maxHealth: t.maxHealth, 
+                };
+            });
+
+            const gameState = {
+                gold: gold, wave: wave, baseHealth: baseHealth, towers: savableTowers,
+                currentDifficulty: currentDifficulty, difficultyModifier: difficultyModifier,
+                waveInProgress: waveInProgress, waveTimer: waveTimer,
+                enemyStrengthModifier: enemyStrengthModifier, enemySpeedModifier: enemySpeedModifier
+            };
+
+            localStorage.setItem('gctd_save', JSON.stringify(gameState));
+
+            floatingTexts.push({ x: canvasWidth / 2, y: canvasHeight / 2, content: 'Game Saved!', color: '0, 255, 0', duration: 120, size: 40 });
+            playSound('build');
+        }
+
+        function loadGame() {
+            const savedDataString = localStorage.getItem('gctd_save');
+            if (!savedDataString) { console.error("No save data found."); return; }
+            const savedState = JSON.parse(savedDataString);
+            
+            init(savedState.currentDifficulty);
+
+            gold = savedState.gold;
+            wave = savedState.wave;
+            baseHealth = savedState.baseHealth;
+            enemyStrengthModifier = savedState.enemyStrengthModifier;
+            enemySpeedModifier = savedState.enemySpeedModifier;
+            waveInProgress = savedState.waveInProgress;
+            waveTimer = savedState.waveTimer;
+
+            towers = savedState.towers.map(st => {
+                const baseTowerData = TOWER_DATA[st.type];
+                return {
+                    ...st,
+                    size: canvasWidth * 0.035,
+                    projectileType: baseTowerData.projectile,
+                    fireCooldown: 0, shield: 0, disabled: 0, currentTarget: null, damageBonus: 0
+                };
+            });
+
+            gameHasStarted = true;
+            modeSelectModal.classList.add('hidden');
+            updateUI();
+
+            if (!waveInProgress) {
+                startWaveTimer(waveTimer);
+            }
+        }
+
+        function checkForSave() {
+            const savedDataString = localStorage.getItem('gctd_save');
+            if (savedDataString) {
+                try {
+                    const savedData = JSON.parse(savedDataString);
+                    continueButton.classList.remove('hidden');
+                    continueInfo.textContent = `Wave: ${savedData.wave} | Gold: ${savedData.gold} | ${savedData.currentDifficulty}`;
+                } catch (e) {
+                    console.error("Failed to parse save data:", e);
+                    localStorage.removeItem('gctd_save');
+                }
+            } else {
+                continueButton.classList.add('hidden');
+            }
+        }
+
         // --- Event Listeners ---
         window.addEventListener('resize', () => {
             if (gameHasStarted) {
-                // Find a better way to handle resize, for now we restart
                 const currentIsMusicPlaying = isMusicPlaying;
-                init(difficultyModifier.health === 1 ? 'normal' : difficultyModifier.health === 1.5 ? 'hard' : 'hardcore');
+                const difficulty = currentDifficulty || 'normal';
+                init(difficulty);
                 if(currentIsMusicPlaying) {
                     musicToggle.checked = true;
                     toggleMusic();
@@ -2486,22 +2591,24 @@
         });
         canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('mousemove', e => { const rect = canvas.getBoundingClientRect(); mousePos.x = e.clientX - rect.left; mousePos.y = e.clientY - rect.top; });
+        
         restartButton.addEventListener('click', () => {
             if (isMusicPlaying) {
-                toggleMusic(); // Stop music on restart
+                toggleMusic();
                 musicToggle.checked = false;
             }
             gameHasStarted = false;
             preGameOverlay.style.display = 'none';
             modeSelectModal.classList.remove('hidden');
             gameOverModal.classList.add('hidden');
+            checkForSave();
             
-            // Reset stats display on UI for clarity before new game starts
             goldDisplay.textContent = 100;
             livesDisplay.textContent = 1500;
             waveDisplay.textContent = 0;
             timerDisplay.textContent = '--';
         });
+
         soundToggleButton.addEventListener('click', toggleSound);
         pauseButton.addEventListener('click', togglePause);
         normalSpeedButton.addEventListener('click', () => setGameSpeed(1));
@@ -2512,6 +2619,7 @@
             document.getElementById('game-section').scrollIntoView();
             modeSelectModal.classList.remove('hidden');
             preGameOverlay.style.display = 'none';
+            checkForSave();
         };
 
         startGameButton.addEventListener('click', startFunction);
@@ -2541,19 +2649,17 @@
 
         indexButton.addEventListener('click', () => {
             if (gameIndexModal.classList.contains('hidden')) {
-                // Open it
-                if (!isPaused) togglePause();
+                if (!isPaused && gameHasStarted) togglePause();
                 gameIndexModal.classList.remove('hidden');
                 setTimeout(() => gameIndexModal.classList.remove('opacity-0', 'scale-90'), 10);
             } else {
-                // Close it
-                if (isPaused) togglePause();
+                if (isPaused && gameHasStarted) togglePause();
                 gameIndexModal.classList.add('opacity-0', 'scale-90');
                 setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
             }
         });
         closeIndexButton.addEventListener('click', () => {
-            if(isPaused) togglePause();
+            if(isPaused && gameHasStarted) togglePause();
             gameIndexModal.classList.add('opacity-0', 'scale-90');
             setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
         });
@@ -2578,6 +2684,32 @@
             showEnemiesTab.classList.add('active');
         });
 
+        // Save/Load Listeners
+        saveButton.addEventListener('click', saveGame);
+        continueButton.addEventListener('click', loadGame);
+
+        resetSaveButton.addEventListener('click', () => {
+            if (!isPaused && gameHasStarted) togglePause();
+            resetSaveModal.classList.remove('hidden');
+        });
+
+        confirmResetButton.addEventListener('click', () => {
+            localStorage.removeItem('gctd_save');
+            resetSaveModal.classList.add('hidden');
+            if (isPaused && gameHasStarted) togglePause();
+            checkForSave(); // This will hide the continue button
+            floatingTexts.push({
+                x: canvasWidth / 2, y: canvasHeight / 2,
+                content: 'Save Deleted', color: '255, 100, 100',
+                duration: 120, size: 40
+            });
+        });
+        
+        cancelResetButton.addEventListener('click', () => {
+            resetSaveModal.classList.add('hidden');
+            if (isPaused && gameHasStarted) togglePause();
+        });
+
         // --- Admin Panel Logic ---
         adminPanelButton.addEventListener('click', () => {
             adminPanel.classList.toggle('hidden');
@@ -2593,7 +2725,7 @@
         });
          executeSetWave.addEventListener('click', () => {
             const targetWave = parseInt(setWaveInput.value, 10);
-            if (!isNaN(targetWave) && targetWave >= 1) { // Allow setting to any wave >= 1
+            if (!isNaN(targetWave) && targetWave >= 1) {
                 adminSetWave(targetWave);
             }
         });
@@ -2720,31 +2852,20 @@
 
         function adminSetWave(targetWave) {
             if (timerInterval) clearInterval(timerInterval);
-
-            // Clear all active game elements
             enemies = [];
             projectiles = [];
             specialEffects = [];
             waveInProgress = false;
             bossSpawned = false;
-
-            // Set the new wave number. We set it to targetWave - 1 because
-            // startNextWave will increment it to the target number.
             wave = targetWave - 1;
-
             floatingTexts.push({
-                x: canvasWidth / 2,
-                y: canvasHeight / 2,
-                content: `Set to Wave ${targetWave}`,
-                color: '0, 191, 255',
-                duration: 180,
-                size: 50
+                x: canvasWidth / 2, y: canvasHeight / 2,
+                content: `Set to Wave ${targetWave}`, color: '0, 191, 255',
+                duration: 180, size: 50
             });
 
             if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
-            
             updateUI();
-            // Immediately trigger the next wave instead of waiting for the timer
             startNextWave();
         }
 
@@ -2754,7 +2875,9 @@
         setupTowerData();
         createTowerButtons();
         populateIndex();
+        checkForSave();
 
     </script>
 </body>
 </html>
+
