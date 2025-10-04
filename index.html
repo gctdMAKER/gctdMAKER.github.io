@@ -2050,7 +2050,14 @@
             }
         }
 
-        function updateUI() { goldDisplay.textContent = Math.floor(gold); livesDisplay.textContent = Math.round(baseHealth); waveDisplay.textContent = wave; timerDisplay.textContent = waveTimer; }
+        function updateUI() { 
+            if (gameHasStarted) {
+                goldDisplay.textContent = Math.floor(gold); 
+                livesDisplay.textContent = Math.round(baseHealth); 
+                waveDisplay.textContent = wave; 
+                timerDisplay.textContent = waveTimer;
+            }
+        }
 
         function startWaveTimer(startTime = 10) { 
             waveTimer = startTime; 
@@ -3313,11 +3320,52 @@
         async function setupFirebaseVoting() {
             try {
                 // DO NOT CHANGE THIS. This is a special variable for the web environment.
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? '{}' : '{}');
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'gctd-vote-app';
 
                 if (!firebaseConfig.apiKey) {
-                    console.error("Firebase config not found. Voting will not work.");
+                    console.error("Firebase config not found. Voting will use localStorage.");
+                    // Fallback to localStorage if Firebase is not configured
+                    const voteYesButton = document.getElementById('vote-yes-button');
+                    const voteNoButton = document.getElementById('vote-no-button');
+                    
+                    function updateLocalVoteDisplay() {
+                        const yesVotes = parseInt(localStorage.getItem('gctd_vote_yes') || '0');
+                        const noVotes = parseInt(localStorage.getItem('gctd_vote_no') || '0');
+                        const totalVotes = yesVotes + noVotes;
+                        document.getElementById('vote-count-yes').textContent = yesVotes;
+                        document.getElementById('vote-count-no').textContent = noVotes;
+                        const yesPercent = totalVotes === 0 ? 50 : (yesVotes / totalVotes) * 100;
+                        document.getElementById('vote-bar-yes').style.width = `${yesPercent}%`;
+                        
+                        if(localStorage.getItem('gctd_voted')) {
+                            voteYesButton.disabled = true;
+                            voteNoButton.disabled = true;
+                            voteYesButton.classList.add('opacity-50');
+                            voteNoButton.classList.add('opacity-50');
+                        }
+                    }
+
+                    voteYesButton.addEventListener('click', () => {
+                        if (!localStorage.getItem('gctd_voted')) {
+                            const yesVotes = parseInt(localStorage.getItem('gctd_vote_yes') || '0');
+                            localStorage.setItem('gctd_vote_yes', yesVotes + 1);
+                            localStorage.setItem('gctd_voted', 'true');
+                            updateLocalVoteDisplay();
+                        }
+                    });
+
+                    voteNoButton.addEventListener('click', () => {
+                        if (!localStorage.getItem('gctd_voted')) {
+                            const noVotes = parseInt(localStorage.getItem('gctd_vote_no') || '0');
+                            localStorage.setItem('gctd_vote_no', noVotes + 1);
+                            localStorage.setItem('gctd_voted', 'true');
+                            updateLocalVoteDisplay();
+                        }
+                    });
+                    
+                    document.getElementById('vote-button').addEventListener('click', updateLocalVoteDisplay);
+                    updateLocalVoteDisplay(); // Initial display
                     return;
                 }
 
@@ -3343,11 +3391,14 @@
 
                 let userHasVoted = false;
 
+                const voteYesButton = document.getElementById('vote-yes-button');
+                const voteNoButton = document.getElementById('vote-no-button');
+
                 function disableVoteButtons() {
-                     document.getElementById('vote-yes-button').disabled = true;
-                     document.getElementById('vote-no-button').disabled = true;
-                     document.getElementById('vote-yes-button').classList.add('opacity-50', 'cursor-not-allowed');
-                     document.getElementById('vote-no-button').classList.add('opacity-50', 'cursor-not-allowed');
+                     voteYesButton.disabled = true;
+                     voteNoButton.disabled = true;
+                     voteYesButton.classList.add('opacity-50', 'cursor-not-allowed');
+                     voteNoButton.classList.add('opacity-50', 'cursor-not-allowed');
                 }
 
                 // Check if user has already voted
@@ -3404,8 +3455,8 @@
                     }
                 }
 
-                 document.getElementById('vote-yes-button').addEventListener('click', () => castVote('yes'));
-                 document.getElementById('vote-no-button').addEventListener('click', () => castVote('no'));
+                 voteYesButton.addEventListener('click', () => castVote('yes'));
+                 voteNoButton.addEventListener('click', () => castVote('no'));
 
             } catch (error) {
                 console.error("Error setting up Firebase voting:", error);
