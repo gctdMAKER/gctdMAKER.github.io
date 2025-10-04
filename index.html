@@ -170,7 +170,7 @@
                             </button>
                             <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
                                 <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
-                                <p class="mt-2">Start with 50 Gold. Tougher enemies & expensive towers!</p>
+                                <p class="mt-2">Start with 550 Gold & 10000 Base Health. Waves progress slower, but enemies are much tougher!</p>
                             </button>
                         </div>
                         <button id="custom-mode-button" class="mode-button bg-purple-600 border-4 border-purple-400 p-6 rounded-xl w-64">
@@ -1907,8 +1907,13 @@
 
 
             gold = 100;
+            maxBaseHealth = 1500;
+            baseHealth = maxBaseHealth;
+
             if (difficulty === 'hardcore') {
-                gold = 50;
+                gold = 550;
+                maxBaseHealth = 10000;
+                baseHealth = maxBaseHealth;
                 // Adjust tower costs for hardcore mode
                 const expensiveTowerTypes = Object.keys(TOWER_DATA).slice(Object.keys(TOWER_DATA).indexOf('bomber'));
                  expensiveTowerTypes.forEach(type => {
@@ -1919,8 +1924,6 @@
             }
 
             wave = 0; 
-            maxBaseHealth = 1500; 
-            baseHealth = maxBaseHealth; 
             enemyStrengthModifier = 1.0;
             enemySpeedModifier = 1.0;
             isBaseInvincible = false;
@@ -2089,7 +2092,8 @@
                 }
                 const data = ENEMY_DATA[enemyType];
                 
-                let healthMultiplier = (1 + (wave * 0.18)) * enemyStrengthModifier * difficultyModifier.health;
+                let waveHealthScaling = (currentDifficulty === 'hardcore') ? 0.12 : 0.18;
+                let healthMultiplier = (1 + (wave * waveHealthScaling)) * enemyStrengthModifier * difficultyModifier.health;
                 let speedMultiplier = enemySpeedModifier * difficultyModifier.speed;
 
                 if (hellModeActive) {
@@ -3336,3 +3340,4 @@
     </script>
 </body>
 </html>
+
