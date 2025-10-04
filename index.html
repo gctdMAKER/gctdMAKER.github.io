@@ -152,31 +152,33 @@
                 <canvas id="gameCanvas"></canvas>
 
                 <!-- Mode Select Modal -->
-                <div id="mode-select-modal" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-white p-8 text-center hidden z-40">
-                    <h2 class="text-6xl font-chewy text-amber-400 mb-8">Select a Mode</h2>
-                    <div id="mode-select-container" class="flex flex-col items-center gap-8">
-                        <button id="continue-button" class="mode-button bg-sky-600 border-4 border-sky-400 p-6 rounded-xl w-64 hidden">
-                            <h3 class="text-3xl font-chewy">Continue Game</h3>
-                            <p id="continue-info" class="mt-2"></p>
-                        </button>
-                        <div class="flex flex-col md:flex-row gap-8">
-                            <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64">
-                                <h3 class="text-3xl font-chewy">Normal Mode</h3>
-                                <p class="mt-2">The standard cheesy challenge.</p>
+                <div id="mode-select-modal" class="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center text-white p-8 text-center hidden z-40">
+                    <div>
+                        <h2 class="text-6xl font-chewy text-amber-400 mb-8">Select a Mode</h2>
+                        <div id="mode-select-container" class="flex flex-col items-center gap-8">
+                            <button id="continue-button" class="mode-button bg-sky-600 border-4 border-sky-400 p-6 rounded-xl w-64 hidden">
+                                <h3 class="text-3xl font-chewy">Continue Game</h3>
+                                <p id="continue-info" class="mt-2"></p>
                             </button>
-                            <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64">
-                                <h3 class="text-3xl font-chewy">Hard Mode</h3>
-                                <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
-                            </button>
-                            <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
-                                <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
-                                <p class="mt-2">Start with 550 Gold & 10000 Base Health. Waves progress slower, but enemies are much tougher!</p>
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64">
+                                    <h3 class="text-3xl font-chewy">Normal Mode</h3>
+                                    <p class="mt-2">The standard cheesy challenge.</p>
+                                </button>
+                                <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64">
+                                    <h3 class="text-3xl font-chewy">Hard Mode</h3>
+                                    <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
+                                </button>
+                                <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
+                                    <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
+                                    <p class="mt-2">Start with 550 Gold & 10000 Base Health. Waves progress slower, but enemies are much tougher!</p>
+                                </button>
+                            </div>
+                            <button id="custom-mode-button" class="mode-button bg-purple-600 border-4 border-purple-400 p-6 rounded-xl w-64">
+                                <h3 class="text-3xl font-chewy">Custom Mode</h3>
+                                <p class="mt-2">Create your own challenge!</p>
                             </button>
                         </div>
-                        <button id="custom-mode-button" class="mode-button bg-purple-600 border-4 border-purple-400 p-6 rounded-xl w-64">
-                            <h3 class="text-3xl font-chewy">Custom Mode</h3>
-                            <p class="mt-2">Create your own challenge!</p>
-                        </button>
                     </div>
                 </div>
 
@@ -3340,4 +3342,5 @@
     </script>
 </body>
 </html>
+
 
