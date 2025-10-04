@@ -70,7 +70,7 @@
     <!-- Header -->
     <header class="bg-amber-500 shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 32</div>
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 33</div>
             <div>
                 <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
                 <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
@@ -154,29 +154,31 @@
                 <!-- Mode Select Modal -->
                 <div id="mode-select-modal" class="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center text-white p-8 text-center hidden z-40">
                     <div>
-                        <h2 class="text-6xl font-chewy text-amber-400 mb-8">Select a Mode</h2>
-                        <div id="mode-select-container" class="flex flex-col items-center gap-8">
-                            <button id="continue-button" class="mode-button bg-sky-600 border-4 border-sky-400 p-6 rounded-xl w-64 hidden">
+                        <h2 class="text-6xl font-chewy text-amber-400 mb-12" style="text-shadow: 2px 2px #000;">Select a Mode</h2>
+                        <div id="mode-select-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                             <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64 h-40 flex flex-col justify-center">
+                                <h3 class="text-3xl font-chewy">Normal Mode</h3>
+                                <p class="mt-2">The standard cheesy challenge.</p>
+                            </button>
+                             <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64 h-40 flex flex-col justify-center">
+                                <h3 class="text-3xl font-chewy">Hard Mode</h3>
+                                <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
+                            </button>
+                             <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64 h-40 flex flex-col justify-center">
+                                <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
+                                <p class="mt-2 text-sm">Start with 550 Gold & 10000 Base Health. Waves progress slower, but enemies are much tougher!</p>
+                            </button>
+                             <button id="custom-mode-button" class="mode-button bg-purple-600 border-4 border-purple-400 p-6 rounded-xl w-64 h-40 flex flex-col justify-center">
+                                <h3 class="text-3xl font-chewy">Custom Mode</h3>
+                                <p class="mt-2">Create your own challenge!</p>
+                            </button>
+                            <button id="continue-button" class="mode-button bg-sky-600 border-4 border-sky-400 p-6 rounded-xl w-64 h-40 flex flex-col justify-center hidden">
                                 <h3 class="text-3xl font-chewy">Continue Game</h3>
                                 <p id="continue-info" class="mt-2"></p>
                             </button>
-                            <div class="flex flex-col md:flex-row gap-8">
-                                <button id="normal-mode-button" class="mode-button bg-green-600 border-4 border-green-400 p-6 rounded-xl w-64">
-                                    <h3 class="text-3xl font-chewy">Normal Mode</h3>
-                                    <p class="mt-2">The standard cheesy challenge.</p>
-                                </button>
-                                <button id="hard-mode-button" class="mode-button bg-orange-600 border-4 border-orange-400 p-6 rounded-xl w-64">
-                                    <h3 class="text-3xl font-chewy">Hard Mode</h3>
-                                    <p class="mt-2">Enemies have 1.5x health and are 1.2x faster.</p>
-                                </button>
-                                <button id="hardcore-mode-button" class="mode-button bg-red-700 border-4 border-red-500 p-6 rounded-xl w-64">
-                                    <h3 class="text-3xl font-chewy">Hardcore Mode</h3>
-                                    <p class="mt-2">Start with 550 Gold & 10000 Base Health. Waves progress slower, but enemies are much tougher!</p>
-                                </button>
-                            </div>
-                            <button id="custom-mode-button" class="mode-button bg-purple-600 border-4 border-purple-400 p-6 rounded-xl w-64">
-                                <h3 class="text-3xl font-chewy">Custom Mode</h3>
-                                <p class="mt-2">Create your own challenge!</p>
+                            <button class="mode-button bg-amber-200 border-4 border-amber-300 p-6 rounded-xl w-64 h-40 flex flex-col justify-center text-gray-400 cursor-not-allowed">
+                                <h3 class="text-3xl font-chewy">More Coming Soon</h3>
+                                <p class="mt-2 opacity-50">Stay tuned!</p>
                             </button>
                         </div>
                     </div>
@@ -500,11 +502,6 @@
         const voteButton = document.getElementById('vote-button');
         const voteModal = document.getElementById('vote-modal');
         const closeVoteButton = document.getElementById('close-vote-button');
-        const voteYesButton = document.getElementById('vote-yes-button');
-        const voteNoButton = document.getElementById('vote-no-button');
-        const voteBarYes = document.getElementById('vote-bar-yes');
-        const voteCountYes = document.getElementById('vote-count-yes');
-        const voteCountNo = document.getElementById('vote-count-no');
         
         // Admin Panel UI
         const adminPanelButton = document.getElementById('admin-panel-button');
@@ -3023,6 +3020,17 @@
             if (isPaused && gameHasStarted) togglePause();
         });
 
+        voteButton.addEventListener('click', () => {
+            if (!isPaused && gameHasStarted) togglePause();
+            voteModal.classList.remove('hidden', 'opacity-0', 'scale-90');
+        });
+
+        closeVoteButton.addEventListener('click', () => {
+            voteModal.classList.add('opacity-0', 'scale-90');
+            setTimeout(() => voteModal.classList.add('hidden'), 300);
+            if (isPaused && gameHasStarted) togglePause();
+        });
+
         // --- Admin Panel Logic ---
         adminPanelButton.addEventListener('click', () => {
             adminPanel.classList.toggle('hidden');
@@ -3205,54 +3213,6 @@
             startNextWave();
         }
 
-        // --- Vote Logic ---
-        function updateVoteDisplay() {
-            const yesVotes = parseInt(localStorage.getItem('gctd_vote_yes') || '0');
-            const noVotes = parseInt(localStorage.getItem('gctd_vote_no') || '0');
-            const totalVotes = yesVotes + noVotes;
-            voteCountYes.textContent = yesVotes;
-            voteCountNo.textContent = noVotes;
-            const yesPercent = totalVotes === 0 ? 50 : (yesVotes / totalVotes) * 100;
-            voteBarYes.style.width = `${yesPercent}%`;
-            
-            if(localStorage.getItem('gctd_voted')) {
-                voteYesButton.disabled = true;
-                voteNoButton.disabled = true;
-                voteYesButton.classList.add('opacity-50');
-                voteNoButton.classList.add('opacity-50');
-            }
-        }
-
-        voteButton.addEventListener('click', () => {
-            if (!isPaused && gameHasStarted) togglePause();
-            updateVoteDisplay();
-            voteModal.classList.remove('hidden', 'opacity-0', 'scale-90');
-        });
-
-        closeVoteButton.addEventListener('click', () => {
-            voteModal.classList.add('opacity-0', 'scale-90');
-            setTimeout(() => voteModal.classList.add('hidden'), 300);
-            if (isPaused && gameHasStarted) togglePause();
-        });
-
-        voteYesButton.addEventListener('click', () => {
-            if (!localStorage.getItem('gctd_voted')) {
-                const yesVotes = parseInt(localStorage.getItem('gctd_vote_yes') || '0');
-                localStorage.setItem('gctd_vote_yes', yesVotes + 1);
-                localStorage.setItem('gctd_voted', 'true');
-                updateVoteDisplay();
-            }
-        });
-
-        voteNoButton.addEventListener('click', () => {
-            if (!localStorage.getItem('gctd_voted')) {
-                const noVotes = parseInt(localStorage.getItem('gctd_vote_no') || '0');
-                localStorage.setItem('gctd_vote_no', noVotes + 1);
-                localStorage.setItem('gctd_voted', 'true');
-                updateVoteDisplay();
-            }
-        });
-
         // --- Custom Game Logic ---
         function showCustomModal(modalToShow) {
             document.querySelectorAll('.custom-game-modal').forEach(m => m.classList.add('hidden'));
@@ -3337,10 +3297,118 @@
         createTowerButtons();
         populateIndex();
         checkForSave();
-        updateVoteDisplay();
 
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, runTransaction, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Voting Logic ---
+        async function setupFirebaseVoting() {
+            try {
+                // DO NOT CHANGE THIS. This is a special variable for the web environment.
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'gctd-vote-app';
+
+                if (!firebaseConfig.apiKey) {
+                    console.error("Firebase config not found. Voting will not work.");
+                    return;
+                }
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                const auth = getAuth(app);
+                
+                // Sign in the user
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                     await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                     await signInAnonymously(auth);
+                }
+
+                const userId = auth.currentUser?.uid;
+                if (!userId) {
+                    console.error("User not authenticated. Voting will be disabled.");
+                    return;
+                }
+
+                const voteDocRef = doc(db, `artifacts/${appId}/public/data/votes`, 'poll_1');
+                const userVoteDocRef = doc(db, `artifacts/${appId}/users/${userId}/votes`, 'poll_1');
+
+                let userHasVoted = false;
+
+                function disableVoteButtons() {
+                     document.getElementById('vote-yes-button').disabled = true;
+                     document.getElementById('vote-no-button').disabled = true;
+                     document.getElementById('vote-yes-button').classList.add('opacity-50', 'cursor-not-allowed');
+                     document.getElementById('vote-no-button').classList.add('opacity-50', 'cursor-not-allowed');
+                }
+
+                // Check if user has already voted
+                const userVoteSnap = await getDoc(userVoteDocRef);
+                if (userVoteSnap.exists()) {
+                    userHasVoted = true;
+                    disableVoteButtons();
+                }
+
+                // Listen for real-time vote updates
+                onSnapshot(voteDocRef, (doc) => {
+                    const data = doc.data() || { yes: 0, no: 0 };
+                    const yesVotes = data.yes || 0;
+                    const noVotes = data.no || 0;
+                    const totalVotes = yesVotes + noVotes;
+
+                    document.getElementById('vote-count-yes').textContent = yesVotes;
+                    document.getElementById('vote-count-no').textContent = noVotes;
+
+                    const yesPercent = totalVotes === 0 ? 50 : (yesVotes / totalVotes) * 100;
+                    document.getElementById('vote-bar-yes').style.width = `${yesPercent}%`;
+                });
+
+                async function castVote(voteType) {
+                    if (userHasVoted) return;
+
+                    try {
+                        await runTransaction(db, async (transaction) => {
+                            const voteDoc = await transaction.get(voteDocRef);
+                            let newYes = 0;
+                            let newNo = 0;
+
+                            if (voteDoc.exists()) {
+                                newYes = voteDoc.data().yes || 0;
+                                newNo = voteDoc.data().no || 0;
+                            }
+
+                            if (voteType === 'yes') {
+                                newYes++;
+                            } else {
+                                newNo++;
+                            }
+
+                            transaction.set(voteDocRef, { yes: newYes, no: newNo }, { merge: true });
+                        });
+
+                        // After successful transaction, mark user as voted
+                        await setDoc(userVoteDocRef, { voted: true });
+                        userHasVoted = true;
+                        disableVoteButtons();
+
+                    } catch (e) {
+                        console.error("Vote transaction failed: ", e);
+                    }
+                }
+
+                 document.getElementById('vote-yes-button').addEventListener('click', () => castVote('yes'));
+                 document.getElementById('vote-no-button').addEventListener('click', () => castVote('no'));
+
+            } catch (error) {
+                console.error("Error setting up Firebase voting:", error);
+            }
+        }
+
+        setupFirebaseVoting();
     </script>
 </body>
 </html>
-
 
