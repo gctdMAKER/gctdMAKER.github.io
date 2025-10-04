@@ -502,8 +502,6 @@
         const voteButton = document.getElementById('vote-button');
         const voteModal = document.getElementById('vote-modal');
         const closeVoteButton = document.getElementById('close-vote-button');
-        const voteYesButton = document.getElementById('vote-yes-button');
-        const voteNoButton = document.getElementById('vote-no-button');
         const voteBarYes = document.getElementById('vote-bar-yes');
         const voteCountYes = document.getElementById('vote-count-yes');
         const voteCountNo = document.getElementById('vote-count-no');
@@ -3403,8 +3401,8 @@
                         }
 
                         // Assign click handlers inside the auth listener to ensure they're ready
-                        voteYesButton.onclick = () => castVote('yes');
-                        voteNoButton.onclick = () => castVote('no');
+                        voteYesButton.addEventListener('click', () => castVote('yes'));
+                        voteNoButton.addEventListener('click', () => castVote('no'));
 
                     } else {
                         // User is signed out.
