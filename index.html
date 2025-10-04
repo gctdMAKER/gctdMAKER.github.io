@@ -127,15 +127,15 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 text-center">
                 <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
                     <p class="text-sm text-gray-500 font-semibold">GOLD</p>
-                    <p id="gold-display" class="text-2xl font-bold text-amber-500">100</p>
+                    <p id="gold-display" class="text-2xl font-bold text-amber-500">--</p>
                 </div>
                 <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
                     <p class="text-sm text-gray-500 font-semibold">BASE HEALTH</p>
-                    <p id="lives-display" class="text-2xl font-bold text-red-500">1500</p>
+                    <p id="lives-display" class="text-2xl font-bold text-red-500">--</p>
                 </div>
                 <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
                     <p class="text-sm text-gray-500 font-semibold">WAVE</p>
-                    <p id="wave-display" class="text-2xl font-bold text-sky-500">0</p>
+                    <p id="wave-display" class="text-2xl font-bold text-sky-500">--</p>
                 </div>
                  <div class="bg-white p-3 rounded-lg shadow-md border-2 border-amber-300">
                     <p class="text-sm text-gray-500 font-semibold">NEXT WAVE IN</p>
@@ -502,6 +502,11 @@
         const voteButton = document.getElementById('vote-button');
         const voteModal = document.getElementById('vote-modal');
         const closeVoteButton = document.getElementById('close-vote-button');
+        const voteYesButton = document.getElementById('vote-yes-button');
+        const voteNoButton = document.getElementById('vote-no-button');
+        const voteBarYes = document.getElementById('vote-bar-yes');
+        const voteCountYes = document.getElementById('vote-count-yes');
+        const voteCountNo = document.getElementById('vote-count-no');
         
         // Admin Panel UI
         const adminPanelButton = document.getElementById('admin-panel-button');
@@ -2907,9 +2912,9 @@
             gameOverModal.classList.add('hidden');
             checkForSave();
             
-            goldDisplay.textContent = 100;
-            livesDisplay.textContent = 1500;
-            waveDisplay.textContent = 0;
+            goldDisplay.textContent = '--';
+            livesDisplay.textContent = '--';
+            waveDisplay.textContent = '--';
             timerDisplay.textContent = '--';
         });
 
