@@ -70,7 +70,7 @@
     <!-- Header -->
     <header class="bg-amber-500 shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 34</div>
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 33</div>
             <div>
                 <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
                 <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
@@ -3320,10 +3320,10 @@
         async function setupFirebaseVoting() {
             try {
                 // DO NOT CHANGE THIS. This is a special variable for the web environment.
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? '{}' : '{}');
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'gctd-vote-app';
 
-                if (!firebaseConfig.apiKey) {
+                 if (Object.keys(firebaseConfig).length === 0) {
                     console.error("Firebase config not found. Voting will use localStorage.");
                     // Fallback to localStorage if Firebase is not configured
                     const voteYesButton = document.getElementById('vote-yes-button');
@@ -3341,8 +3341,8 @@
                         if(localStorage.getItem('gctd_voted')) {
                             voteYesButton.disabled = true;
                             voteNoButton.disabled = true;
-                            voteYesButton.classList.add('opacity-50');
-                            voteNoButton.classList.add('opacity-50');
+                            voteYesButton.classList.add('opacity-50', 'cursor-not-allowed');
+                            voteNoButton.classList.add('opacity-50', 'cursor-not-allowed');
                         }
                     }
 
