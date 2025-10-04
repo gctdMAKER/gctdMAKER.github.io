@@ -70,7 +70,7 @@
     <!-- Header -->
     <header class="bg-amber-500 shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 35</div>
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 33</div>
             <div>
                 <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
                 <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
@@ -3313,10 +3313,10 @@
     </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, runTransaction, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Voting Logic (EDITED) ---
+        // --- Firebase Voting Logic (FIXED) ---
         async function setupFirebaseVoting() {
             try {
                 // These are special variables provided by the web environment.
@@ -3325,7 +3325,6 @@
 
                 if (firebaseConfigString === '{}') {
                     console.error("Firebase config not found. Real-time voting is disabled.");
-                    // You could implement a localStorage fallback here if needed.
                     return;
                 }
                 const firebaseConfig = JSON.parse(firebaseConfigString);
@@ -3334,94 +3333,93 @@
                 const app = initializeApp(firebaseConfig);
                 const db = getFirestore(app);
                 const auth = getAuth(app);
-                
-                // Sign in the user anonymously or with a provided token
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                     await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                     await signInAnonymously(auth);
-                }
 
-                const userId = auth.currentUser?.uid;
-                if (!userId) {
-                    console.error("User authentication failed. Voting will be disabled.");
-                    return;
-                }
+                // This listener ensures that all voting logic runs *after* the user is authenticated.
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        // User is signed in.
+                        const userId = user.uid;
+                        
+                        const voteDocRef = doc(db, `artifacts/${appId}/public/data/votes`, 'poll_1');
+                        const userVoteDocRef = doc(db, `artifacts/${appId}/users/${userId}/votes`, 'poll_1');
+                        
+                        let userHasVoted = false;
+                        const voteYesButton = document.getElementById('vote-yes-button');
+                        const voteNoButton = document.getElementById('vote-no-button');
 
-                // Document references
-                const voteDocRef = doc(db, `artifacts/${appId}/public/data/votes`, 'poll_1');
-                const userVoteDocRef = doc(db, `artifacts/${appId}/users/${userId}/votes`, 'poll_1');
+                        function disableVoteButtons() {
+                            userHasVoted = true;
+                            voteYesButton.disabled = true;
+                            voteNoButton.disabled = true;
+                            voteYesButton.classList.add('opacity-50', 'cursor-not-allowed');
+                            voteNoButton.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
 
-                let userHasVoted = false;
-                const voteYesButton = document.getElementById('vote-yes-button');
-                const voteNoButton = document.getElementById('vote-no-button');
+                        // Check if the user has already voted
+                        const userVoteSnap = await getDoc(userVoteDocRef);
+                        if (userVoteSnap.exists()) {
+                            disableVoteButtons();
+                        }
 
-                function disableVoteButtons() {
-                    userHasVoted = true;
-                    voteYesButton.disabled = true;
-                    voteNoButton.disabled = true;
-                    voteYesButton.classList.add('opacity-50', 'cursor-not-allowed');
-                    voteNoButton.classList.add('opacity-50', 'cursor-not-allowed');
-                }
+                        // Listen for real-time updates on the vote counts
+                        onSnapshot(voteDocRef, (docSnap) => {
+                            const data = docSnap.data() || { yes: 0, no: 0 };
+                            const yesVotes = data.yes || 0;
+                            const noVotes = data.no || 0;
+                            const totalVotes = yesVotes + noVotes;
 
-                // 1. Check if the user has already voted
-                const userVoteSnap = await getDoc(userVoteDocRef);
-                if (userVoteSnap.exists()) {
-                    disableVoteButtons();
-                }
+                            document.getElementById('vote-count-yes').textContent = yesVotes;
+                            document.getElementById('vote-count-no').textContent = noVotes;
 
-                // 2. Listen for real-time updates on the public vote counts
-                onSnapshot(voteDocRef, (doc) => {
-                    const data = doc.data() || { yes: 0, no: 0 };
-                    const yesVotes = data.yes || 0;
-                    const noVotes = data.no || 0;
-                    const totalVotes = yesVotes + noVotes;
-
-                    document.getElementById('vote-count-yes').textContent = yesVotes;
-                    document.getElementById('vote-count-no').textContent = noVotes;
-
-                    const yesPercent = totalVotes === 0 ? 50 : (yesVotes / totalVotes) * 100;
-                    document.getElementById('vote-bar-yes').style.width = `${yesPercent}%`;
-                });
-
-                // 3. Function to cast a vote using a transaction
-                async function castVote(voteType) {
-                    if (userHasVoted) return;
-
-                    try {
-                        await runTransaction(db, async (transaction) => {
-                            const voteDoc = await transaction.get(voteDocRef);
-                            
-                            let newYes = 0;
-                            let newNo = 0;
-
-                            if (voteDoc.exists()) {
-                                newYes = voteDoc.data().yes || 0;
-                                newNo = voteDoc.data().no || 0;
-                            }
-
-                            if (voteType === 'yes') {
-                                newYes++;
-                            } else {
-                                newNo++;
-                            }
-
-                            // Update the public vote count
-                            transaction.set(voteDocRef, { yes: newYes, no: newNo }, { merge: true });
+                            const yesPercent = totalVotes === 0 ? 50 : (yesVotes / totalVotes) * 100;
+                            document.getElementById('vote-bar-yes').style.width = `${yesPercent}%`;
                         });
 
-                        // After the transaction is successful, mark that this user has voted.
-                        await setDoc(userVoteDocRef, { voted: true });
-                        disableVoteButtons();
+                        async function castVote(voteType) {
+                            if (userHasVoted) return;
 
-                    } catch (e) {
-                        console.error("Vote transaction failed: ", e);
+                            try {
+                                await runTransaction(db, async (transaction) => {
+                                    const voteDoc = await transaction.get(voteDocRef);
+                                    let newYes = 0;
+                                    let newNo = 0;
+                                    if (voteDoc.exists()) {
+                                        newYes = voteDoc.data().yes || 0;
+                                        newNo = voteDoc.data().no || 0;
+                                    }
+                                    if (voteType === 'yes') {
+                                        newYes++;
+                                    } else {
+                                        newNo++;
+                                    }
+                                    transaction.set(voteDocRef, { yes: newYes, no: newNo }, { merge: true });
+                                });
+
+                                await setDoc(userVoteDocRef, { voted: true });
+                                disableVoteButtons();
+                            } catch (e) {
+                                console.error("Vote transaction failed: ", e);
+                            }
+                        }
+
+                        // Assign click handlers inside the auth listener to ensure they're ready
+                        voteYesButton.onclick = () => castVote('yes');
+                        voteNoButton.onclick = () => castVote('no');
+
+                    } else {
+                        // User is signed out.
+                        console.error("User is not signed in. Voting will be disabled.");
+                    }
+                });
+                
+                // Trigger sign-in if no user is currently signed in.
+                if (!auth.currentUser) {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
                     }
                 }
-
-                // 4. Attach event listeners
-                voteYesButton.addEventListener('click', () => castVote('yes'));
-                voteNoButton.addEventListener('click', () => castVote('no'));
 
             } catch (error) {
                 console.error("Error setting up Firebase voting:", error);
@@ -3433,3 +3431,4 @@
     </script>
 </body>
 </html>
+
