@@ -26,7 +26,7 @@
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
             border-color: #FBBF24;
         }
-        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert, #mode-select-modal, #reset-save-modal, #vote-modal, .custom-game-modal {
+        .game-over-modal, .boss-alert, .demon-mode-alert, #game-index-modal, #hell-mode-alert, #mode-select-modal, #reset-save-modal, .custom-game-modal {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
         #enemy-index-content::-webkit-scrollbar, #tower-index-content::-webkit-scrollbar, #admin-panel div::-webkit-scrollbar, .custom-select-content::-webkit-scrollbar {
@@ -70,7 +70,7 @@
     <!-- Header -->
     <header class="bg-amber-500 shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 36</div>
+            <div class="font-chewy text-2xl text-white" style="text-shadow: 1px 1px #a16207;">Version 33</div>
             <div>
                 <a href="#how-to-play" class="text-white hover:text-amber-200 mx-3 font-semibold">How to Play</a>
                 <a href="#game-section" id="play-now-button" class="bg-white text-amber-600 font-bold py-2 px-4 rounded-lg hover:bg-amber-100 transition-colors">Play Now</a>
@@ -243,26 +243,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Vote Modal -->
-                <div id="vote-modal" class="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center text-white p-8 text-center hidden z-40">
-                     <div class="bg-amber-100 text-black w-full max-w-lg rounded-xl shadow-lg flex flex-col p-8 items-center">
-                        <h2 class="text-3xl font-chewy text-amber-700 mb-4">Community Poll</h2>
-                        <p class="text-lg text-gray-800 mb-6">Should I add a feature where enemies can destroy towers?</p>
-                        <div class="flex gap-4 mb-4">
-                            <button id="vote-yes-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg">Yes</button>
-                            <button id="vote-no-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg">No</button>
-                        </div>
-                        <div class="w-full bg-gray-300 rounded-full h-6 overflow-hidden">
-                            <div id="vote-bar-yes" class="bg-green-500 h-full" style="width: 50%;"></div>
-                        </div>
-                        <div class="w-full flex justify-between mt-1 text-sm font-bold">
-                            <span id="vote-count-yes">0</span>
-                            <span id="vote-count-no">0</span>
-                        </div>
-                        <button id="close-vote-button" class="mt-6 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Close</button>
-                    </div>
-                </div>
                 
                 <!-- Alerts -->
                 <div id="boss-alert" class="absolute inset-0 flex items-center justify-center hidden opacity-0 z-10 pointer-events-none">
@@ -409,7 +389,6 @@
                 <button id="index-button" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Game Index</button>
                 <button id="admin-panel-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Admin</button>
                 <button id="sound-toggle-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">🔊 Sound On</button>
-                <button id="vote-button" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Vote</button>
                 <button id="save-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Save Game</button>
                 <button id="reset-save-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Reset Save</button>
             </div>
@@ -497,14 +476,6 @@
         const resetSaveModal = document.getElementById('reset-save-modal');
         const confirmResetButton = document.getElementById('confirm-reset-button');
         const cancelResetButton = document.getElementById('cancel-reset-button');
-
-        // Vote UI
-        const voteButton = document.getElementById('vote-button');
-        const voteModal = document.getElementById('vote-modal');
-        const closeVoteButton = document.getElementById('close-vote-button');
-        const voteBarYes = document.getElementById('vote-bar-yes');
-        const voteCountYes = document.getElementById('vote-count-yes');
-        const voteCountNo = document.getElementById('vote-count-no');
         
         // Admin Panel UI
         const adminPanelButton = document.getElementById('admin-panel-button');
@@ -3030,17 +3001,6 @@
             if (isPaused && gameHasStarted) togglePause();
         });
 
-        voteButton.addEventListener('click', () => {
-            if (!isPaused && gameHasStarted) togglePause();
-            voteModal.classList.remove('hidden', 'opacity-0', 'scale-90');
-        });
-
-        closeVoteButton.addEventListener('click', () => {
-            voteModal.classList.add('opacity-0', 'scale-90');
-            setTimeout(() => voteModal.classList.add('hidden'), 300);
-            if (isPaused && gameHasStarted) togglePause();
-        });
-
         // --- Admin Panel Logic ---
         adminPanelButton.addEventListener('click', () => {
             adminPanel.classList.toggle('hidden');
@@ -3308,124 +3268,6 @@
         populateIndex();
         checkForSave();
 
-    </script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, runTransaction, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // --- Firebase Voting Logic (FIXED) ---
-        async function setupFirebaseVoting() {
-            try {
-                // These are special variables provided by the web environment.
-                const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'gctd-vote-app';
-
-                if (firebaseConfigString === '{}') {
-                    console.error("Firebase config not found. Real-time voting is disabled.");
-                    return;
-                }
-                const firebaseConfig = JSON.parse(firebaseConfigString);
-
-                // Initialize Firebase
-                const app = initializeApp(firebaseConfig);
-                const db = getFirestore(app);
-                const auth = getAuth(app);
-
-                // This listener ensures that all voting logic runs *after* the user is authenticated.
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        // User is signed in.
-                        const userId = user.uid;
-                        
-                        const voteDocRef = doc(db, `artifacts/${appId}/public/data/votes`, 'poll_1');
-                        const userVoteDocRef = doc(db, `artifacts/${appId}/users/${userId}/votes`, 'poll_1');
-                        
-                        let userHasVoted = false;
-                        const voteYesButton = document.getElementById('vote-yes-button');
-                        const voteNoButton = document.getElementById('vote-no-button');
-
-                        function disableVoteButtons() {
-                            userHasVoted = true;
-                            voteYesButton.disabled = true;
-                            voteNoButton.disabled = true;
-                            voteYesButton.classList.add('opacity-50', 'cursor-not-allowed');
-                            voteNoButton.classList.add('opacity-50', 'cursor-not-allowed');
-                        }
-
-                        // Check if the user has already voted
-                        const userVoteSnap = await getDoc(userVoteDocRef);
-                        if (userVoteSnap.exists()) {
-                            disableVoteButtons();
-                        }
-
-                        // Listen for real-time updates on the vote counts
-                        onSnapshot(voteDocRef, (docSnap) => {
-                            const data = docSnap.data() || { yes: 0, no: 0 };
-                            const yesVotes = data.yes || 0;
-                            const noVotes = data.no || 0;
-                            const totalVotes = yesVotes + noVotes;
-
-                            document.getElementById('vote-count-yes').textContent = yesVotes;
-                            document.getElementById('vote-count-no').textContent = noVotes;
-
-                            const yesPercent = totalVotes === 0 ? 50 : (yesVotes / totalVotes) * 100;
-                            document.getElementById('vote-bar-yes').style.width = `${yesPercent}%`;
-                        });
-
-                        async function castVote(voteType) {
-                            if (userHasVoted) return;
-
-                            try {
-                                await runTransaction(db, async (transaction) => {
-                                    const voteDoc = await transaction.get(voteDocRef);
-                                    let newYes = 0;
-                                    let newNo = 0;
-                                    if (voteDoc.exists()) {
-                                        newYes = voteDoc.data().yes || 0;
-                                        newNo = voteDoc.data().no || 0;
-                                    }
-                                    if (voteType === 'yes') {
-                                        newYes++;
-                                    } else {
-                                        newNo++;
-                                    }
-                                    transaction.set(voteDocRef, { yes: newYes, no: newNo }, { merge: true });
-                                });
-
-                                await setDoc(userVoteDocRef, { voted: true });
-                                disableVoteButtons();
-                            } catch (e) {
-                                console.error("Vote transaction failed: ", e);
-                            }
-                        }
-
-                        // Assign click handlers inside the auth listener to ensure they're ready
-                        voteYesButton.addEventListener('click', () => castVote('yes'));
-                        voteNoButton.addEventListener('click', () => castVote('no'));
-
-                    } else {
-                        // User is signed out.
-                        console.error("User is not signed in. Voting will be disabled.");
-                    }
-                });
-                
-                // Trigger sign-in if no user is currently signed in.
-                if (!auth.currentUser) {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                }
-
-            } catch (error) {
-                console.error("Error setting up Firebase voting:", error);
-            }
-        }
-
-        // Run the setup function
-        setupFirebaseVoting();
     </script>
 </body>
 </html>
