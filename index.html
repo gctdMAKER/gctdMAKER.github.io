@@ -81,6 +81,7 @@
     <!-- Hero Section -->
     <section class="hero-bg py-20 md:py-32">
         <div class="container mx-auto text-center px-6">
+            <p class="text-3xl md:text-4xl font-chewy text-orange-500 bg-white/70 rounded-lg inline-block px-4 py-2 mb-6" style="text-shadow: 1px 1px #fff;">Next update: Story mode</p>
             <h1 class="text-6xl md:text-8xl font-chewy text-amber-700" style="text-shadow: 2px 2px #fff, 4px 4px #FBBF24;">Grilled Cheese Tower Defense</h1>
             <p class="text-xl md:text-2xl text-amber-800 mt-4 max-w-3xl mx-auto font-semibold">The ultimate battle of bread and butter! Defend your delicious base from hordes of hungry, marauding crumbs. Strategize, build, and melt your way to victory!</p>
             <a href="#game-section" id="start-game-button" class="mt-8 inline-block bg-amber-500 text-white font-bold text-2xl py-4 px-10 rounded-xl shadow-lg hover:bg-amber-600 transition-transform transform hover:scale-105">Start Defending!</a>
@@ -208,17 +209,70 @@
                         </div>
                     </div>
                 </div>
+                <div id="custom-gold-select-modal" class="custom-game-modal absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 text-white hidden z-45">
+                    <div class="bg-amber-100 text-black w-full max-w-lg rounded-xl shadow-lg flex flex-col p-8 items-center">
+                        <h2 class="text-3xl font-chewy text-amber-700 mb-6">Custom Game: Select Starting Gold</h2>
+                        <div class="flex gap-4 mb-4">
+                            <button class="gold-button mode-button bg-yellow-400 p-4 rounded-lg" data-gold="100">100</button>
+                            <button class="gold-button mode-button bg-yellow-500 p-4 rounded-lg" data-gold="1000">1000</button>
+                            <button class="gold-button mode-button bg-yellow-600 p-4 rounded-lg" data-gold="10000">10000</button>
+                        </div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <label for="custom-gold-input" class="font-semibold">Custom:</label>
+                            <input type="number" id="custom-gold-input" class="w-40 text-black rounded px-2 py-1" placeholder="Enter amount">
+                        </div>
+                        <div class="mt-4 flex justify-between w-full gap-4">
+                            <button id="custom-gold-back-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">Back</button>
+                            <button id="custom-gold-next-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Next</button>
+                        </div>
+                    </div>
+                </div>
                  <div id="custom-difficulty-select-modal" class="custom-game-modal absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 text-white hidden z-45">
                       <div class="bg-amber-100 text-black w-full max-w-lg rounded-xl shadow-lg flex flex-col p-8 items-center">
                         <h2 class="text-3xl font-chewy text-amber-700 mb-6">Custom Game: Select Difficulty</h2>
-                        <div class="flex gap-4 mb-6">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
                             <button class="difficulty-button mode-button bg-green-500 p-4 rounded-lg" data-difficulty="0.75">Easy</button>
                             <button class="difficulty-button mode-button bg-yellow-500 p-4 rounded-lg" data-difficulty="1">Medium</button>
                             <button class="difficulty-button mode-button bg-red-500 p-4 rounded-lg" data-difficulty="1.5">Hard</button>
+                            <button id="custom-difficulty-button" class="difficulty-button mode-button bg-purple-500 p-4 rounded-lg">Custom</button>
                         </div>
                         <div class="mt-4 flex justify-between w-full gap-4">
                              <button id="custom-difficulty-back-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">Back</button>
                              <button id="custom-start-game-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Start Game</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="custom-difficulty-details-modal" class="custom-game-modal absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 text-white hidden z-45">
+                    <div class="bg-amber-100 text-black w-full max-w-lg rounded-xl shadow-lg flex flex-col p-8 items-center space-y-4">
+                        <h2 class="text-3xl font-chewy text-amber-700">Custom Difficulty Settings</h2>
+                        
+                        <div class="w-full">
+                            <label for="enemy-health-slider" class="flex justify-between"><span>Enemy Health:</span><span id="enemy-health-value">1.0x</span></label>
+                            <input type="range" id="enemy-health-slider" min="0.1" max="10" step="0.1" value="1" class="w-full">
+                        </div>
+                        <div class="w-full">
+                            <label for="enemy-speed-slider" class="flex justify-between"><span>Enemy Speed:</span><span id="enemy-speed-value">1.0x</span></label>
+                            <input type="range" id="enemy-speed-slider" min="0.1" max="5" step="0.1" value="1" class="w-full">
+                        </div>
+
+                        <hr class="w-full border-t-2 border-amber-300 my-2">
+
+                        <div class="w-full">
+                            <label for="tower-damage-slider" class="flex justify-between"><span>Tower Damage:</span><span id="tower-damage-value">1.0x</span></label>
+                            <input type="range" id="tower-damage-slider" min="0.1" max="5" step="0.1" value="1" class="w-full">
+                        </div>
+                        <div class="w-full">
+                            <label for="tower-firerate-slider" class="flex justify-between"><span>Tower Fire Rate:</span><span id="tower-firerate-value">1.0x</span></label>
+                            <input type="range" id="tower-firerate-slider" min="0.1" max="5" step="0.1" value="1" class="w-full">
+                        </div>
+                        <div class="w-full">
+                            <label for="tower-range-slider" class="flex justify-between"><span>Tower Range:</span><span id="tower-range-value">1.0x</span></label>
+                            <input type="range" id="tower-range-slider" min="0.5" max="3" step="0.1" value="1" class="w-full">
+                        </div>
+
+                        <div class="mt-4 flex justify-between w-full gap-4">
+                             <button id="custom-difficulty-details-back-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">Back</button>
+                             <button id="start-custom-game-final-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg">Done</button>
                         </div>
                     </div>
                 </div>
@@ -460,12 +514,22 @@
         // Custom Game UI
         const customTowerSelectModal = document.getElementById('custom-tower-select-modal');
         const customEnemySelectModal = document.getElementById('custom-enemy-select-modal');
+        const customGoldSelectModal = document.getElementById('custom-gold-select-modal');
         const customDifficultySelectModal = document.getElementById('custom-difficulty-select-modal');
+        const customDifficultyDetailsModal = document.getElementById('custom-difficulty-details-modal');
+
         const customTowersNextButton = document.getElementById('custom-towers-next-button');
         const customEnemiesBackButton = document.getElementById('custom-enemies-back-button');
         const customEnemiesNextButton = document.getElementById('custom-enemies-next-button');
+        const customGoldBackButton = document.getElementById('custom-gold-back-button');
+        const customGoldNextButton = document.getElementById('custom-gold-next-button');
+        const customGoldInput = document.getElementById('custom-gold-input');
         const customDifficultyBackButton = document.getElementById('custom-difficulty-back-button');
         const customStartGameButton = document.getElementById('custom-start-game-button');
+        const customDifficultyButton = document.getElementById('custom-difficulty-button');
+        const customDifficultyDetailsBackButton = document.getElementById('custom-difficulty-details-back-button');
+        const startCustomGameFinalButton = document.getElementById('start-custom-game-final-button');
+
 
         // Save/Load UI
         const saveButton = document.getElementById('save-button');
@@ -531,6 +595,8 @@
         let originalTowerData = {}; // To store original costs
         let isCustomGame = false;
         let customEnabledTowers = [], customEnabledEnemies = [];
+        let customStartingGold = 100;
+        let customDifficultySettings = { enemyHealth: 1, enemySpeed: 1, towerDamage: 1, towerFireRate: 1, towerRange: 1 };
 
         // --- Audio & Music Setup ---
         let popSynth, lazarSynth, explodeSynth, deathSynth, buildSynth, musicSynth, musicLoop;
@@ -1867,7 +1933,18 @@
             currentDifficulty = difficulty;
             
             setupTowerData(); // Reset tower data to original values
-            if (difficulty === 'normal') {
+
+            if(isCustomGame && currentDifficulty === 'custom') {
+                 Object.keys(TOWER_DATA).forEach(type => {
+                     TOWER_DATA[type].damage *= customDifficultySettings.towerDamage;
+                     TOWER_DATA[type].fireRate /= customDifficultySettings.towerFireRate;
+                     TOWER_DATA[type].range *= customDifficultySettings.towerRange;
+                 });
+                 difficultyModifier = {
+                     health: customDifficultySettings.enemyHealth,
+                     speed: customDifficultySettings.enemySpeed
+                 }
+            } else if (difficulty === 'normal') {
                 difficultyModifier = { health: 1, speed: 1 };
                 backgroundColor = '#2E8B57';
             } else if (difficulty === 'hard') {
@@ -1879,7 +1956,7 @@
             }
 
 
-            gold = 100;
+            gold = isCustomGame ? customStartingGold : 100;
             maxBaseHealth = 1500;
             baseHealth = maxBaseHealth;
 
@@ -2793,482 +2870,5 @@
         }
 
         function loadGame() {
-            const savedDataString = localStorage.getItem('gctd_save');
-            if (!savedDataString) { console.error("No save data found."); return; }
-            const savedState = JSON.parse(savedDataString);
-            isCustomGame = false;
-            init(savedState.currentDifficulty);
-
-            gold = savedState.gold;
-            wave = savedState.wave;
-            baseHealth = savedState.baseHealth;
-            enemyStrengthModifier = savedState.enemyStrengthModifier || 1.0;
-            enemySpeedModifier = savedState.enemySpeedModifier || 1.0;
-            
-            towers = savedState.towers.map(st => {
-                const baseTowerData = originalTowerData[st.type];
-                let loadedTower = {
-                    ...baseTowerData, // Start with original stats
-                    x: st.x * canvasWidth, y: st.y * canvasHeight,
-                    type: st.type, level: st.level, totalSpent: st.totalSpent,
-                    size: canvasWidth * 0.035,
-                    range: canvasWidth * baseTowerData.range,
-                    upgradeCost: baseTowerData.cost,
-                    fireCooldown: 0, shield: 0, disabled: 0, currentTarget: null, damageBonus: 0,
-                };
-
-                // Re-apply upgrades based on level
-                for(let i = 1; i < st.level; i++) {
-                    const upgradeType = TOWER_DATA[st.type].upgrade;
-                    if (upgradeType === 'damage') loadedTower.damage *= 1.25;
-                    else if (upgradeType === 'fireRate') loadedTower.fireRate *= 0.85;
-                    else if (upgradeType === 'effect') loadedTower.damage *= 1.2;
-                    else if (upgradeType === 'cash') { loadedTower.damage *= 1.5; loadedTower.fireRate *= 0.9; }
-                    loadedTower.upgradeCost *= 2;
-                }
-
-                if (st.type === 'monolith') {
-                    loadedTower.health = st.health;
-                    loadedTower.maxHealth = st.maxHealth;
-                }
-
-                return loadedTower;
-            });
-
-            gameHasStarted = true;
-            modeSelectModal.classList.add('hidden');
-            
-            waveInProgress = savedState.waveInProgress;
-            waveTimer = savedState.waveTimer;
-            updateUI();
-
-            if (waveInProgress) {
-                 startNextWave(); // This logic might need adjustment depending on how you want to respawn mid-wave enemies. For now, we restart the wave.
-                 wave--; // Counteract the wave++ in startNextWave
-            } else {
-                startWaveTimer(waveTimer);
-            }
-        }
-
-        function checkForSave() {
-            const savedDataString = localStorage.getItem('gctd_save');
-            if (savedDataString) {
-                try {
-                    const savedData = JSON.parse(savedDataString);
-                    continueButton.classList.remove('hidden');
-                    continueInfo.textContent = `Wave: ${savedData.wave} | Gold: ${savedData.gold} | ${savedData.currentDifficulty}`;
-                } catch (e) {
-                    console.error("Failed to parse save data:", e);
-                    localStorage.removeItem('gctd_save');
-                }
-            } else {
-                continueButton.classList.add('hidden');
-            }
-        }
-
-        // --- Event Listeners ---
-        window.addEventListener('resize', () => {
-            if (gameHasStarted) {
-                 resizeCanvas();
-            } else {
-                resizeCanvas();
-            }
-        });
-        canvas.addEventListener('click', handleCanvasClick);
-        canvas.addEventListener('mousemove', e => { const rect = canvas.getBoundingClientRect(); mousePos.x = e.clientX - rect.left; mousePos.y = e.clientY - rect.top; });
-        
-        restartButton.addEventListener('click', () => {
-            if (isMusicPlaying) {
-                toggleMusic();
-                musicToggle.checked = false;
-            }
-            gameHasStarted = false;
-            preGameOverlay.style.display = 'none';
-            modeSelectModal.classList.remove('hidden');
-            gameOverModal.classList.add('hidden');
-            checkForSave();
-            
-            goldDisplay.textContent = '--';
-            livesDisplay.textContent = '--';
-            waveDisplay.textContent = '--';
-            timerDisplay.textContent = '--';
-        });
-
-        soundToggleButton.addEventListener('click', toggleSound);
-        pauseButton.addEventListener('click', togglePause);
-        normalSpeedButton.addEventListener('click', () => setGameSpeed(1));
-        twoxSpeedButton.addEventListener('click', () => setGameSpeed(2));
-        
-        const startFunction = (e) => {
-            e.preventDefault();
-            document.getElementById('game-section').scrollIntoView();
-            modeSelectModal.classList.remove('hidden');
-            preGameOverlay.style.display = 'none';
-            checkForSave();
-        };
-
-        startGameButton.addEventListener('click', startFunction);
-        playNowButton.addEventListener('click', startFunction);
-
-        normalModeButton.addEventListener('click', () => {
-            modeSelectModal.classList.add('hidden');
-            if(!gameHasStarted) {
-                isCustomGame = false;
-                init('normal');
-                gameHasStarted = true;
-            }
-        });
-        hardModeButton.addEventListener('click', () => {
-            modeSelectModal.classList.add('hidden');
-            if(!gameHasStarted) {
-                isCustomGame = false;
-                init('hard');
-                gameHasStarted = true;
-            }
-        });
-        hardcoreModeButton.addEventListener('click', () => {
-            modeSelectModal.classList.add('hidden');
-            if(!gameHasStarted) {
-                isCustomGame = false;
-                init('hardcore');
-                gameHasStarted = true;
-            }
-        });
-
-        indexButton.addEventListener('click', () => {
-            if (gameIndexModal.classList.contains('hidden')) {
-                if (!isPaused && gameHasStarted) togglePause();
-                gameIndexModal.classList.remove('hidden');
-                setTimeout(() => gameIndexModal.classList.remove('opacity-0', 'scale-90'), 10);
-            } else {
-                if (isPaused && gameHasStarted) togglePause();
-                gameIndexModal.classList.add('opacity-0', 'scale-90');
-                setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
-            }
-        });
-        closeIndexButton.addEventListener('click', () => {
-            if(isPaused && gameHasStarted) togglePause();
-            gameIndexModal.classList.add('opacity-0', 'scale-90');
-            setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && gameHasStarted && !isPaused) {
-                togglePause();
-                saveGame(); // Auto-save when tab loses focus
-            }
-        });
-        
-        showTowersTab.addEventListener('click', () => {
-            towerIndexContent.classList.remove('hidden');
-            enemyIndexContent.classList.add('hidden');
-            showTowersTab.classList.add('active');
-            showEnemiesTab.classList.remove('active');
-        });
-        
-        showEnemiesTab.addEventListener('click', () => {
-            towerIndexContent.classList.add('hidden');
-            enemyIndexContent.classList.remove('hidden');
-            showTowersTab.classList.remove('active');
-            showEnemiesTab.classList.add('active');
-        });
-
-        // Save/Load Listeners
-        saveButton.addEventListener('click', saveGame);
-        continueButton.addEventListener('click', loadGame);
-
-        resetSaveButton.addEventListener('click', () => {
-            if (!isPaused && gameHasStarted) togglePause();
-            resetSaveModal.classList.remove('hidden', 'opacity-0', 'scale-90');
-        });
-
-        confirmResetButton.addEventListener('click', () => {
-            localStorage.removeItem('gctd_save');
-            resetSaveModal.classList.add('opacity-0', 'scale-90');
-            setTimeout(() => resetSaveModal.classList.add('hidden'), 300);
-            if (isPaused && gameHasStarted) togglePause();
-            checkForSave(); // This will hide the continue button
-            floatingTexts.push({
-                x: canvasWidth / 2, y: canvasHeight / 2,
-                content: 'Save Deleted', color: '255, 100, 100',
-                duration: 120, size: 40
-            });
-        });
-        
-        cancelResetButton.addEventListener('click', () => {
-            resetSaveModal.classList.add('opacity-0', 'scale-90');
-            setTimeout(() => resetSaveModal.classList.add('hidden'), 300);
-            if (isPaused && gameHasStarted) togglePause();
-        });
-
-        // --- Admin Panel Logic ---
-        adminPanelButton.addEventListener('click', () => {
-            adminPanel.classList.toggle('hidden');
-        });
-        closeAdminPanel.addEventListener('click', () => {
-            adminPanel.classList.add('hidden');
-        });
-        executeSkipWaves.addEventListener('click', () => {
-            const numWaves = parseInt(skipWavesInput.value, 10);
-            if (!isNaN(numWaves) && numWaves > 0) {
-                adminSkipWaves(numWaves);
-            }
-        });
-         executeSetWave.addEventListener('click', () => {
-            const targetWave = parseInt(setWaveInput.value, 10);
-            if (!isNaN(targetWave) && targetWave >= 1) {
-                adminSetWave(targetWave);
-            }
-        });
-        executeSetSpeed.addEventListener('click', () => {
-            const speed = parseFloat(setSpeedInput.value);
-            if (!isNaN(speed) && speed > 0) {
-                setGameSpeed(speed);
-            }
-        });
-        executeAddGold.addEventListener('click', () => {
-            const amount = parseInt(addGoldInput.value, 10);
-            if (!isNaN(amount)) {
-                gold += amount;
-                updateUI();
-            }
-        });
-        executeKillAll.addEventListener('click', () => {
-            enemies = [];
-        });
-        executeSetHealth.addEventListener('click', () => {
-            const health = parseInt(setHealthInput.value, 10);
-            if(!isNaN(health) && health > 0) {
-                baseHealth = health;
-                maxBaseHealth = health;
-                updateUI();
-            }
-        });
-        invincibleBaseToggle.addEventListener('change', (e) => {
-            isBaseInvincible = e.target.checked;
-        });
-         executeGrassColor.addEventListener('click', () => {
-            const color = grassColorInput.value;
-            backgroundColor = color;
-            createGreenBackground(color);
-        });
-        musicToggle.addEventListener('change', toggleMusic);
-        executeEnemyHealthMod.addEventListener('click', () => {
-            const mod = parseFloat(enemyHealthModInput.value);
-            if(!isNaN(mod) && mod > 0) {
-                enemyStrengthModifier = mod;
-            }
-        });
-        executeEnemySpeedMod.addEventListener('click', () => {
-            const mod = parseFloat(enemySpeedModInput.value);
-            if(!isNaN(mod) && mod > 0) {
-                enemySpeedModifier = mod;
-            }
-        });
-        executeDisableTowers.addEventListener('click', () => {
-            towers.forEach(t => t.disabled = 300); // Disable for 5 seconds
-        });
-         executeSpawnEnemy.addEventListener('click', () => {
-            const enemyName = spawnEnemyInput.value.trim();
-            let enemyKey = null;
-
-            for (const key in ENEMY_DESCRIPTIONS) {
-                if (ENEMY_DESCRIPTIONS[key].name.toLowerCase() === enemyName.toLowerCase()) {
-                    enemyKey = key;
-                    break;
-                }
-            }
-
-            if(enemyKey && ENEMY_DATA[enemyKey]) {
-                 const data = ENEMY_DATA[enemyKey];
-                 enemies.push({ x: scaledPath[0].x, y: scaledPath[0].y, pathIndex: 0, speed: data.speed, health: data.health, maxHealth: data.health, size: canvasWidth * 0.02, gold: data.gold, type: enemyKey, visual: {}, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, ability: data.ability || null, resistance: data.resistance || null, lastHitBy: null, attackingMonolith: null });
-            }
-        });
-
-        adminDemonMode.addEventListener('click', () => adminSetWave(100));
-        adminHellMode.addEventListener('click', () => adminSetWave(1000));
-        adminMaxTowers.addEventListener('click', () => {
-            towers.forEach(t => { 
-                if (gold < t.upgradeCost * (10 - t.level)) {
-                    gold += t.upgradeCost * (10 - t.level);
-                }
-                for(let i = t.level; i < 10; i++) upgradeTower(t); 
-            });
-        });
-        adminGiveAll.addEventListener('click', () => {
-            Object.keys(TOWER_DATA).forEach(type => {
-                const x = Math.random() * canvasWidth;
-                const y = Math.random() * canvasHeight;
-                if(canPlaceTower(x, y)) {
-                    towers.push({ x: x, y: y, type: type, size: canvasWidth * 0.035, range: canvasWidth * TOWER_DATA[type].range, fireRate: TOWER_DATA[type].fireRate, fireCooldown: 0, damage: TOWER_DATA[type].damage, projectileType: TOWER_DATA[type].projectile, level: 1, upgradeCost: TOWER_DATA[type].cost * 2, totalSpent: TOWER_DATA[type].cost, shield: 0, disabled: 0, currentTarget: null, damageBonus: 0 });
-                }
-            });
-        });
-        adminTriggerAbilities.addEventListener('click', () => {
-            towers.forEach(t => t.fireCooldown = 0);
-        });
-
-
-        window.addEventListener('keydown', handleCheatCode);
-
-        function handleCheatCode(e) {
-            if (gameOver) return;
-            keySequence.push(e.key);
-            if (keySequence.length > 20) {
-                keySequence.shift();
-            }
-
-            const adminCodeStr = adminCode.join('');
-            const currentSequenceStr = keySequence.join('');
-
-            if (currentSequenceStr.endsWith(adminCodeStr)) {
-                adminPanelButton.classList.remove('hidden');
-                floatingTexts.push({
-                    x: canvasWidth / 2,
-                    y: canvasHeight / 2,
-                    content: 'Admin Panel Unlocked',
-                    color: '0, 191, 255',
-                    duration: 240,
-                    size: 50
-                });
-                if (audioStarted) buildSynth.triggerAttackRelease("C5", "4n");
-                keySequence = []; // Reset sequence
-            }
-        }
-
-        function adminSkipWaves(numWaves) {
-            if (timerInterval) clearInterval(timerInterval);
-            
-            enemies = [];
-            projectiles = [];
-            waveInProgress = false;
-            bossSpawned = false;
-
-            for (let i = 0; i < numWaves; i++) {
-                gold += 100 + (wave + i + 1) * 10;
-            }
-            wave += numWaves;
-            
-            floatingTexts.push({
-                x: canvasWidth / 2,
-                y: canvasHeight / 2,
-                content: `+${numWaves} Waves!`,
-                color: '0, 255, 255',
-                duration: 180,
-                size: 50
-            });
-
-            if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
-            
-            updateUI();
-            startWaveTimer();
-        }
-
-        function adminSetWave(targetWave) {
-            if (timerInterval) clearInterval(timerInterval);
-            enemies = [];
-            projectiles = [];
-            specialEffects = [];
-            waveInProgress = false;
-            bossSpawned = false;
-            wave = targetWave - 1;
-            floatingTexts.push({
-                x: canvasWidth / 2, y: canvasHeight / 2,
-                content: `Set to Wave ${targetWave}`, color: '0, 191, 255',
-                duration: 180, size: 50
-            });
-
-            if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
-            updateUI();
-            startNextWave();
-        }
-
-        // --- Custom Game Logic ---
-        function showCustomModal(modalToShow) {
-            document.querySelectorAll('.custom-game-modal').forEach(m => m.classList.add('hidden'));
-            if(modalToShow) modalToShow.classList.remove('hidden');
-        }
-
-        customModeButton.addEventListener('click', () => {
-            modeSelectModal.classList.add('hidden');
-            populateCustomTowerSelection();
-            showCustomModal(customTowerSelectModal);
-        });
-        
-        customTowersNextButton.addEventListener('click', () => {
-            customEnabledTowers = [];
-            document.querySelectorAll('#custom-tower-select-modal input:checked').forEach(checkbox => {
-                customEnabledTowers.push(checkbox.dataset.type);
-            });
-            if(customEnabledTowers.length > 0) {
-                populateCustomEnemySelection();
-                showCustomModal(customEnemySelectModal);
-            } else {
-                alert("Please select at least one tower!");
-            }
-        });
-
-        customEnemiesBackButton.addEventListener('click', () => showCustomModal(customTowerSelectModal));
-        
-        customEnemiesNextButton.addEventListener('click', () => {
-             customEnabledEnemies = [];
-            document.querySelectorAll('#custom-enemy-select-modal input:checked').forEach(checkbox => {
-                customEnabledEnemies.push(checkbox.dataset.type);
-            });
-            if(customEnabledEnemies.length > 0) {
-                showCustomModal(customDifficultySelectModal);
-            } else {
-                alert("Please select at least one enemy!");
-            }
-        });
-
-        customDifficultyBackButton.addEventListener('click', () => showCustomModal(customEnemySelectModal));
-
-        document.querySelectorAll('.difficulty-button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const difficultyValue = parseFloat(e.currentTarget.dataset.difficulty);
-                difficultyModifier = { health: difficultyValue, speed: difficultyValue };
-                currentDifficulty = e.currentTarget.textContent.toLowerCase();
-                 document.querySelectorAll('.difficulty-button').forEach(b => b.classList.remove('ring-4', 'ring-blue-400'));
-                 e.currentTarget.classList.add('ring-4', 'ring-blue-400');
-            });
-        });
-        
-        customStartGameButton.addEventListener('click', () => {
-             if(!currentDifficulty) { alert("Please select a difficulty!"); return; }
-             isCustomGame = true;
-             init(currentDifficulty);
-             gameHasStarted = true;
-             showCustomModal(null); // Hide all custom modals
-        });
-
-
-        function populateCustomTowerSelection() {
-            const container = document.querySelector('#custom-tower-select-modal .custom-select-content');
-            container.innerHTML = '';
-            Object.keys(TOWER_DATA).forEach(type => {
-                // ... create checkbox, icon, label, etc. and append ...
-                 container.innerHTML += `<label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg cursor-pointer hover:bg-white/80"><input type="checkbox" data-type="${type}" class="h-5 w-5 rounded"><span>${TOWER_DATA[type].name}</span></label>`;
-            });
-        }
-        function populateCustomEnemySelection() {
-            const container = document.querySelector('#custom-enemy-select-modal .custom-select-content');
-            container.innerHTML = '';
-            Object.keys(ENEMY_DATA).forEach(type => {
-                // ... create checkbox, icon, label, etc. and append ...
-                 container.innerHTML += `<label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg cursor-pointer hover:bg-white/80"><input type="checkbox" data-type="${type}" class="h-5 w-5 rounded"><span>${ENEMY_DESCRIPTIONS[type].name}</span></label>`;
-            });
-        }
-
-
-        // --- Initialisation on page load (for non-game elements) ---
-        resizeCanvas();
-        setupTowerData();
-        createTowerButtons();
-        populateIndex();
-        checkForSave();
-
-    </script>
-</body>
-</html>
+            const
 
