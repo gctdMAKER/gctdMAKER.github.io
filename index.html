@@ -2870,5 +2870,548 @@
         }
 
         function loadGame() {
-            const
+            const savedDataString = localStorage.getItem('gctd_save');
+            if (!savedDataString) { console.error("No save data found."); return; }
+            const savedState = JSON.parse(savedDataString);
+            isCustomGame = false;
+            init(savedState.currentDifficulty);
+
+            gold = savedState.gold;
+            wave = savedState.wave;
+            baseHealth = savedState.baseHealth;
+            enemyStrengthModifier = savedState.enemyStrengthModifier || 1.0;
+            enemySpeedModifier = savedState.enemySpeedModifier || 1.0;
+            
+            towers = savedState.towers.map(st => {
+                const baseTowerData = originalTowerData[st.type];
+                let loadedTower = {
+                    ...baseTowerData, // Start with original stats
+                    x: st.x * canvasWidth, y: st.y * canvasHeight,
+                    type: st.type, level: st.level, totalSpent: st.totalSpent,
+                    size: canvasWidth * 0.035,
+                    range: canvasWidth * baseTowerData.range,
+                    upgradeCost: baseTowerData.cost,
+                    fireCooldown: 0, shield: 0, disabled: 0, currentTarget: null, damageBonus: 0,
+                };
+
+                // Re-apply upgrades based on level
+                for(let i = 1; i < st.level; i++) {
+                    const upgradeType = TOWER_DATA[st.type].upgrade;
+                    if (upgradeType === 'damage') loadedTower.damage *= 1.25;
+                    else if (upgradeType === 'fireRate') loadedTower.fireRate *= 0.85;
+                    else if (upgradeType === 'effect') loadedTower.damage *= 1.2;
+                    else if (upgradeType === 'cash') { loadedTower.damage *= 1.5; loadedTower.fireRate *= 0.9; }
+                    loadedTower.upgradeCost *= 2;
+                }
+
+                if (st.type === 'monolith') {
+                    loadedTower.health = st.health;
+                    loadedTower.maxHealth = st.maxHealth;
+                }
+
+                return loadedTower;
+            });
+
+            gameHasStarted = true;
+            modeSelectModal.classList.add('hidden');
+            
+            waveInProgress = savedState.waveInProgress;
+            waveTimer = savedState.waveTimer;
+            updateUI();
+
+            if (waveInProgress) {
+                 startNextWave(); // This logic might need adjustment depending on how you want to respawn mid-wave enemies. For now, we restart the wave.
+                 wave--; // Counteract the wave++ in startNextWave
+            } else {
+                startWaveTimer(waveTimer);
+            }
+        }
+
+        function checkForSave() {
+            const savedDataString = localStorage.getItem('gctd_save');
+            if (savedDataString) {
+                try {
+                    const savedData = JSON.parse(savedDataString);
+                    continueButton.classList.remove('hidden');
+                    continueInfo.textContent = `Wave: ${savedData.wave} | Gold: ${savedData.gold} | ${savedData.currentDifficulty}`;
+                } catch (e) {
+                    console.error("Failed to parse save data:", e);
+                    localStorage.removeItem('gctd_save');
+                }
+            } else {
+                continueButton.classList.add('hidden');
+            }
+        }
+
+        // --- Event Listeners ---
+        window.addEventListener('resize', () => {
+            if (gameHasStarted) {
+                 resizeCanvas();
+            } else {
+                resizeCanvas();
+            }
+        });
+        canvas.addEventListener('click', handleCanvasClick);
+        canvas.addEventListener('mousemove', e => { const rect = canvas.getBoundingClientRect(); mousePos.x = e.clientX - rect.left; mousePos.y = e.clientY - rect.top; });
+        
+        restartButton.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                toggleMusic();
+                musicToggle.checked = false;
+            }
+            gameHasStarted = false;
+            preGameOverlay.style.display = 'none';
+            modeSelectModal.classList.remove('hidden');
+            gameOverModal.classList.add('hidden');
+            checkForSave();
+            
+            goldDisplay.textContent = '--';
+            livesDisplay.textContent = '--';
+            waveDisplay.textContent = '--';
+            timerDisplay.textContent = '--';
+        });
+
+        soundToggleButton.addEventListener('click', toggleSound);
+        pauseButton.addEventListener('click', togglePause);
+        normalSpeedButton.addEventListener('click', () => setGameSpeed(1));
+        twoxSpeedButton.addEventListener('click', () => setGameSpeed(2));
+        
+        const startFunction = (e) => {
+            e.preventDefault();
+            document.getElementById('game-section').scrollIntoView();
+            modeSelectModal.classList.remove('hidden');
+            preGameOverlay.style.display = 'none';
+            checkForSave();
+        };
+
+        startGameButton.addEventListener('click', startFunction);
+        playNowButton.addEventListener('click', startFunction);
+
+        normalModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            if(!gameHasStarted) {
+                isCustomGame = false;
+                init('normal');
+                gameHasStarted = true;
+            }
+        });
+        hardModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            if(!gameHasStarted) {
+                isCustomGame = false;
+                init('hard');
+                gameHasStarted = true;
+            }
+        });
+        hardcoreModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            if(!gameHasStarted) {
+                isCustomGame = false;
+                init('hardcore');
+                gameHasStarted = true;
+            }
+        });
+
+        indexButton.addEventListener('click', () => {
+            if (gameIndexModal.classList.contains('hidden')) {
+                if (!isPaused && gameHasStarted) togglePause();
+                gameIndexModal.classList.remove('hidden');
+                setTimeout(() => gameIndexModal.classList.remove('opacity-0', 'scale-90'), 10);
+            } else {
+                if (isPaused && gameHasStarted) togglePause();
+                gameIndexModal.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
+            }
+        });
+        closeIndexButton.addEventListener('click', () => {
+            if(isPaused && gameHasStarted) togglePause();
+            gameIndexModal.classList.add('opacity-0', 'scale-90');
+            setTimeout(() => gameIndexModal.classList.add('hidden'), 300);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && gameHasStarted && !isPaused) {
+                togglePause();
+                saveGame(); // Auto-save when tab loses focus
+            }
+        });
+        
+        showTowersTab.addEventListener('click', () => {
+            towerIndexContent.classList.remove('hidden');
+            enemyIndexContent.classList.add('hidden');
+            showTowersTab.classList.add('active');
+            showEnemiesTab.classList.remove('active');
+        });
+        
+        showEnemiesTab.addEventListener('click', () => {
+            towerIndexContent.classList.add('hidden');
+            enemyIndexContent.classList.remove('hidden');
+            showTowersTab.classList.remove('active');
+            showEnemiesTab.classList.add('active');
+        });
+
+        // Save/Load Listeners
+        saveButton.addEventListener('click', saveGame);
+        continueButton.addEventListener('click', loadGame);
+
+        resetSaveButton.addEventListener('click', () => {
+            if (!isPaused && gameHasStarted) togglePause();
+            resetSaveModal.classList.remove('hidden', 'opacity-0', 'scale-90');
+        });
+
+        confirmResetButton.addEventListener('click', () => {
+            localStorage.removeItem('gctd_save');
+            resetSaveModal.classList.add('opacity-0', 'scale-90');
+            setTimeout(() => resetSaveModal.classList.add('hidden'), 300);
+            if (isPaused && gameHasStarted) togglePause();
+            checkForSave(); // This will hide the continue button
+            floatingTexts.push({
+                x: canvasWidth / 2, y: canvasHeight / 2,
+                content: 'Save Deleted', color: '255, 100, 100',
+                duration: 120, size: 40
+            });
+        });
+        
+        cancelResetButton.addEventListener('click', () => {
+            resetSaveModal.classList.add('opacity-0', 'scale-90');
+            setTimeout(() => resetSaveModal.classList.add('hidden'), 300);
+            if (isPaused && gameHasStarted) togglePause();
+        });
+
+        // --- Admin Panel Logic ---
+        adminPanelButton.addEventListener('click', () => {
+            adminPanel.classList.toggle('hidden');
+        });
+        closeAdminPanel.addEventListener('click', () => {
+            adminPanel.classList.add('hidden');
+        });
+        executeSkipWaves.addEventListener('click', () => {
+            const numWaves = parseInt(skipWavesInput.value, 10);
+            if (!isNaN(numWaves) && numWaves > 0) {
+                adminSkipWaves(numWaves);
+            }
+        });
+         executeSetWave.addEventListener('click', () => {
+            const targetWave = parseInt(setWaveInput.value, 10);
+            if (!isNaN(targetWave) && targetWave >= 1) {
+                adminSetWave(targetWave);
+            }
+        });
+        executeSetSpeed.addEventListener('click', () => {
+            const speed = parseFloat(setSpeedInput.value);
+            if (!isNaN(speed) && speed > 0) {
+                setGameSpeed(speed);
+            }
+        });
+        executeAddGold.addEventListener('click', () => {
+            const amount = parseInt(addGoldInput.value, 10);
+            if (!isNaN(amount)) {
+                gold += amount;
+                updateUI();
+            }
+        });
+        executeKillAll.addEventListener('click', () => {
+            enemies = [];
+        });
+        executeSetHealth.addEventListener('click', () => {
+            const health = parseInt(setHealthInput.value, 10);
+            if(!isNaN(health) && health > 0) {
+                baseHealth = health;
+                maxBaseHealth = health;
+                updateUI();
+            }
+        });
+        invincibleBaseToggle.addEventListener('change', (e) => {
+            isBaseInvincible = e.target.checked;
+        });
+         executeGrassColor.addEventListener('click', () => {
+            const color = grassColorInput.value;
+            backgroundColor = color;
+            createGreenBackground(color);
+        });
+        musicToggle.addEventListener('change', toggleMusic);
+        executeEnemyHealthMod.addEventListener('click', () => {
+            const mod = parseFloat(enemyHealthModInput.value);
+            if(!isNaN(mod) && mod > 0) {
+                enemyStrengthModifier = mod;
+            }
+        });
+        executeEnemySpeedMod.addEventListener('click', () => {
+            const mod = parseFloat(enemySpeedModInput.value);
+            if(!isNaN(mod) && mod > 0) {
+                enemySpeedModifier = mod;
+            }
+        });
+        executeDisableTowers.addEventListener('click', () => {
+            towers.forEach(t => t.disabled = 300); // Disable for 5 seconds
+        });
+         executeSpawnEnemy.addEventListener('click', () => {
+            const enemyName = spawnEnemyInput.value.trim();
+            let enemyKey = null;
+
+            for (const key in ENEMY_DESCRIPTIONS) {
+                if (ENEMY_DESCRIPTIONS[key].name.toLowerCase() === enemyName.toLowerCase()) {
+                    enemyKey = key;
+                    break;
+                }
+            }
+
+            if(enemyKey && ENEMY_DATA[enemyKey]) {
+                 const data = ENEMY_DATA[enemyKey];
+                 enemies.push({ x: scaledPath[0].x, y: scaledPath[0].y, pathIndex: 0, speed: data.speed, health: data.health, maxHealth: data.health, size: canvasWidth * 0.02, gold: data.gold, type: enemyKey, visual: {}, slowed: false, slowTimer: 0, isBurning: false, burnTimer: 0, burnDamage: 0, isFrozen: false, freezeTimer: 0, isShocked: false, shockTimer: 0, ability: data.ability || null, resistance: data.resistance || null, lastHitBy: null, attackingMonolith: null });
+            }
+        });
+
+        adminDemonMode.addEventListener('click', () => adminSetWave(100));
+        adminHellMode.addEventListener('click', () => adminSetWave(1000));
+        adminMaxTowers.addEventListener('click', () => {
+            towers.forEach(t => { 
+                if (gold < t.upgradeCost * (10 - t.level)) {
+                    gold += t.upgradeCost * (10 - t.level);
+                }
+                for(let i = t.level; i < 10; i++) upgradeTower(t); 
+            });
+        });
+        adminGiveAll.addEventListener('click', () => {
+            Object.keys(TOWER_DATA).forEach(type => {
+                const x = Math.random() * canvasWidth;
+                const y = Math.random() * canvasHeight;
+                if(canPlaceTower(x, y)) {
+                    towers.push({ x: x, y: y, type: type, size: canvasWidth * 0.035, range: canvasWidth * TOWER_DATA[type].range, fireRate: TOWER_DATA[type].fireRate, fireCooldown: 0, damage: TOWER_DATA[type].damage, projectileType: TOWER_DATA[type].projectile, level: 1, upgradeCost: TOWER_DATA[type].cost * 2, totalSpent: TOWER_DATA[type].cost, shield: 0, disabled: 0, currentTarget: null, damageBonus: 0 });
+                }
+            });
+        });
+        adminTriggerAbilities.addEventListener('click', () => {
+            towers.forEach(t => t.fireCooldown = 0);
+        });
+
+
+        window.addEventListener('keydown', handleCheatCode);
+
+        function handleCheatCode(e) {
+            if (gameOver) return;
+            keySequence.push(e.key);
+            if (keySequence.length > 20) {
+                keySequence.shift();
+            }
+
+            const adminCodeStr = adminCode.join('');
+            const currentSequenceStr = keySequence.join('');
+
+            if (currentSequenceStr.endsWith(adminCodeStr)) {
+                adminPanelButton.classList.remove('hidden');
+                floatingTexts.push({
+                    x: canvasWidth / 2,
+                    y: canvasHeight / 2,
+                    content: 'Admin Panel Unlocked',
+                    color: '0, 191, 255',
+                    duration: 240,
+                    size: 50
+                });
+                if (audioStarted) buildSynth.triggerAttackRelease("C5", "4n");
+                keySequence = []; // Reset sequence
+            }
+        }
+
+        function adminSkipWaves(numWaves) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            enemies = [];
+            projectiles = [];
+            waveInProgress = false;
+            bossSpawned = false;
+
+            for (let i = 0; i < numWaves; i++) {
+                gold += 100 + (wave + i + 1) * 10;
+            }
+            wave += numWaves;
+            
+            floatingTexts.push({
+                x: canvasWidth / 2,
+                y: canvasHeight / 2,
+                content: `+${numWaves} Waves!`,
+                color: '0, 255, 255',
+                duration: 180,
+                size: 50
+            });
+
+            if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
+            
+            updateUI();
+            startWaveTimer();
+        }
+
+        function adminSetWave(targetWave) {
+            if (timerInterval) clearInterval(timerInterval);
+            enemies = [];
+            projectiles = [];
+            specialEffects = [];
+            waveInProgress = false;
+            bossSpawned = false;
+            wave = targetWave - 1;
+            floatingTexts.push({
+                x: canvasWidth / 2, y: canvasHeight / 2,
+                content: `Set to Wave ${targetWave}`, color: '0, 191, 255',
+                duration: 180, size: 50
+            });
+
+            if (audioStarted) buildSynth.triggerAttackRelease("G5", "4n");
+            updateUI();
+            startNextWave();
+        }
+
+        // --- Custom Game Logic ---
+        function showCustomModal(modalToShow) {
+            document.querySelectorAll('.custom-game-modal').forEach(m => m.classList.add('hidden'));
+            if(modalToShow) modalToShow.classList.remove('hidden');
+        }
+
+        customModeButton.addEventListener('click', () => {
+            modeSelectModal.classList.add('hidden');
+            populateCustomTowerSelection();
+            showCustomModal(customTowerSelectModal);
+        });
+        
+        customTowersNextButton.addEventListener('click', () => {
+            customEnabledTowers = [];
+            document.querySelectorAll('#custom-tower-select-modal input:checked').forEach(checkbox => {
+                customEnabledTowers.push(checkbox.dataset.type);
+            });
+            if(customEnabledTowers.length > 0) {
+                populateCustomEnemySelection();
+                showCustomModal(customEnemySelectModal);
+            } else {
+                alert("Please select at least one tower!");
+            }
+        });
+
+        customEnemiesBackButton.addEventListener('click', () => showCustomModal(customTowerSelectModal));
+        
+        customEnemiesNextButton.addEventListener('click', () => {
+             customEnabledEnemies = [];
+            document.querySelectorAll('#custom-enemy-select-modal input:checked').forEach(checkbox => {
+                customEnabledEnemies.push(checkbox.dataset.type);
+            });
+            if(customEnabledEnemies.length > 0) {
+                showCustomModal(customGoldSelectModal);
+            } else {
+                alert("Please select at least one enemy!");
+            }
+        });
+
+        customGoldBackButton.addEventListener('click', () => showCustomModal(customEnemySelectModal));
+
+        document.querySelectorAll('.gold-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const goldValue = parseInt(e.currentTarget.dataset.gold, 10);
+                customStartingGold = goldValue;
+                document.querySelectorAll('.gold-button').forEach(b => b.classList.remove('ring-4', 'ring-blue-400'));
+                e.currentTarget.classList.add('ring-4', 'ring-blue-400');
+                customGoldInput.value = '';
+            });
+        });
+
+        customGoldInput.addEventListener('input', () => {
+            document.querySelectorAll('.gold-button').forEach(b => b.classList.remove('ring-4', 'ring-blue-400'));
+        });
+
+        customGoldNextButton.addEventListener('click', () => {
+            const customValue = parseInt(customGoldInput.value, 10);
+            if (!isNaN(customValue) && customValue > 0) {
+                customStartingGold = customValue;
+            } else if (customGoldInput.value === '') {
+                // A preset was selected, customStartingGold is already set
+            } else {
+                alert("Please select a preset or enter a valid gold amount.");
+                return;
+            }
+            showCustomModal(customDifficultySelectModal);
+        });
+
+
+        customDifficultyBackButton.addEventListener('click', () => showCustomModal(customGoldSelectModal));
+
+        document.querySelectorAll('.difficulty-button').forEach(button => {
+            if(button.id !== 'custom-difficulty-button') {
+                button.addEventListener('click', (e) => {
+                    const difficultyValue = parseFloat(e.currentTarget.dataset.difficulty);
+                    difficultyModifier = { health: difficultyValue, speed: difficultyValue };
+                    currentDifficulty = e.currentTarget.textContent.toLowerCase();
+                     document.querySelectorAll('.difficulty-button').forEach(b => b.classList.remove('ring-4', 'ring-blue-400'));
+                     e.currentTarget.classList.add('ring-4', 'ring-blue-400');
+                });
+            }
+        });
+
+        customDifficultyButton.addEventListener('click', () => {
+            document.querySelectorAll('.difficulty-button').forEach(b => b.classList.remove('ring-4', 'ring-blue-400'));
+            customDifficultyButton.classList.add('ring-4', 'ring-blue-400');
+            currentDifficulty = 'custom';
+            showCustomModal(customDifficultyDetailsModal);
+        });
+        
+        customStartGameButton.addEventListener('click', () => {
+             if(!currentDifficulty || currentDifficulty === 'custom') { alert("Please select a difficulty or configure a custom one!"); return; }
+             isCustomGame = true;
+             init(currentDifficulty);
+             gameHasStarted = true;
+             showCustomModal(null); // Hide all custom modals
+        });
+
+        customDifficultyDetailsBackButton.addEventListener('click', () => showCustomModal(customDifficultySelectModal));
+
+        startCustomGameFinalButton.addEventListener('click', () => {
+            isCustomGame = true;
+            gameHasStarted = true;
+            init('custom'); 
+            showCustomModal(null);
+        });
+
+        // Sliders for custom difficulty
+        const sliders = {
+            'enemy-health': { el: document.getElementById('enemy-health-slider'), valEl: document.getElementById('enemy-health-value'), key: 'enemyHealth' },
+            'enemy-speed': { el: document.getElementById('enemy-speed-slider'), valEl: document.getElementById('enemy-speed-value'), key: 'enemySpeed' },
+            'tower-damage': { el: document.getElementById('tower-damage-slider'), valEl: document.getElementById('tower-damage-value'), key: 'towerDamage' },
+            'tower-firerate': { el: document.getElementById('tower-firerate-slider'), valEl: document.getElementById('tower-firerate-value'), key: 'towerFireRate' },
+            'tower-range': { el: document.getElementById('tower-range-slider'), valEl: document.getElementById('tower-range-value'), key: 'towerRange' },
+        };
+
+        for (const sliderKey in sliders) {
+            const slider = sliders[sliderKey];
+            slider.el.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                slider.valEl.textContent = `${value.toFixed(1)}x`;
+                customDifficultySettings[slider.key] = value;
+            });
+        }
+
+
+        function populateCustomTowerSelection() {
+            const container = document.querySelector('#custom-tower-select-modal .custom-select-content');
+            container.innerHTML = '';
+            Object.keys(TOWER_DATA).forEach(type => {
+                // ... create checkbox, icon, label, etc. and append ...
+                 container.innerHTML += `<label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg cursor-pointer hover:bg-white/80"><input type="checkbox" data-type="${type}" class="h-5 w-5 rounded"><span>${TOWER_DATA[type].name}</span></label>`;
+            });
+        }
+        function populateCustomEnemySelection() {
+            const container = document.querySelector('#custom-enemy-select-modal .custom-select-content');
+            container.innerHTML = '';
+            Object.keys(ENEMY_DATA).forEach(type => {
+                // ... create checkbox, icon, label, etc. and append ...
+                 container.innerHTML += `<label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg cursor-pointer hover:bg-white/80"><input type="checkbox" data-type="${type}" class="h-5 w-5 rounded"><span>${ENEMY_DESCRIPTIONS[type].name}</span></label>`;
+            });
+        }
+
+
+        // --- Initialisation on page load (for non-game elements) ---
+        resizeCanvas();
+        setupTowerData();
+        createTowerButtons();
+        populateIndex();
+        checkForSave();
+
+    </script>
+</body>
+</html>
 
